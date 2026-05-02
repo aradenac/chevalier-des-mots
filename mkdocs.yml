@@ -1,0 +1,33 @@
+site_name: Le Chevalier des Mots
+site_description: Documentation du jeu éducatif Le Chevalier des Mots
+site_url: ""
+theme:
+  name: material
+  language: fr
+nav:
+  - Accueil: index.md
+  - Game Design:
+      - Vue d'ensemble: game-design/index.md
+      - Vision: game-design/vision.md
+      - Boucle de jeu: game-design/gameplay-loop.md
+      - Niveaux: game-design/levels.md
+      - Règles pédagogiques: game-design/pedagogical-rules.md
+      - Progression: game-design/difficulty-progression.md
+  - Architecture:
+      - Vue d'ensemble: architecture/index.md
+      - Architecture actuelle: architecture/overview.md
+      - Modules: architecture/modules.md
+      - Flux runtime: architecture/runtime-flow.md
+      - APIs navigateur: architecture/browser-apis.md
+      - Décisions:
+          - ADR-0001: architecture/decisions/adr-0001-docs-as-code.md
+          - ADR-0002: architecture/decisions/adr-0002-vanilla-js-vite.md
+          - ADR-0003: architecture/decisions/adr-0003-speech-synthesis-as-optional.md
+  - Notice utilisateur:
+      - Vue d'ensemble: user-guide/index.md
+      - Lancement: user-guide/launch.md
+      - Contrôles: user-guide/controls.md
+      - Niveaux: user-guide/levels.md
+      - Dépannage: user-guide/troubleshooting.md
+  - Glossaire: glossary.md
+  - Guide LLM: llm-maintenance-guide.md

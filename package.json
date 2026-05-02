@@ -4,7 +4,9 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "docs:serve": "mkdocs serve",
+    "docs:build": "mkdocs build"
   },
   "devDependencies": {
     "vite": "^5.4.0",
