@@ -15,10 +15,18 @@ La validation de traçabilité doit passer par OpenFastTrace.
 ## État de validation
 
 - documentation opérationnelle : oui;
-- OpenFastTrace installé dans l'environnement courant : non;
-- Java 17+ disponible dans l'environnement courant : non;
+- OpenFastTrace installé dans l'environnement courant : oui;
+- Java 17+ disponible dans l'environnement courant : oui;
 - commandes validées : `npm test`, `npm run build`, `npm run docs:build`;
-- `npm run trace` : échec propre faute de Java et du JAR OpenFastTrace.
+- `npm run trace` : lancé, mais la couverture reste non propre.
+
+## Observation d'audit
+
+- l'outillage MkDocs fonctionne;
+- OpenFastTrace fonctionne en CLI et produit un rapport texte;
+- la base OpenFastTrace actuelle produit encore des doublons et des couvertures non désirées lors de `npm run trace`;
+- plusieurs pages de spécification réutilisent les mêmes identifiants dans des exemples ou des doublons de contenu;
+- la structure de traçabilité doit être resserrée avant de pouvoir considérer la couverture comme propre.
 
 ## Fonctionnalités terminées
 
@@ -62,6 +70,5 @@ La validation de traçabilité doit passer par OpenFastTrace.
 ## Prochaines étapes
 
 1. Brancher OpenFastTrace dans `tools/trace.sh`.
-2. Installer Java 17+ et le JAR OpenFastTrace localement.
+2. Réduire les doublons de spécifications et les exemples interprétés comme des éléments de traçabilité.
 3. Garder les spécifications synchronisées avec les tests.
-4. Réduire les doublons entre exigences et guide utilisateur.

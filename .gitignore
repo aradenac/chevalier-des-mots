@@ -3,3 +3,4 @@ dist/
 .venv/
 site/
 build/
+tools/openfasttrace/openfasttrace.jar
