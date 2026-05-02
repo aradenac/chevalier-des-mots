@@ -1,4 +1,4 @@
-// utest~cdm.audio-optional~1
+// [utest->req~audio.non-blocking~1]
 import { describe, expect, it, vi } from "vitest";
 import { createAudioService } from "../src/adapters/audioService.js";
 

@@ -1,5 +1,8 @@
 # Dépannage
 
+<!-- [doc->req~audio.non-blocking~1] -->
+<!-- [doc->req~speech.optional~1] -->
+
 ## Son absent
 
 Vérifier :
@@ -16,10 +19,6 @@ Cause possible :
 - Brave expose `speechSynthesis` mais aucune voix exploitable;
 - `getVoices()` retourne `[]`;
 - `synthesis-failed` survient au moment de parler.
-
-`uman~cdm.troubleshooting-audio-voice~1`
-
-Needs: req
 
 ## Ce que le jeu doit faire
 

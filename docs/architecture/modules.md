@@ -4,100 +4,100 @@ Cette page mappe les principaux modules du dépôt.
 
 ## `src/data/levels.js`
 
-`dsn~cdm.level-data-model~1`
+`dsn~architecture.level~1`
 
 Contient les données pédagogiques.
 Ce module ne doit pas contenir de logique de gameplay.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `src/core/gameState.js`
 
-`dsn~cdm.state-model~1`
+`dsn~architecture.game-state~1`
 
 Construit et réinitialise l'état de jeu.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `src/core/collision.js`
 
-`dsn~cdm.collision-core~1`
+`dsn~architecture.collision-result~1`
 
 Détecte les collisions entre l'épée et les mots.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `src/core/progression.js`
 
-`dsn~cdm.progression-core~1`
+`dsn~architecture.progression~1`
 
 Gère la sélection, le passage au niveau suivant et les conditions de réussite.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `src/core/wordSpawner.js`
 
-`dsn~cdm.word-spawner-core~1`
+`dsn~architecture.word-spawner~1`
 
 Gère le tirage, la vitesse et la densité des mots.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `src/adapters/keyboardInput.js`
 
-`dsn~cdm.input-adapters~1`
+`dsn~architecture.input-adapters~1`
 
 Normalise le clavier.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `src/adapters/touchInput.js`
 
-`dsn~cdm.input-adapters~1`
+`dsn~architecture.input-adapters~1`
 
 Normalise le tactile.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `src/adapters/gamepadInput.js`
 
-`dsn~cdm.input-adapters~1`
+`dsn~architecture.input-adapters~1`
 
 Normalise la manette.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `src/adapters/audioService.js`
 
-`dsn~cdm.audio-optional~1`
+`dsn~architecture.audio-service~1`
 
 Encapsule les sons courts.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `src/adapters/narrationService.js`
 
-`dsn~cdm.speech-optional~1`
+`dsn~architecture.narration-service~1`
 
 Encapsule la synthèse vocale.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `src/diagnostics/speechDiagnostics.js`
 
-`dsn~cdm.speech-diagnostics~1`
+`dsn~architecture.speech-diagnostics~1`
 
 Traduit les erreurs de voix en diagnostic lisible.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `src/main.js`
 
-`dsn~cdm.main-runtime~1`
+`dsn~architecture.main-runtime~1`
 
 Orchestre la partie, les services et le DOM.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## Critères d'acceptation
 

@@ -3,9 +3,11 @@
 Le jeu n'applique pas de punition dure.
 Il corrige, il montre et il laisse rejouer.
 
-`feat~cdm.feedback-loop~1`
+`dsn~game.no-hard-punishment~1`
 
-Needs: req
+Les erreurs ne doivent jamais bloquer brutalement l'enfant ni provoquer de game over punitif.
+
+Needs: req, doc
 
 ## Modalités de feedback
 

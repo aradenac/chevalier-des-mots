@@ -1,14 +1,14 @@
 # Contrôles
 
+<!-- [doc->req~input.keyboard~1] -->
+<!-- [doc->req~input.touch~1] -->
+<!-- [doc->req~input.gamepad~1] -->
+
 ## Clavier
 
 - `ArrowLeft` ou `A` : aller à gauche;
 - `ArrowRight` ou `D` : aller à droite;
 - `Space` ou `Enter` : frapper.
-
-`uman~cdm.keyboard-controls~1`
-
-Needs: req
 
 ## Tactile
 
@@ -17,19 +17,11 @@ Needs: req
 - bouton de frappe : attaquer;
 - bouton pause : mettre en pause.
 
-`uman~cdm.touch-controls~1`
-
-Needs: req
-
 ## Manette SNES USB
 
 - croix ou stick : déplacer le chevalier;
 - bouton d'action : frapper;
 - bouton pause : interrompre ou reprendre.
-
-`uman~cdm.gamepad-controls~1`
-
-Needs: req
 
 ## Critères d'acceptation
 

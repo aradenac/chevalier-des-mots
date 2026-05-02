@@ -1,5 +1,8 @@
 # Règles de contribution
 
+<!-- [doc->req~traceability.openfasttrace-validation~1] -->
+<!-- [doc->req~documentation.markdown-source~1] -->
+
 ## Règles simples
 
 - garder les changements petits;
@@ -8,10 +11,6 @@
 - ne pas créer un validateur maison;
 - ne pas introduire de framework UI;
 - ne pas modifier les niveaux sans raison liée aux exigences.
-
-`oman~cdm.contribution-rules~1`
-
-Needs: req
 
 ## Critères d'acceptation
 

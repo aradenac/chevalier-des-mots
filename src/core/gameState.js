@@ -1,4 +1,4 @@
-// impl~cdm.state-model~1
+// [impl->req~architecture.core-without-browser-api~1]
 export function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }

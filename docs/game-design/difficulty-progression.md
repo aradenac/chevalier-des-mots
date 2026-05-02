@@ -3,9 +3,11 @@
 La difficulté monte par paliers.
 Elle ne doit pas casser la compréhension du jeu.
 
-`feat~cdm.difficulty-progression~1`
+`dsn~level.grammar-progression~1`
 
-Needs: req
+Les niveaux suivent une progression : orthographe visible, catégories grammaticales, temps verbaux, accords, homophones, synthèse.
+
+Needs: req, doc
 
 ## Les leviers de difficulté
 
@@ -34,4 +36,3 @@ Exemple :
 - les niveaux intermédiaires introduisent un tri grammatical;
 - les derniers niveaux combinent plusieurs confusions possibles;
 - la difficulté reste jouable sans dépendre d'une réaction parfaite.
-

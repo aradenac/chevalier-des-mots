@@ -1,4 +1,4 @@
-// impl~cdm.main-runtime~1
+// [impl->req~game.visible-instruction~1]
 import { LEVELS } from "./data/levels.js";
 import { clamp, createGameState, resetGameStateForLevel } from "./core/gameState.js";
 import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLevelIndex } from "./core/progression.js";
@@ -114,6 +114,7 @@ function setMessage(text) {
 function updateHud() {
   const current = getLevel();
   levelInfo.textContent = "Niveau " + current.id + " · " + current.title;
+  // [impl->req~game.visible-instruction~1]
   instruction.textContent = current.shortInstruction;
   starsEl.textContent = "⭐ " + stars + " / " + current.starsToWin;
   startSubtitle.textContent = "Niveau " + current.id + " : " + current.title;
@@ -213,6 +214,7 @@ function strike() {
   const swordRect = knight.querySelector(".sword").getBoundingClientRect();
   const swordCenterX = swordRect.left + swordRect.width / 2;
   const swordCenterY = swordRect.top + swordRect.height / 2;
+  // [impl->req~game.target-only-slicing~1]
   const hit = findSwordCollision({ words: activeWords, swordCenterX, swordCenterY, veryEasy });
   makeSlash(knightX + 40, window.innerHeight - 185);
   if (!hit) return;
@@ -221,6 +223,7 @@ function strike() {
   if (hit.data.target) {
     stars++;
     updateHud();
+    // [impl->req~game.immediate-feedback~1]
     setMessage(hit.data.feedbackOk + (hit.data.correction ? "" : ""));
     services.narration.speak(shortFeedback(hit.data.feedbackOk));
     playSweetSound();
@@ -230,6 +233,7 @@ function strike() {
     if (hasWonLevel(stars, getLevel())) finishLevel();
   } else {
     bounceWord(hit);
+    // [impl->req~game.no-hard-punishment~1]
     setMessage(hit.data.feedbackKo);
     services.narration.speak(shortFeedback(hit.data.feedbackKo));
   }

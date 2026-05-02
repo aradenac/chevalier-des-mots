@@ -5,11 +5,11 @@ Ils sont écrits en JavaScript, sans TypeScript, mais doivent rester stables.
 
 ## `Level`
 
-`dsn~cdm.level-data-model~1`
+`dsn~architecture.level~1`
 
 Un niveau décrit une mission pédagogique complète.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ```js
 {
@@ -27,11 +27,11 @@ Needs: impl, utest
 
 ## `LevelItem`
 
-`dsn~cdm.level-item-model~1`
+`dsn~architecture.level-item~1`
 
 Un item décrit un mot ou une phrase à afficher dans un niveau.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ```js
 {
@@ -46,11 +46,11 @@ Needs: impl, utest
 
 ## `GameState`
 
-`dsn~cdm.state-model~1`
+`dsn~architecture.game-state~1`
 
 L'état de jeu doit rester simple et mutable par la boucle principale.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ```js
 {
@@ -68,20 +68,20 @@ Needs: impl, utest
 
 ## `ActiveWord`
 
-`dsn~cdm.active-word-model~1`
+`dsn~architecture.active-word~1`
 
 Une `ActiveWord` est une instance runtime d'un `LevelItem`.
 Elle ajoute des coordonnées et une vitesse.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `InputState`
 
-`dsn~cdm.input-state-model~1`
+`dsn~architecture.input-state~1`
 
 L'état d'entrée doit être unifié pour le clavier, le tactile et la manette.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ```js
 {
@@ -95,27 +95,27 @@ Needs: impl, utest
 
 ## `CollisionResult`
 
-`dsn~cdm.collision-result-model~1`
+`dsn~architecture.collision-result~1`
 
 `findSwordCollision()` retourne le mot touché ou `null`.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `AudioService`
 
-`dsn~cdm.audio-optional~1`
+`dsn~architecture.audio-service~1`
 
 Le service audio doit encapsuler WebAudio et échouer silencieusement si l'API manque.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## `NarrationService`
 
-`dsn~cdm.speech-optional~1`
+`dsn~architecture.narration-service~1`
 
 Le service de narration doit encapsuler `speechSynthesis` et laisser le jeu jouable sans voix.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## Critères d'acceptation
 

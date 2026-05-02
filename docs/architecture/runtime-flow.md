@@ -4,7 +4,7 @@ Cette page décrit le chemin des données pendant une partie.
 
 ## Flux principal
 
-`dsn~cdm.main-runtime~1`
+`dsn~architecture.main-runtime~1`
 
 Le runtime doit suivre cet ordre:
 
@@ -18,7 +18,7 @@ Le runtime doit suivre cet ordre:
 8. produire du feedback;
 9. passer au niveau suivant si besoin.
 
-Needs: impl, utest
+Needs: impl, utest, doc
 
 ## Ce qui ne doit pas arriver
 
@@ -36,4 +36,3 @@ Si le joueur tranche le mot cible, le runtime doit:
 - afficher un retour court;
 - éventuellement lancer un son;
 - continuer la partie sans recharger la page.
-

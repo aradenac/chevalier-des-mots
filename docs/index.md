@@ -3,6 +3,10 @@
 Le dépôt contient un système de spécifications versionnées pour le jeu éducatif.
 Le but est de pouvoir lire, tester et maintenir le projet sans dépendre d'un prompt ponctuel.
 
+<!-- [doc->req~documentation.markdown-source~1] -->
+<!-- [doc->req~documentation.static-readable-site~1] -->
+<!-- [doc->req~traceability.openfasttrace-validation~1] -->
+
 Cette documentation est organisée pour rester :
 
 - consultable directement dans GitHub;
@@ -21,11 +25,11 @@ Cette documentation est organisée pour rester :
 
 ## Contrat du dépôt
 
-`feat~cdm.documentation-system~1`
+`dsn~requirements.layer~1`
 
 Le dépôt doit exposer des spécifications versionnées, auditables et reliées à leurs niveaux de conception, d'implémentation, de test et d'usage.
 
-Needs: req
+Needs: req, doc
 
 Critères d'acceptation :
 
@@ -44,4 +48,3 @@ Il décrit :
 - comment le code est organisé;
 - comment vérifier la couverture;
 - comment reprendre la maintenance.
-

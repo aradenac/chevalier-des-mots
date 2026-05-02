@@ -20,11 +20,11 @@ L'architecture décrit comment les exigences sont matérialisées dans le code e
 
 ## Principe
 
-`dsn~cdm.core-adapters-ui-separation~1`
+`dsn~architecture.layered-design~1`
 
 Le projet doit conserver une séparation nette entre données, core, adapters et UI.
 
-Needs: impl, utest
+Needs: req, doc
 
 ## Critères d'acceptation
 
@@ -32,4 +32,3 @@ Needs: impl, utest
 - les APIs navigateur restent encapsulées;
 - les données pédagogiques restent séparées du moteur;
 - la documentation d'architecture reste cohérente avec les exigences.
-

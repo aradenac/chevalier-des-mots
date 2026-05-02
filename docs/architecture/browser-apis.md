@@ -3,6 +3,9 @@
 Les APIs navigateur sont optionnelles.
 Le jeu doit continuer à fonctionner si elles manquent ou se comportent mal.
 
+<!-- [doc->req~audio.non-blocking~1] -->
+<!-- [doc->req~speech.optional~1] -->
+
 ## APIs utilisées
 
 - `AudioContext` / `webkitAudioContext`;
@@ -13,20 +16,20 @@ Le jeu doit continuer à fonctionner si elles manquent ou se comportent mal.
 
 ## Cible navigateur
 
-`dsn~cdm.brave-target~1`
+`dsn~architecture.brave-target~1`
 
 Brave doit être considéré comme un navigateur cible.
 La documentation doit expliquer ses limites sur la voix.
 
-Needs: req
+Needs: req, doc
 
 ## SpeechSynthesis optionnelle
 
-`dsn~cdm.browser-apis-optional~1`
+`dsn~architecture.speech-optional~1`
 
 La narration doit rester optionnelle parce que certains navigateurs exposent `speechSynthesis` sans voix exploitable.
 
-Needs: impl, utest
+Needs: req, doc
 
 ## Comportement attendu
 

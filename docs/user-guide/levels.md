@@ -2,9 +2,7 @@
 
 Le joueur peut choisir un niveau depuis l'écran de sélection.
 
-`uman~cdm.level-selection~1`
-
-Needs: req
+<!-- [doc->req~level.twenty-themed-levels~1] -->
 
 ## Ce qu'il faut retenir
 
@@ -25,4 +23,3 @@ Needs: req
 - le joueur peut revenir à un niveau déjà connu;
 - le niveau choisi est lisible sans ambiguïté;
 - la liste reste cohérente avec le tableau du game design.
-

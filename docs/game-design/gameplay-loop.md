@@ -1,22 +1,20 @@
 # Boucle de jeu
 
-`feat~cdm.gameplay-loop~1`
+`dsn~game.loop~1`
 
-La boucle doit rester lisible:
+La boucle principale est : lire la consigne, observer les mots qui tombent, se déplacer, trancher, recevoir un feedback.
 
-1. un niveau s'affiche;
-2. des mots tombent;
-3. le joueur se déplace;
-4. le joueur frappe ou laisse passer;
-5. le jeu donne un retour immédiat;
-6. le score monte;
-7. le niveau se termine quand le seuil d'étoiles est atteint.
+Needs: req, doc
 
-Needs: req
+<!-- [doc->req~game.visible-instruction~1] -->
+<!-- [doc->req~game.target-only-slicing~1] -->
+<!-- [doc->req~game.immediate-feedback~1] -->
+<!-- [doc->req~game.no-hard-punishment~1] -->
 
 ## Ce que la boucle doit garantir
 
-- une action claire à chaque tour de jeu;
+- une consigne visible pendant la partie;
+- une cible claire à trancher;
 - une réponse immédiate après une bonne ou mauvaise frappe;
 - un redémarrage rapide au niveau suivant;
 - une difficulté qui monte sans casser la compréhension.
@@ -32,4 +30,3 @@ La bonne décision doit faire gagner une étoile, un son de réussite et un reto
 - le feedback arrive en moins d'une action;
 - une erreur n'empêche pas de continuer;
 - le niveau peut être rejoué.
-

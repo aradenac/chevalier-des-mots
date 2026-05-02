@@ -1,4 +1,4 @@
-// impl~cdm.collision-core~1
+// [impl->req~game.target-only-slicing~1]
 export function getSwordHitRanges(veryEasy) {
   return {
     x: veryEasy ? 150 : 118,

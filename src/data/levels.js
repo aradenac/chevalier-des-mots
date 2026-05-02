@@ -1,4 +1,5 @@
-// impl~cdm.level-data-model~1
+// [impl->req~level.twenty-themed-levels~1]
+// [impl->req~level.targets-and-distractors~1]
 const item = (text, target, feedbackOk, feedbackKo, correction, category) => ({ text, target, feedbackOk, feedbackKo, correction, category });
 const level = (id, title, instruction, shortInstruction, difficulty, starsToWin, maxActiveWords, fallSpeed, items) => ({ id, title, instruction, shortInstruction, difficulty, starsToWin, maxActiveWords, fallSpeed, items });
 

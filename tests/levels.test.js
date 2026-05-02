@@ -1,4 +1,5 @@
-// utest~cdm.level-data-model~1
+// [utest->req~level.twenty-themed-levels~1]
+// [utest->req~level.targets-and-distractors~1]
 import { describe, expect, it } from "vitest";
 import { LEVELS } from "../src/data/levels.js";
 

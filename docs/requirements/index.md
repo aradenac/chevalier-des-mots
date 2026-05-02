@@ -5,12 +5,12 @@ Le but est de pouvoir vérifier, page par page, ce qui est attendu du jeu.
 
 ## Hiérarchie
 
-1. `feat` décrit l'intention produit.
+1. `dsn` décrit une décision de design ou de specification.
 2. `req` décrit une exigence vérifiable.
-3. `dsn` décrit la décision d'architecture ou de conception.
-4. `impl` décrit l'implémentation.
-5. `utest` décrit la couverture par test.
-6. `uman` et `oman` décrivent les usages attendus côté humain.
+3. `impl` décrit l'implémentation.
+4. `utest` décrit la couverture par test.
+5. `itest` décrit une couverture d'intégration.
+6. `doc` décrit une page ou une section de documentation.
 
 ## Lecture rapide
 
@@ -24,11 +24,11 @@ Le but est de pouvoir vérifier, page par page, ce qui est attendu du jeu.
 
 ## Ce que cette couche doit garantir
 
-`feat~cdm.requirements-layer~1`
+`dsn~requirements.layer~1`
 
 Le dépôt doit contenir des exigences claires, versionnées et testables.
 
-Needs: req
+Needs: req, doc
 
 Critères d'acceptation :
 

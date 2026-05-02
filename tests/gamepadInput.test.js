@@ -1,4 +1,4 @@
-// utest~cdm.input-adapters~1
+// [utest->req~input.gamepad~1]
 import { describe, expect, it } from "vitest";
 import { readGamepadState } from "../src/adapters/gamepadInput.js";
 

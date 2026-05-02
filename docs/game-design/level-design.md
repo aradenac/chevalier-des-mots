@@ -3,9 +3,12 @@
 Le jeu contient 20 niveaux thématiques.
 Ils sont conçus comme une progression pédagogique, pas comme une simple montée de vitesse.
 
-`feat~cdm.levels~1`
+`dsn~level.grammar-progression~1`
 
-Needs: req
+<!-- [doc->req~level.twenty-themed-levels~1] -->
+<!-- [doc->req~level.targets-and-distractors~1] -->
+
+Needs: req, doc
 
 ## Table des 20 niveaux
 

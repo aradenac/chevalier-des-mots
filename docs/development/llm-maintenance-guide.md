@@ -2,6 +2,11 @@
 
 Ce guide explique comment Codex ou un autre LLM doit travailler sur le dépôt.
 
+<!-- [doc->req~documentation.markdown-source~1] -->
+<!-- [doc->req~documentation.static-readable-site~1] -->
+<!-- [doc->req~traceability.openfasttrace-validation~1] -->
+<!-- [doc->req~architecture.core-without-browser-api~1] -->
+
 ## Règle de base
 
 Lire les exigences avant de modifier le code.
@@ -15,10 +20,6 @@ Ne pas supposer un comportement qui n'est pas écrit.
 4. lire les tests;
 5. modifier le minimum;
 6. vérifier avec les commandes du dépôt.
-
-`oman~cdm.llm-rules~1`
-
-Needs: req
 
 ## Ce que le LLM doit éviter
 

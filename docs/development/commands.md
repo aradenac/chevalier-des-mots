@@ -2,6 +2,9 @@
 
 Cette page regroupe les commandes utiles.
 
+<!-- [doc->req~documentation.static-readable-site~1] -->
+<!-- [doc->req~traceability.openfasttrace-validation~1] -->
+
 ## NPM
 
 ```bash
@@ -32,10 +35,6 @@ npm run build
 npm run docs:build
 npm run trace
 ```
-
-`oman~cdm.npm-commands~1`
-
-Needs: req
 
 ## Critères d'acceptation
 
