@@ -1,5 +1,57 @@
 # Exigences d'interface et d'entrées
 
+Le démarrage doit laisser choisir un personnage avant la partie. Ce choix ne change pas les règles du jeu, seulement l'apparence et l'arme affichées.
+
+#### La sélection du personnage doit être proposée au démarrage
+`req~character.start-selection~1`
+
+Status: approved
+Priority: high
+Verification: test, manual-review
+
+Le système doit permettre au joueur de choisir son personnage avant le démarrage d'une partie.
+
+Rationale:
+Le choix du personnage augmente l'appropriation du jeu par l'enfant sans modifier les règles pédagogiques.
+
+Acceptance criteria:
+- L'écran de démarrage propose au moins trois personnages.
+- Les personnages disponibles sont :
+  - le chevalier ;
+  - le pépé à la canne ;
+  - le maître laser ou sage galactique.
+- Le personnage sélectionné est utilisé pendant la partie.
+- Le changement de personnage ne modifie pas la logique de score, de collision ou de progression.
+- Chaque personnage possède une animation ou un effet visuel cohérent avec son arme.
+- Le choix reste simple et compréhensible par un enfant.
+- Un personnage par défaut est sélectionné si le joueur ne fait aucun choix.
+
+Needs:
+- impl
+- utest
+
+#### Les personnages doivent rester cosmétiques
+`req~character.cosmetic-only~1`
+
+Status: approved
+Priority: high
+Verification: test, manual-review
+
+Le système doit garantir que le choix du personnage est cosmétique et ne modifie pas les règles du jeu.
+
+Rationale:
+Les personnages doivent personnaliser l'expérience sans déséquilibrer la difficulté ni perturber l'apprentissage.
+
+Acceptance criteria:
+- Tous les personnages utilisent la même logique de déplacement.
+- Tous les personnages utilisent la même logique de collision.
+- Tous les personnages utilisent la même logique de score.
+- Les différences entre personnages sont limitées au nom, à l'apparence, à l'arme et aux effets visuels ou sonores.
+
+Needs:
+- impl
+- utest
+
 #### La consigne courante doit rester visible
 `req~ui.visible-instruction~1`
 
@@ -45,3 +97,4 @@ Needs:
 | Date | Spec version | Game version | Location | Modification | Justification |
 |---|---|---|---|---|---|
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/inputs-ui.md | Added interface and input requirements | Keep input and visible instruction expectations in one themed page |
+| 2026-05-03 | 1.1.0 | 1.1.0 | docs/requirements/inputs-ui.md | Added character selection and cosmetic-only character requirements | Let the player choose a character without changing gameplay rules |

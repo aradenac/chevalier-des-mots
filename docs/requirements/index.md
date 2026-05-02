@@ -29,6 +29,7 @@ La page [Version history](version-history.md) relie les versions de specs et les
 
 La page [Niveaux](levels.md) rassemble les exigences de structure, une vue pédagogique synthétique des mondes, le Monde 1 — Écuyer, le Monde 2 — Chevalier et une table non exhaustive pour faciliter la lecture sans dupliquer `src/data/levels.js`.
 Un Monde 3 — Maître chevalier pourra être spécifié dans une évolution ultérieure.
+La page [Interface et entrées](inputs-ui.md) couvre aussi le choix du personnage au démarrage en plus des entrées et de la consigne visible.
 
 ## Change history
 
@@ -36,3 +37,4 @@ Un Monde 3 — Maître chevalier pourra être spécifié dans une évolution ult
 |---|---|---|---|---|---|
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/index.md | Added workflow explanation and history references | Clarify how to use the themed requirements set |
 | 2026-05-02 | 1.1.0 | 1.0.0 | docs/requirements/index.md | Documented the extended campaign structure with worlds | Clarify how the level specification expands without duplicating level data |
+| 2026-05-03 | 1.1.0 | 1.1.0 | docs/requirements/index.md | Documented the character selection entry point in the interface page | Keep the navigation aligned with the updated interface requirements |
