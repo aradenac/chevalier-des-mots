@@ -74,7 +74,7 @@
       right: 10px;
       z-index: 20;
       display: grid;
-      grid-template-columns: auto auto 1fr auto auto;
+      grid-template-columns: auto auto 1fr auto auto auto;
       gap: 8px;
       align-items: center;
     }
@@ -101,7 +101,7 @@
     }
     #levelInfo { color: #6849d8; }
     #stars { font-size: clamp(18px, 2.4vw, 27px); color: #bd7600; }
-    #pauseBtn, #strikeBtnTop {
+    #menuBtn, #pauseBtn, #strikeBtnTop {
       min-width: 48px;
       background: #fff7d6;
     }
@@ -443,6 +443,7 @@
       <div id="levelInfo" class="pill">Niveau 1</div>
       <div id="stars" class="pill">⭐ 0 / 5</div>
       <div id="instruction" class="pill">Tranche seulement les mots mal orthographiés</div>
+      <button id="menuBtn" class="pill" type="button" aria-label="Menu principal">Menu</button>
       <button id="pauseBtn" class="pill" type="button" aria-label="Pause">⏸</button>
       <button id="strikeBtnTop" class="pill" type="button" aria-label="Frapper">⚔</button>
     </div>
@@ -717,6 +718,7 @@
     const starsEl = document.getElementById("stars");
     const levelInfo = document.getElementById("levelInfo");
     const instruction = document.getElementById("instruction");
+    const menuBtn = document.getElementById("menuBtn");
     const pauseBtn = document.getElementById("pauseBtn");
     const startOverlay = document.getElementById("startOverlay");
     const selectOverlay = document.getElementById("selectOverlay");
@@ -950,6 +952,19 @@
       startGame(veryEasy);
     }
 
+    function returnToMenu() {
+      resetWords();
+      stars = 0;
+      state = "menu";
+      updateHud();
+      pauseBtn.classList.remove("paused");
+      pauseBtn.textContent = "⏸";
+      levelOverlay.classList.add("hidden");
+      selectOverlay.classList.add("hidden");
+      startOverlay.classList.remove("hidden");
+      setMessage(getLevel().instruction);
+    }
+
     function togglePause() {
       if (state === "playing") {
         state = "paused";
@@ -1065,6 +1080,7 @@
     bindHold(document.getElementById("rightTouch"), "right");
     document.getElementById("touchStrike").addEventListener("pointerdown", (event) => { event.preventDefault(); strike(); });
     document.getElementById("strikeBtnTop").addEventListener("click", strike);
+    menuBtn.addEventListener("click", returnToMenu);
     pauseBtn.addEventListener("click", togglePause);
     document.getElementById("playBtn").addEventListener("click", () => startGame(false));
     document.getElementById("easyBtn").addEventListener("click", () => startGame(true));
