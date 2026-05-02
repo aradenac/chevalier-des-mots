@@ -460,7 +460,7 @@
       <div class="leg right"></div>
     </div>
 
-    <div id="message">Prêt à aider le chevalier ?</div>
+    <div id="message" role="status" aria-live="polite">Prêt à aider le chevalier ?</div>
 
     <div id="touchControls">
       <div class="touchGroup">
@@ -477,6 +477,7 @@
         <div class="menuBtns">
           <button id="playBtn" class="bigBtn" type="button">Jouer</button>
           <button id="easyBtn" class="bigBtn secondary" type="button">Mode très facile</button>
+          <button id="voiceBtn" class="bigBtn secondary" type="button">Voix : oui</button>
           <button id="chooseBtn" class="bigBtn secondary" type="button">Choisir un niveau</button>
           <button id="padBtn" class="bigBtn pink" type="button">Tester la manette</button>
         </div>
@@ -720,6 +721,7 @@
     const instruction = document.getElementById("instruction");
     const menuBtn = document.getElementById("menuBtn");
     const pauseBtn = document.getElementById("pauseBtn");
+    const voiceBtn = document.getElementById("voiceBtn");
     const startOverlay = document.getElementById("startOverlay");
     const selectOverlay = document.getElementById("selectOverlay");
     const levelOverlay = document.getElementById("levelOverlay");
@@ -742,6 +744,13 @@
     let audioContext = null;
     let previousPadStrike = false;
     let previousPadStart = false;
+    const narration = {
+      available: "speechSynthesis" in window && "SpeechSynthesisUtterance" in window,
+      enabled: true,
+      unlocked: false,
+      voices: [],
+      voice: null
+    };
 
     function clamp(value, min, max) {
       return Math.max(min, Math.min(max, value));
@@ -749,6 +758,100 @@
 
     function getLevel() {
       return LEVELS[currentLevelIndex];
+    }
+
+    function initNarration() {
+      try {
+        narration.enabled = localStorage.getItem("chevalierNarration") !== "off";
+      } catch {
+        narration.enabled = true;
+      }
+      updateNarrationButton();
+      if (!narration.available) return;
+      loadVoices();
+      if (window.speechSynthesis.addEventListener) {
+        window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+      } else {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+      }
+    }
+
+    function unlockNarration() {
+      if (!narration.available) return;
+      narration.unlocked = true;
+      window.speechSynthesis.resume();
+      loadVoices();
+    }
+
+    function loadVoices() {
+      if (!narration.available) return [];
+      narration.voices = window.speechSynthesis.getVoices();
+      narration.voice = pickFrenchVoice();
+      console.log("[Narration] voix disponibles :", narration.voices.length);
+      if (narration.voice) {
+        console.log("[Narration] voix choisie :", narration.voice.name, narration.voice.lang);
+      } else {
+        console.warn("[Narration] aucune voix disponible");
+      }
+      return narration.voices;
+    }
+
+    function pickFrenchVoice() {
+      const voices = narration.voices || [];
+      return voices.find(voice => voice.lang === "fr-FR")
+        || voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith("fr"))
+        || voices.find(voice => /french|français|francais/i.test(voice.name || ""))
+        || voices.find(voice => voice.default)
+        || voices[0]
+        || null;
+    }
+
+    function narrate(text, options = {}) {
+      if (!narration.available || !narration.enabled || !narration.unlocked || !text) return;
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voice = narration.voice || pickFrenchVoice();
+      utterance.lang = voice && voice.lang ? voice.lang : "fr-FR";
+      utterance.rate = options.rate || 0.95;
+      utterance.pitch = options.pitch || 1;
+      if (voice) utterance.voice = voice;
+      if (options.mode !== "queue") window.speechSynthesis.cancel();
+      window.speechSynthesis.resume();
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function stopNarration() {
+      if (narration.available) window.speechSynthesis.cancel();
+    }
+
+    function toggleNarration() {
+      narration.enabled = !narration.enabled;
+      try {
+        localStorage.setItem("chevalierNarration", narration.enabled ? "on" : "off");
+      } catch {}
+      updateNarrationButton();
+      if (narration.enabled) {
+        unlockNarration();
+        narrate("Voix activée.");
+      } else {
+        stopNarration();
+      }
+    }
+
+    function updateNarrationButton() {
+      if (!voiceBtn) return;
+      if (!narration.available) {
+        voiceBtn.disabled = true;
+        voiceBtn.textContent = "Voix indisponible";
+        voiceBtn.setAttribute("aria-label", "Narration vocale indisponible");
+        return;
+      }
+      voiceBtn.disabled = false;
+      voiceBtn.textContent = "Voix : " + (narration.enabled ? "oui" : "non");
+      voiceBtn.setAttribute("aria-label", narration.enabled ? "Désactiver la narration vocale" : "Activer la narration vocale");
+    }
+
+    function shortFeedback(text) {
+      return (text || "").split(/[.!?]/)[0].trim() || text;
     }
 
     function setMessage(text) {
@@ -891,6 +994,7 @@
         stars++;
         updateHud();
         setMessage(hit.data.feedbackOk + (hit.data.correction ? "" : ""));
+        narrate(shortFeedback(hit.data.feedbackOk));
         playSweetSound();
         makeConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
         hit.el.remove();
@@ -899,6 +1003,7 @@
       } else {
         bounceWord(hit);
         setMessage(hit.data.feedbackKo);
+        narrate(shortFeedback(hit.data.feedbackKo));
       }
     }
 
@@ -916,6 +1021,7 @@
         document.getElementById("levelText").textContent = "Niveau " + current.id + " réussi. Prochaine mission : " + LEVELS[currentLevelIndex + 1].title + " !";
         document.getElementById("nextBtn").textContent = "Continuer";
       }
+      narrate("Bravo, niveau terminé.");
     }
 
     function startGame(easy) {
@@ -932,6 +1038,8 @@
       pauseBtn.classList.remove("paused");
       pauseBtn.textContent = "⏸";
       setMessage(getLevel().instruction);
+      unlockNarration();
+      narrate(getLevel().instruction);
       ensureAudio();
       spawnWord();
     }
@@ -964,11 +1072,13 @@
         pauseBtn.classList.add("paused");
         pauseBtn.textContent = "▶";
         setMessage("Pause");
+        narrate("Pause");
       } else if (state === "paused") {
         state = "playing";
         pauseBtn.classList.remove("paused");
         pauseBtn.textContent = "⏸";
         setMessage(getLevel().instruction);
+        narrate("C’est reparti.");
       }
     }
 
@@ -1075,6 +1185,7 @@
     document.getElementById("strikeBtnTop").addEventListener("click", strike);
     menuBtn.addEventListener("click", returnToMenu);
     pauseBtn.addEventListener("click", togglePause);
+    voiceBtn.addEventListener("click", toggleNarration);
     document.getElementById("playBtn").addEventListener("click", () => startGame(false));
     document.getElementById("easyBtn").addEventListener("click", () => startGame(true));
     document.getElementById("chooseBtn").addEventListener("click", () => {
@@ -1100,6 +1211,7 @@
 
     buildLevelGrid();
     updateHud();
+    initNarration();
     setMessage(getLevel().instruction);
     knight.style.left = knightX + "px";
     requestAnimationFrame(tick);
