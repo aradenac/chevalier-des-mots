@@ -108,7 +108,7 @@
     #pauseBtn.paused { background: #ffcae4; }
     #arena {
       position: absolute;
-      inset: 78px 0 0 0;
+      inset: 148px 0 0 0;
       z-index: 4;
     }
     .word {
@@ -287,22 +287,23 @@
     #message {
       position: absolute;
       left: 50%;
-      bottom: calc(20vh + 58px);
-      width: min(820px, calc(100vw - 24px));
-      min-height: 52px;
+      top: calc(max(10px, env(safe-area-inset-top)) + 58px);
+      width: min(900px, calc(100vw - 24px));
+      min-height: 46px;
       translate: -50% 0;
       z-index: 18;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 10px 16px;
+      padding: 9px 16px;
       border-radius: 18px;
       background: rgba(255, 253, 242, .93);
       border: 3px solid rgba(39, 48, 79, .16);
       box-shadow: 0 8px 20px var(--shadow);
-      font-size: clamp(17px, 2.3vw, 28px);
+      font-size: clamp(16px, 2vw, 24px);
       font-weight: 900;
+      pointer-events: none;
     }
     .overlay {
       position: absolute;
@@ -421,7 +422,8 @@
     @media (max-width: 820px) {
       #topbar { grid-template-columns: auto auto auto auto; }
       #instruction { grid-column: 1 / -1; grid-row: 2; width: 100%; }
-      #arena { inset-top: 124px; }
+      #message { top: calc(max(10px, env(safe-area-inset-top)) + 110px); }
+      #arena { inset-top: 180px; }
     }
     @media (max-width: 720px) {
       .pill { min-height: 38px; padding: 7px 9px; font-size: 14px; }
@@ -429,7 +431,12 @@
       #knight .body { left: 24px; width: 52px; height: 62px; }
       #knight .head { left: 22px; width: 58px; height: 50px; bottom: 70px; }
       #knight .plume { bottom: 115px; }
-      #message { bottom: calc(22vh + 42px); }
+      #message {
+        top: calc(max(10px, env(safe-area-inset-top)) + 104px);
+        min-height: 42px;
+        padding: 8px 12px;
+      }
+      #arena { inset-top: 172px; }
       .word { font-size: clamp(18px, 5vw, 28px); }
     }
   </style>
@@ -478,7 +485,6 @@
           <button id="playBtn" class="bigBtn" type="button">Jouer</button>
           <button id="easyBtn" class="bigBtn secondary" type="button">Mode très facile</button>
           <button id="voiceBtn" class="bigBtn secondary" type="button">Activer la voix</button>
-          <button id="speechTestBtn" class="bigBtn pink" type="button">Test voix</button>
           <button id="chooseBtn" class="bigBtn secondary" type="button">Choisir un niveau</button>
           <button id="padBtn" class="bigBtn pink" type="button">Tester la manette</button>
         </div>
@@ -723,7 +729,6 @@
     const menuBtn = document.getElementById("menuBtn");
     const pauseBtn = document.getElementById("pauseBtn");
     const voiceBtn = document.getElementById("voiceBtn");
-    const speechTestBtn = document.getElementById("speechTestBtn");
     const startOverlay = document.getElementById("startOverlay");
     const selectOverlay = document.getElementById("selectOverlay");
     const levelOverlay = document.getElementById("levelOverlay");
@@ -922,6 +927,28 @@
       });
     }
 
+    function playSwordSound() {
+      ensureAudio();
+      const now = audioContext.currentTime;
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const filter = audioContext.createBiquadFilter();
+
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.12);
+      filter.type = "bandpass";
+      filter.frequency.setValueAtTime(1500, now);
+      filter.Q.setValueAtTime(7, now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.13, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+
+      osc.connect(filter).connect(gain).connect(audioContext.destination);
+      osc.start(now);
+      osc.stop(now + 0.15);
+    }
+
     function makeConfetti(x, y) {
       const colors = ["#ffd94a", "#ff75b7", "#43c55f", "#3e8cff", "#6849d8", "#ff8b3d"];
       for (let i = 0; i < 22; i++) {
@@ -1003,17 +1030,21 @@
     function strike() {
       if (state !== "playing") return;
       ensureAudio();
+      playSwordSound();
       knight.classList.remove("striking");
       void knight.offsetWidth;
       knight.classList.add("striking");
 
-      const hitRangeX = veryEasy ? 125 : 96;
-      const hitRangeY = 150;
+      const swordRect = knight.querySelector(".sword").getBoundingClientRect();
+      const swordCenterX = swordRect.left + swordRect.width / 2;
+      const swordCenterY = swordRect.top + swordRect.height / 2;
+      const hitRangeX = veryEasy ? 150 : 118;
+      const hitRangeY = veryEasy ? 190 : 165;
       let hit = null;
       let best = Infinity;
       for (const word of activeWords) {
-        const dx = Math.abs(word.x - knightX);
-        const dy = Math.abs(word.y - (window.innerHeight - 170));
+        const dx = Math.abs(word.x - swordCenterX);
+        const dy = Math.abs(word.y - swordCenterY);
         const score = dx + dy * .35;
         if (dx < hitRangeX && dy < hitRangeY && score < best) {
           hit = word;
@@ -1220,7 +1251,6 @@
     menuBtn.addEventListener("click", returnToMenu);
     pauseBtn.addEventListener("click", togglePause);
     voiceBtn.addEventListener("click", toggleNarration);
-    speechTestBtn.addEventListener("click", () => window.testNarration());
     document.getElementById("playBtn").addEventListener("click", () => startGame(false));
     document.getElementById("easyBtn").addEventListener("click", () => startGame(true));
     document.getElementById("chooseBtn").addEventListener("click", () => {
