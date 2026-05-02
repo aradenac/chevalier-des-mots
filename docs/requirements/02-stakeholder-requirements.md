@@ -17,8 +17,11 @@ Acceptance criteria:
 - La mission est visible pendant la partie.
 - La mission reste compréhensible en une lecture.
 
+Needs:
+- sysreq
+
 Covers:
-need~pedagogy.action-learning~1
+- need~pedagogy.action-learning~1
 
 #### Erreurs récupérables
 `stkreq~child.recoverable-errors~1`
@@ -37,8 +40,35 @@ Acceptance criteria:
 - Une erreur ne bloque pas la partie.
 - Une erreur n'impose pas de game over punitif.
 
+Needs:
+- sysreq
+
 Covers:
-need~pedagogy.no-hard-punishment~1
+- need~pedagogy.no-hard-punishment~1
+
+#### Entrées multiples
+`stkreq~user.multiple-inputs~1`
+
+Status: approved
+
+Le système doit accepter clavier, tactile et manette.
+
+Rationale:
+Le jeu doit rester jouable sur les périphériques courants sans configuration supplémentaire.
+
+Verification method:
+Revue des adaptateurs d'entrée et des tests associés.
+
+Acceptance criteria:
+- Le clavier fonctionne.
+- Le tactile fonctionne.
+- La manette fonctionne si disponible.
+
+Needs:
+- sysreq
+
+Covers:
+- need~user.keyboard-touch-gamepad~1
 
 #### Difficulté progressive
 `stkreq~child.progressive-difficulty~1`
@@ -57,8 +87,11 @@ Acceptance criteria:
 - Les premiers niveaux sont simples.
 - Les derniers niveaux combinent plusieurs familles d'erreurs.
 
+Needs:
+- sysreq
+
 Covers:
-need~pedagogy.progressive-grammar-learning~1
+- need~pedagogy.progressive-grammar-learning~1
 
 #### Objectif d'apprentissage visible
 `stkreq~parent.visible-learning-goal~1`
@@ -77,8 +110,11 @@ Acceptance criteria:
 - Le thème de niveau est explicite.
 - La progression pédagogique est visible.
 
+Needs:
+- sysreq
+
 Covers:
-need~user.quick-play~1
+- need~user.quick-play~1
 
 #### Changement traçable
 `stkreq~maintainer.traceable-changes~1`
@@ -97,8 +133,11 @@ Acceptance criteria:
 - Chaque évolution fonctionnelle pointe vers des exigences.
 - Les annotations de traceabilité restent lisibles.
 
+Needs:
+- sysreq
+
 Covers:
-need~maintainer.auditability~1
+- need~maintainer.auditability~1
 
 #### Travail LLM en spec-first
 `stkreq~llm.spec-first-workflow~1`
@@ -117,5 +156,8 @@ Acceptance criteria:
 - Les specs sont lues avant le code.
 - La contradiction entre specs et demande utilisateur est traitée par mise à jour des specs.
 
+Needs:
+- sysreq
+
 Covers:
-need~maintainer.spec-driven-development~1
+- need~maintainer.spec-driven-development~1

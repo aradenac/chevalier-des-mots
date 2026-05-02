@@ -8,9 +8,9 @@ La chaîne de traçabilité attendue est stricte.
 - Un `SWREQ` doit être couvert par une implémentation.
 - Un `SWREQ` testable doit aussi être couvert par un `utest` ou un `itest`.
 - Un `VERREQ` doit être couvert par un script, une commande ou un test.
-- Les tests doivent produire un résultat d'exécution via `npm test` ou `npm run verify`.
-- OpenFastTrace valide la chaîne statique.
-- Vitest valide les résultats d'exécution.
+- OpenFastTrace valide la couverture statique entre besoins, exigences, code et tests.
+- Vitest produit les résultats d'exécution locaux.
+- La commande `npm run verify` constitue la preuve locale complète quand toutes les étapes passent.
 - Aucun validateur maison ne doit être créé.
 
 Les annotations de lien gardent le format suivant :

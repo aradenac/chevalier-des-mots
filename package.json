@@ -5,10 +5,11 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:report": "mkdir -p build/test-results && vitest run --reporter=default --reporter=junit --outputFile.junit=build/test-results/vitest-junit.xml",
     "docs:serve": "mkdocs serve",
     "docs:build": "mkdocs build",
     "trace": "bash tools/trace.sh",
-    "verify": "npm test && npm run build && npm run docs:build && npm run trace"
+    "verify": "npm run test:report && npm run build && npm run trace && npm run docs:build"
   },
   "devDependencies": {
     "vite": "^5.4.0",

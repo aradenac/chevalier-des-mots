@@ -11,17 +11,18 @@ Rationale:
 Le contenu pédagogique doit pouvoir évoluer sans réécrire la logique du jeu.
 
 Verification method:
-utest
+itest
 
 Acceptance criteria:
 - `src/data/levels.js` contient les données.
 - Le moteur ne mélange pas contenu et logique.
 
-Covers:
-sysreq~level.twenty-themed-levels~1
-
 Needs:
 - impl
+- utest
+
+Covers:
+- sysreq~level.twenty-themed-levels~1
 
 #### Logique de tranchage des cibles
 `swreq~game.target-only-slicing~1`
@@ -34,17 +35,17 @@ Rationale:
 La règle du jeu repose sur une décision de tri fiable.
 
 Verification method:
-utest
+itest
 
 Acceptance criteria:
 - Une cible peut être identifiée comme telle.
 - Un distracteur peut être identifié comme tel.
 
-Covers:
-sysreq~game.target-only-slicing~1
-
 Needs:
 - impl
+
+Covers:
+- sysreq~game.target-only-slicing~1
 
 #### Flux sans punition dure
 `swreq~game.no-game-over-punishment~1`
@@ -57,18 +58,17 @@ Rationale:
 Le joueur doit pouvoir continuer après une erreur.
 
 Verification method:
-utest
+itest
 
 Acceptance criteria:
 - Une erreur ne termine pas brutalement la partie.
 - La progression reste récupérable.
 
-Covers:
-sysreq~game.no-game-over-punishment~1
-
 Needs:
 - impl
-- utest
+
+Covers:
+- sysreq~game.no-game-over-punishment~1
 
 #### Modèle de progression de niveau
 `swreq~level.progression-model~1`
@@ -81,18 +81,18 @@ Rationale:
 La difficulté doit évoluer selon les thèmes et les paliers.
 
 Verification method:
-utest
+itest
 
 Acceptance criteria:
 - Les niveaux sont ordonnés.
 - La progression reste stable.
 
-Covers:
-sysreq~level.progressive-difficulty~1
-
 Needs:
 - impl
 - utest
+
+Covers:
+- sysreq~level.progressive-difficulty~1
 
 #### Core sans dépendance directe aux APIs navigateur
 `swreq~core.no-browser-api-dependency~1`
@@ -105,18 +105,18 @@ Rationale:
 Le core doit rester testable sans navigateur.
 
 Verification method:
-utest
+itest
 
 Acceptance criteria:
 - Le core est testable en isolation.
 - Les APIs navigateur restent hors du core.
 
-Covers:
-sysreq~game.visible-instruction~1
-
 Needs:
 - impl
-- utest
+- itest
+
+Covers:
+- sysreq~game.visible-instruction~1
 
 #### Adaptateurs isolant les APIs navigateur
 `swreq~adapter.browser-api-isolation~1`
@@ -135,11 +135,11 @@ Acceptance criteria:
 - Les accès navigateur sont regroupés dans les adaptateurs.
 - Le core reste indépendant des APIs browser.
 
-Covers:
-sysreq~input.keyboard~1
-
 Needs:
 - impl
+
+Covers:
+- sysreq~input.keyboard~1
 
 #### État d'entrée normalisé
 `swreq~input.normalized-input-state~1`
@@ -158,11 +158,11 @@ Acceptance criteria:
 - L'état contient gauche, droite, frappe et pause.
 - Les trois périphériques sont lisibles par la même structure.
 
-Covers:
-sysreq~input.keyboard~1
-
 Needs:
 - impl
+
+Covers:
+- sysreq~input.keyboard~1
 
 #### Mapping générique de manette
 `swreq~gamepad.standard-and-generic-mapping~1`
@@ -181,12 +181,12 @@ Acceptance criteria:
 - Le d-pad déplace le chevalier.
 - Les boutons standard déclenchent la frappe et la pause.
 
-Covers:
-sysreq~input.gamepad-snes~1
-
 Needs:
 - impl
 - utest
+
+Covers:
+- sysreq~input.gamepad-snes~1
 
 #### Service audio non bloquant
 `swreq~audio.service-failure-non-blocking~1`
@@ -205,12 +205,12 @@ Acceptance criteria:
 - L'absence d'AudioContext ne casse pas la partie.
 - Une erreur audio ne coupe pas l'exécution.
 
-Covers:
-sysreq~audio.non-blocking-feedback~1
-
 Needs:
 - impl
 - utest
+
+Covers:
+- sysreq~audio.non-blocking-feedback~1
 
 #### Gestion des voix Brave
 `swreq~speech.brave-failure-handling~1`
@@ -229,12 +229,12 @@ Acceptance criteria:
 - Le jeu reste jouable sans voix.
 - Un diagnostic lisible est produit.
 
-Covers:
-sysreq~speech.optional~1
-
 Needs:
 - impl
 - utest
+
+Covers:
+- sysreq~speech.optional~1
 
 #### Rendu de la consigne
 `swreq~ui.instruction-rendering~1`
@@ -253,11 +253,11 @@ Acceptance criteria:
 - La consigne apparaît dans l'interface.
 - La consigne change quand le niveau change.
 
-Covers:
-sysreq~game.visible-instruction~1
-
 Needs:
 - impl
+
+Covers:
+- sysreq~game.visible-instruction~1
 
 #### Rendu du feedback
 `swreq~ui.feedback-rendering~1`
@@ -276,31 +276,8 @@ Acceptance criteria:
 - Le feedback est visible immédiatement.
 - Le feedback reste bref.
 
-Covers:
-sysreq~game.immediate-feedback~1
-
 Needs:
 - impl
 
-#### Site statique
-`swreq~build.static-site~1`
-
-Status: approved
-
-Le site documentaire doit être généré en HTML statique.
-
-Rationale:
-La documentation doit rester consultable via `site/index.html`.
-
-Verification method:
-commande de build
-
-Acceptance criteria:
-- `mkdocs build` produit un site lisible.
-- `use_directory_urls: false` reste actif.
-
 Covers:
-verreq~docs.mkdocs-build-pass~1
-
-Needs:
-- impl
+- sysreq~game.immediate-feedback~1

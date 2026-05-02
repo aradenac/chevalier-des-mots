@@ -17,6 +17,9 @@ Acceptance criteria:
 - L'action du joueur produit un retour observable.
 - L'apprentissage se fait en jouant.
 
+Needs:
+- stkreq
+
 #### Erreur sans sanction dure
 `need~pedagogy.no-hard-punishment~1`
 
@@ -33,6 +36,9 @@ Revue des exigences système et des tests liés au feedback.
 Acceptance criteria:
 - Une erreur ne ferme pas brutalement la partie.
 - Le joueur peut continuer après un échec.
+
+Needs:
+- stkreq
 
 #### Progression grammaticale
 `need~pedagogy.progressive-grammar-learning~1`
@@ -51,6 +57,9 @@ Acceptance criteria:
 - Les niveaux suivent une progression lisible.
 - Les thèmes restent cohérents d'un niveau à l'autre.
 
+Needs:
+- stkreq
+
 #### Jeu rapide
 `need~user.quick-play~1`
 
@@ -67,6 +76,9 @@ Revue des écrans d'entrée et de sélection.
 Acceptance criteria:
 - La consigne est visible rapidement.
 - Le joueur peut commencer sans configuration lourde.
+
+Needs:
+- stkreq
 
 #### Entrées multiples
 `need~user.keyboard-touch-gamepad~1`
@@ -86,6 +98,9 @@ Acceptance criteria:
 - Le tactile fonctionne.
 - La manette fonctionne si disponible.
 
+Needs:
+- stkreq
+
 #### Développement piloté par les specs
 `need~maintainer.spec-driven-development~1`
 
@@ -103,6 +118,9 @@ Acceptance criteria:
 - Les exigences existent avant les changements fonctionnels.
 - Les changements sont rattachés à des IDs.
 
+Needs:
+- stkreq
+
 #### Auditabilité
 `need~maintainer.auditability~1`
 
@@ -119,3 +137,6 @@ OpenFastTrace et revue de la chaîne de preuve.
 Acceptance criteria:
 - La chaîne de traçabilité est lisible.
 - La preuve de validation est reproductible.
+
+Needs:
+- stkreq

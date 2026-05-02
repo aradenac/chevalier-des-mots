@@ -18,12 +18,12 @@ Acceptance criteria:
 - La consigne est mise à jour quand le niveau change.
 - La consigne reste lisible sur desktop et mobile.
 
-Covers:
-stkreq~child.clear-mission~1
-
 Needs:
+- swreq
 - impl
-- utest
+
+Covers:
+- stkreq~child.clear-mission~1
 
 #### Tranchage des cibles seulement
 `sysreq~game.target-only-slicing~1`
@@ -36,19 +36,19 @@ Rationale:
 Le tri entre cible et distracteur est la base de l'apprentissage.
 
 Verification method:
-utest
+stest
 
 Acceptance criteria:
 - Une cible correcte est comptée comme réussite.
 - Un distracteur ne compte pas comme réussite.
 - Le niveau reste cohérent avec sa règle.
 
-Covers:
-stkreq~child.clear-mission~1
-
 Needs:
+- swreq
 - impl
-- utest
+
+Covers:
+- stkreq~child.clear-mission~1
 
 #### Feedback immédiat
 `sysreq~game.immediate-feedback~1`
@@ -68,12 +68,12 @@ Acceptance criteria:
 - Le feedback indique réussite ou erreur.
 - Le feedback reste court.
 
-Covers:
-stkreq~child.clear-mission~1
-
 Needs:
+- swreq
 - impl
-- utest
+
+Covers:
+- stkreq~child.clear-mission~1
 
 #### Pas de game over punitif
 `sysreq~game.no-game-over-punishment~1`
@@ -92,12 +92,13 @@ Acceptance criteria:
 - Une erreur ne coupe pas la partie.
 - Le joueur peut continuer après un échec.
 
-Covers:
-stkreq~child.recoverable-errors~1
-
 Needs:
+- swreq
 - impl
 - utest
+
+Covers:
+- stkreq~child.recoverable-errors~1
 
 #### Vingt niveaux thématiques
 `sysreq~level.twenty-themed-levels~1`
@@ -110,18 +111,19 @@ Rationale:
 La progression pédagogique repose sur un ensemble complet et fixe.
 
 Verification method:
-utest
+stest
 
 Acceptance criteria:
 - Le nombre de niveaux est 20.
 - Les titres reflètent des thèmes distincts.
 
-Covers:
-stkreq~child.progressive-difficulty~1
-
 Needs:
+- swreq
 - impl
-- utest
+- stest
+
+Covers:
+- stkreq~child.progressive-difficulty~1
 
 #### Cibles et distracteurs
 `sysreq~level.targets-and-distractors~1`
@@ -134,18 +136,19 @@ Rationale:
 Le joueur doit pouvoir distinguer une bonne réponse d'une fausse.
 
 Verification method:
-utest
+itest
 
 Acceptance criteria:
 - Chaque niveau a au moins une cible.
 - Chaque niveau a au moins un distracteur.
 
-Covers:
-stkreq~child.progressive-difficulty~1
-
 Needs:
+- swreq
 - impl
-- utest
+- itest
+
+Covers:
+- stkreq~child.progressive-difficulty~1
 
 #### Difficulté progressive
 `sysreq~level.progressive-difficulty~1`
@@ -164,12 +167,13 @@ Acceptance criteria:
 - La difficulté augmente de manière lisible.
 - Les derniers niveaux combinent plusieurs familles d'erreurs.
 
-Covers:
-stkreq~child.progressive-difficulty~1
-
 Needs:
+- swreq
 - impl
 - utest
+
+Covers:
+- stkreq~child.progressive-difficulty~1
 
 #### Entrée clavier
 `sysreq~input.keyboard~1`
@@ -188,12 +192,13 @@ Acceptance criteria:
 - Gauche et droite déplacent le chevalier.
 - Une touche de frappe déclenche l'action.
 
-Covers:
-need~user.keyboard-touch-gamepad~1
-
 Needs:
+- swreq
 - impl
 - utest
+
+Covers:
+- stkreq~user.multiple-inputs~1
 
 #### Entrée tactile
 `sysreq~input.touch~1`
@@ -212,12 +217,13 @@ Acceptance criteria:
 - Les boutons tactiles déplacent le chevalier.
 - Un bouton tactile déclenche la frappe.
 
-Covers:
-need~user.keyboard-touch-gamepad~1
-
 Needs:
+- swreq
 - impl
 - utest
+
+Covers:
+- stkreq~user.multiple-inputs~1
 
 #### Manette SNES USB
 `sysreq~input.gamepad-snes~1`
@@ -237,12 +243,13 @@ Acceptance criteria:
 - Une manette standard déclenche la frappe.
 - L'absence de manette ne bloque pas le jeu.
 
-Covers:
-need~user.keyboard-touch-gamepad~1
-
 Needs:
+- swreq
 - impl
 - utest
+
+Covers:
+- stkreq~user.multiple-inputs~1
 
 #### Feedback audio non bloquant
 `sysreq~audio.non-blocking-feedback~1`
@@ -261,12 +268,13 @@ Acceptance criteria:
 - Le jeu reste jouable sans audio.
 - Le feedback texte reste visible.
 
-Covers:
-need~pedagogy.no-hard-punishment~1
-
 Needs:
+- swreq
 - impl
 - utest
+
+Covers:
+- stkreq~child.recoverable-errors~1
 
 #### Synthèse vocale optionnelle
 `sysreq~speech.optional~1`
@@ -285,9 +293,10 @@ Acceptance criteria:
 - Le jeu reste jouable si aucune voix n'est disponible.
 - L'échec de synthèse ne bloque pas la partie.
 
-Covers:
-need~pedagogy.no-hard-punishment~1
-
 Needs:
+- swreq
 - impl
 - utest
+
+Covers:
+- stkreq~child.recoverable-errors~1
