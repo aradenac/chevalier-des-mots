@@ -1,4 +1,5 @@
-// [utest->req~input.gamepad~1]
+// [utest->swreq~gamepad.standard-and-generic-mapping~1]
+// [utest->swreq~input.normalized-input-state~1]
 import { describe, expect, it } from "vitest";
 import { readGamepadState } from "../src/adapters/gamepadInput.js";
 

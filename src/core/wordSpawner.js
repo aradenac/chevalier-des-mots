@@ -1,4 +1,3 @@
-// [impl->req~architecture.core-without-browser-api~1]
 export function chooseNextItem({ level, retryQueue, wordIndex, veryEasy, random = Math.random }) {
   if (retryQueue.length && random() < 0.7) {
     return {

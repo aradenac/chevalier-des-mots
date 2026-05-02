@@ -8,7 +8,7 @@
     "docs:serve": "mkdocs serve",
     "docs:build": "mkdocs build",
     "trace": "bash tools/trace.sh",
-    "verify": "npm test && npm run build && npm run trace"
+    "verify": "npm test && npm run build && npm run docs:build && npm run trace"
   },
   "devDependencies": {
     "vite": "^5.4.0",

@@ -1,5 +1,4 @@
-// [utest->req~level.twenty-themed-levels~1]
-// [utest->req~level.targets-and-distractors~1]
+// [utest->swreq~data.levels-separated-from-engine~1]
 import { describe, expect, it } from "vitest";
 import { LEVELS } from "../src/data/levels.js";
 

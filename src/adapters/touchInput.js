@@ -1,4 +1,4 @@
-// [impl->req~input.touch~1]
+// [impl->swreq~input.normalized-input-state~1]
 const EMPTY_INPUT_STATE = {
   left: false,
   right: false,

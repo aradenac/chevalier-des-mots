@@ -1,4 +1,4 @@
-// [impl->req~input.gamepad~1]
+// [impl->swreq~gamepad.standard-and-generic-mapping~1]
 const EMPTY_INPUT_STATE = {
   left: false,
   right: false,

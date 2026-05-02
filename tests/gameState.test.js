@@ -1,3 +1,4 @@
+// [utest->swreq~core.no-browser-api-dependency~1]
 import { describe, expect, it } from "vitest";
 import { createGameState, resetGameStateForLevel } from "../src/core/gameState.js";
 import { chooseNextItem, getMaxActiveWords } from "../src/core/wordSpawner.js";

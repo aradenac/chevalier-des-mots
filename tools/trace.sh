@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# [impl->verreq~trace.openfasttrace-validation~1]
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -43,6 +44,8 @@ if [ "$QUIET" -eq 0 ]; then
   echo "  - $ROOT/docs"
   echo "  - $ROOT/src"
   echo "  - $ROOT/tests"
+  echo "  - $ROOT/tools"
+  echo "  - $ROOT/mkdocs.yml"
   echo "Rapport : $REPORT"
 fi
 
@@ -57,6 +60,8 @@ if java -jar "$JAR" trace -o plain -f "$REPORT" \
   "$ROOT/docs" \
   "$ROOT/src" \
   "$ROOT/tests" \
+  "$ROOT/tools" \
+  "$ROOT/mkdocs.yml" \
   >"$JAVA_STDOUT" 2>"$JAVA_STDERR"; then
   if [ "$QUIET" -eq 0 ]; then
     echo "Traçabilité validée par OpenFastTrace."

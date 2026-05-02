@@ -6,10 +6,8 @@ Ce dépôt est piloté par des spécifications versionnées. Codex doit travaill
 
 - Les spécifications versionnées du repo sont la source de vérité.
 - Avant toute modification fonctionnelle, lire :
-  - `docs/game-design/`
   - `docs/requirements/`
-  - `docs/architecture/`
-  - `docs/development/llm-maintenance-guide.md`
+  - `docs/index.md`
 - Si la demande utilisateur contredit les specs, ne pas modifier le code directement.
 - Proposer d'abord une mise à jour des specs.
 
@@ -30,10 +28,10 @@ Pour toute évolution fonctionnelle :
 
 - Utiliser OpenFastTrace.
 - Ne jamais créer de validateur maison.
-- Les exigences sont identifiées par des ids comme `req~game.visible-instruction~1`.
-- Les liens de code utilisent `// [impl->req~...~1]`.
-- Les liens de test utilisent `// [utest->req~...~1]`.
-- Les liens documentaires utilisent `<!-- [doc->req~...~1] -->`.
+- Les exigences sont identifiées par des ids comme `sysreq~game.visible-instruction~1`.
+- Les liens de code utilisent `// [impl->swreq~...~1]`.
+- Les liens de test utilisent `// [utest->swreq~...~1]`.
+- Les liens documentaires utilisent `<!-- [doc->sysreq~...~1] -->`.
 
 ## 4. Commandes de vérification
 
@@ -55,7 +53,7 @@ Respecter la séparation :
 - `src/core/` : logique pure testable
 - `src/adapters/` : APIs navigateur
 - `src/main.js` : orchestration UI
-- `docs/` : specs, exigences, architecture, notice, développement
+- `docs/` : référentiel d'exigences uniquement
 
 ## 6. Interdictions
 
