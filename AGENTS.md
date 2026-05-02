@@ -6,8 +6,10 @@ Ce dépôt est piloté par des spécifications versionnées. Codex doit travaill
 
 - Les spécifications versionnées du repo sont la source de vérité.
 - Avant toute modification fonctionnelle, lire :
-  - `docs/requirements.md`
+  - `docs/requirements/index.md`
+  - la sous-page d'exigences concernée dans `docs/requirements/`
   - `docs/index.md`
+- Si une évolution touche plusieurs thèmes, lire plusieurs sous-pages concernées.
 - Si la demande utilisateur contredit les specs, ne pas modifier le code directement.
 - Proposer d'abord une mise à jour des specs.
 

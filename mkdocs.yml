@@ -36,4 +36,12 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 nav:
   - Accueil: index.md
-  - Exigences: requirements.md
+  - Exigences:
+      - Vue d'ensemble: requirements/index.md
+      - Format: requirements/format.md
+      - Gameplay: requirements/gameplay.md
+      - Niveaux: requirements/levels.md
+      - Interface et entrées: requirements/inputs-ui.md
+      - Feedback et audio: requirements/feedback-audio.md
+      - Technique: requirements/technical.md
+      - Vérification: requirements/verification.md
