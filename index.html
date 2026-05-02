@@ -818,14 +818,7 @@
 
     function chooseLevel(index) {
       currentLevelIndex = clamp(index, 0, LEVELS.length - 1);
-      stars = 0;
-      wordIndex = 0;
-      resetWords();
-      updateHud();
-      selectOverlay.classList.add("hidden");
-      startOverlay.classList.remove("hidden");
-      state = "menu";
-      setMessage(getLevel().instruction);
+      startGame(veryEasy);
     }
 
     function nextWordData() {
