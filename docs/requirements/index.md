@@ -27,10 +27,12 @@ La page [Version history](version-history.md) relie les versions de specs et les
 - [Technique](technical.md)
 - [Vérification](verification.md)
 
-La page [Niveaux](levels.md) rassemble les exigences de structure, une vue pédagogique synthétique des 20 niveaux et une table non exhaustive pour faciliter la lecture sans dupliquer `src/data/levels.js`.
+La page [Niveaux](levels.md) rassemble les exigences de structure, une vue pédagogique synthétique des mondes, le Monde 1 — Écuyer, le Monde 2 — Chevalier et une table non exhaustive pour faciliter la lecture sans dupliquer `src/data/levels.js`.
+Un Monde 3 — Maître chevalier pourra être spécifié dans une évolution ultérieure.
 
 ## Change history
 
 | Date | Spec version | Game version | Location | Modification | Justification |
 |---|---|---|---|---|---|
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/index.md | Added workflow explanation and history references | Clarify how to use the themed requirements set |
+| 2026-05-02 | 1.1.0 | 1.0.0 | docs/requirements/index.md | Documented the extended campaign structure with worlds | Clarify how the level specification expands without duplicating level data |
