@@ -1,4 +1,8 @@
 import { LEVELS } from "./data/levels.js";
+import { clamp, createGameState, resetGameStateForLevel } from "./core/gameState.js";
+import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLevelIndex } from "./core/progression.js";
+import { chooseNextItem, getMaxActiveWords, getSpawnDelay, getWordSpeedBase } from "./core/wordSpawner.js";
+import { findSwordCollision } from "./core/collision.js";
 
 const game = document.getElementById("game");
 const arena = document.getElementById("arena");
@@ -17,18 +21,19 @@ const gamepadStatus = document.getElementById("gamepadStatus");
 const levelGrid = document.getElementById("levelGrid");
 const startSubtitle = document.getElementById("startSubtitle");
 
-let state = "menu";
-let veryEasy = false;
-let currentLevelIndex = 0;
-let stars = 0;
-let knightX = window.innerWidth / 2;
+const initialState = createGameState({ knightX: window.innerWidth / 2 });
+let state = initialState.state;
+let veryEasy = initialState.veryEasy;
+let currentLevelIndex = initialState.currentLevelIndex;
+let stars = initialState.stars;
+let knightX = initialState.knightX;
 let moveLeft = false;
 let moveRight = false;
-let activeWords = [];
+let activeWords = initialState.activeWords;
 let lastTime = 0;
-let spawnTimer = 0;
-let wordIndex = 0;
-let targetRetryQueue = [];
+let spawnTimer = initialState.spawnTimer;
+let wordIndex = initialState.wordIndex;
+let targetRetryQueue = initialState.targetRetryQueue;
 let audioContext = null;
 let previousPadStrike = false;
 let previousPadStart = false;
@@ -40,12 +45,8 @@ const narration = {
   voice: null
 };
 
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
-
 function getLevel() {
-  return LEVELS[currentLevelIndex];
+  return getCurrentLevel(LEVELS, currentLevelIndex);
 }
 
 function initNarration() {
@@ -262,24 +263,21 @@ function resetWords() {
 }
 
 function chooseLevel(index) {
-  currentLevelIndex = clamp(index, 0, LEVELS.length - 1);
+  currentLevelIndex = selectLevelIndex(index, LEVELS.length);
   startGame(veryEasy);
 }
 
 function nextWordData() {
   const current = getLevel();
-  if (targetRetryQueue.length && Math.random() < 0.7) {
-    return targetRetryQueue.shift();
-  }
-  const targetItems = current.items.filter(w => w.target);
-  const safeItems = current.items.filter(w => !w.target);
-  let pool = current.items;
-  if (veryEasy && targetItems.length && safeItems.length) {
-    pool = Math.random() < 0.76 ? targetItems : safeItems;
-  }
-  const data = pool[wordIndex % pool.length];
-  wordIndex++;
-  return data;
+  const result = chooseNextItem({
+    level: current,
+    retryQueue: targetRetryQueue,
+    wordIndex,
+    veryEasy
+  });
+  targetRetryQueue = result.retryQueue;
+  wordIndex = result.wordIndex;
+  return result.item;
 }
 
 function spawnWord() {
@@ -290,7 +288,7 @@ function spawnWord() {
   el.textContent = data.text;
   arena.appendChild(el);
   const width = window.innerWidth;
-  const speedBase = veryEasy ? Math.max(34, current.fallSpeed - 14) : current.fallSpeed;
+  const speedBase = getWordSpeedBase(current, veryEasy);
   activeWords.push({
     el,
     data,
@@ -319,19 +317,7 @@ function strike() {
   const swordRect = knight.querySelector(".sword").getBoundingClientRect();
   const swordCenterX = swordRect.left + swordRect.width / 2;
   const swordCenterY = swordRect.top + swordRect.height / 2;
-  const hitRangeX = veryEasy ? 150 : 118;
-  const hitRangeY = veryEasy ? 190 : 165;
-  let hit = null;
-  let best = Infinity;
-  for (const word of activeWords) {
-    const dx = Math.abs(word.x - swordCenterX);
-    const dy = Math.abs(word.y - swordCenterY);
-    const score = dx + dy * .35;
-    if (dx < hitRangeX && dy < hitRangeY && score < best) {
-      hit = word;
-      best = score;
-    }
-  }
+  const hit = findSwordCollision({ words: activeWords, swordCenterX, swordCenterY, veryEasy });
   makeSlash(knightX + 40, window.innerHeight - 185);
   if (!hit) return;
 
@@ -345,7 +331,7 @@ function strike() {
     makeConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
     hit.el.remove();
     activeWords = activeWords.filter(w => w !== hit);
-    if (stars >= getLevel().starsToWin) finishLevel();
+    if (hasWonLevel(stars, getLevel())) finishLevel();
   } else {
     bounceWord(hit);
     setMessage(hit.data.feedbackKo);
@@ -358,7 +344,7 @@ function finishLevel() {
   state = "level";
   levelOverlay.classList.remove("hidden");
   resetWords();
-  if (currentLevelIndex >= LEVELS.length - 1) {
+  if (isFinalLevel(currentLevelIndex, LEVELS.length)) {
     document.getElementById("levelTitle").textContent = "Victoire finale !";
     document.getElementById("levelText").textContent = "Le chevalier maîtrise les 20 niveaux des mots.";
     document.getElementById("nextBtn").textContent = "Rejouer";
@@ -371,12 +357,26 @@ function finishLevel() {
 }
 
 function startGame(easy) {
-  veryEasy = easy;
-  state = "playing";
-  stars = 0;
-  knightX = window.innerWidth / 2;
-  wordIndex = 0;
   resetWords();
+  const nextState = resetGameStateForLevel({
+    state,
+    veryEasy,
+    currentLevelIndex,
+    stars,
+    knightX,
+    activeWords,
+    spawnTimer,
+    wordIndex,
+    targetRetryQueue
+  }, { veryEasy: easy, knightX: window.innerWidth / 2 });
+  veryEasy = nextState.veryEasy;
+  state = nextState.state;
+  stars = nextState.stars;
+  knightX = nextState.knightX;
+  wordIndex = nextState.wordIndex;
+  activeWords = nextState.activeWords;
+  spawnTimer = nextState.spawnTimer;
+  targetRetryQueue = nextState.targetRetryQueue;
   updateHud();
   startOverlay.classList.add("hidden");
   selectOverlay.classList.add("hidden");
@@ -391,11 +391,7 @@ function startGame(easy) {
 }
 
 function continueLevel() {
-  if (currentLevelIndex >= LEVELS.length - 1) {
-    chooseLevel(0);
-    return;
-  }
-  currentLevelIndex++;
+  currentLevelIndex = getNextLevelIndex(currentLevelIndex, LEVELS.length);
   startGame(veryEasy);
 }
 
@@ -469,10 +465,10 @@ function tick(time) {
     knight.style.left = knightX + "px";
 
     spawnTimer -= dt;
-    const limit = veryEasy ? Math.max(2, current.maxActiveWords - 1) : current.maxActiveWords;
+    const limit = getMaxActiveWords(current, veryEasy);
     if (spawnTimer <= 0 && activeWords.length < limit) {
       spawnWord();
-      spawnTimer = veryEasy ? 2.05 : Math.max(1.1, 1.75 - current.id * 0.025);
+      spawnTimer = getSpawnDelay(current, veryEasy);
     }
 
     const ground = window.innerHeight - 78;
