@@ -477,7 +477,8 @@
         <div class="menuBtns">
           <button id="playBtn" class="bigBtn" type="button">Jouer</button>
           <button id="easyBtn" class="bigBtn secondary" type="button">Mode très facile</button>
-          <button id="voiceBtn" class="bigBtn secondary" type="button">Voix : oui</button>
+          <button id="voiceBtn" class="bigBtn secondary" type="button">Activer la voix</button>
+          <button id="speechTestBtn" class="bigBtn pink" type="button">Test voix</button>
           <button id="chooseBtn" class="bigBtn secondary" type="button">Choisir un niveau</button>
           <button id="padBtn" class="bigBtn pink" type="button">Tester la manette</button>
         </div>
@@ -722,6 +723,7 @@
     const menuBtn = document.getElementById("menuBtn");
     const pauseBtn = document.getElementById("pauseBtn");
     const voiceBtn = document.getElementById("voiceBtn");
+    const speechTestBtn = document.getElementById("speechTestBtn");
     const startOverlay = document.getElementById("startOverlay");
     const selectOverlay = document.getElementById("selectOverlay");
     const levelOverlay = document.getElementById("levelOverlay");
@@ -746,7 +748,7 @@
     let previousPadStart = false;
     const narration = {
       available: "speechSynthesis" in window && "SpeechSynthesisUtterance" in window,
-      enabled: true,
+      enabled: false,
       unlocked: false,
       voices: [],
       voice: null
@@ -762,10 +764,13 @@
 
     function initNarration() {
       try {
-        narration.enabled = localStorage.getItem("chevalierNarration") !== "off";
+        narration.enabled = localStorage.getItem("chevalierNarration") === "on";
       } catch {
-        narration.enabled = true;
+        narration.enabled = false;
       }
+      console.log("[Narration] disponible:", narration.available);
+      console.log("[Narration] activée:", narration.enabled);
+      console.log("[Narration] déverrouillée:", narration.unlocked);
       updateNarrationButton();
       if (!narration.available) return;
       loadVoices();
@@ -781,15 +786,16 @@
       narration.unlocked = true;
       window.speechSynthesis.resume();
       loadVoices();
+      console.log("[Narration] déverrouillée:", narration.unlocked);
     }
 
     function loadVoices() {
       if (!narration.available) return [];
       narration.voices = window.speechSynthesis.getVoices();
       narration.voice = pickFrenchVoice();
-      console.log("[Narration] voix disponibles :", narration.voices.length);
+      console.log("[Narration] voix disponibles:", narration.voices.length);
       if (narration.voice) {
-        console.log("[Narration] voix choisie :", narration.voice.name, narration.voice.lang);
+        console.log("[Narration] voix choisie:", narration.voice.name, narration.voice.lang);
       } else {
         console.warn("[Narration] aucune voix disponible");
       }
@@ -814,26 +820,49 @@
       utterance.rate = options.rate || 0.95;
       utterance.pitch = options.pitch || 1;
       if (voice) utterance.voice = voice;
-      if (options.mode !== "queue") window.speechSynthesis.cancel();
+      utterance.onstart = () => console.log("[Narration] start");
+      utterance.onend = () => console.log("[Narration] end");
+      utterance.onerror = event => console.warn("[Narration] error:", event.error);
+      console.log("[Narration] speak:", text);
       window.speechSynthesis.resume();
-      window.speechSynthesis.speak(utterance);
+      if (options.mode === "queue") {
+        window.speechSynthesis.speak(utterance);
+      } else {
+        window.speechSynthesis.cancel();
+        setTimeout(() => window.speechSynthesis.speak(utterance), 40);
+      }
     }
 
     function stopNarration() {
       if (narration.available) window.speechSynthesis.cancel();
     }
 
-    function toggleNarration() {
-      narration.enabled = !narration.enabled;
+    function enableNarration() {
+      narration.enabled = true;
       try {
-        localStorage.setItem("chevalierNarration", narration.enabled ? "on" : "off");
+        localStorage.setItem("chevalierNarration", "on");
       } catch {}
       updateNarrationButton();
+      console.log("[Narration] activée:", narration.enabled);
+      unlockNarration();
+      narrate("Voix activée.");
+    }
+
+    function disableNarration() {
+      narration.enabled = false;
+      try {
+        localStorage.setItem("chevalierNarration", "off");
+      } catch {}
+      stopNarration();
+      updateNarrationButton();
+      console.log("[Narration] activée:", narration.enabled);
+    }
+
+    function toggleNarration() {
       if (narration.enabled) {
-        unlockNarration();
-        narrate("Voix activée.");
+        disableNarration();
       } else {
-        stopNarration();
+        enableNarration();
       }
     }
 
@@ -846,9 +875,14 @@
         return;
       }
       voiceBtn.disabled = false;
-      voiceBtn.textContent = "Voix : " + (narration.enabled ? "oui" : "non");
+      voiceBtn.textContent = narration.enabled ? "Désactiver la voix" : "Activer la voix";
       voiceBtn.setAttribute("aria-label", narration.enabled ? "Désactiver la narration vocale" : "Activer la narration vocale");
     }
+
+    window.testNarration = function() {
+      enableNarration();
+      narrate("Bonjour chevalier. La voix fonctionne.");
+    };
 
     function shortFeedback(text) {
       return (text || "").split(/[.!?]/)[0].trim() || text;
@@ -1186,6 +1220,7 @@
     menuBtn.addEventListener("click", returnToMenu);
     pauseBtn.addEventListener("click", togglePause);
     voiceBtn.addEventListener("click", toggleNarration);
+    speechTestBtn.addEventListener("click", () => window.testNarration());
     document.getElementById("playBtn").addEventListener("click", () => startGame(false));
     document.getElementById("easyBtn").addEventListener("click", () => startGame(true));
     document.getElementById("chooseBtn").addEventListener("click", () => {
