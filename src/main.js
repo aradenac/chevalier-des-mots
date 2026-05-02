@@ -6,6 +6,8 @@ import { findSwordCollision } from "./core/collision.js";
 import { createKeyboardInput } from "./adapters/keyboardInput.js";
 import { createTouchInput } from "./adapters/touchInput.js";
 import { createGamepadInput } from "./adapters/gamepadInput.js";
+import { createAudioService } from "./adapters/audioService.js";
+import { createNarrationService } from "./adapters/narrationService.js";
 
 const game = document.getElementById("game");
 const arena = document.getElementById("arena");
@@ -37,117 +39,51 @@ let lastTime = 0;
 let spawnTimer = initialState.spawnTimer;
 let wordIndex = initialState.wordIndex;
 let targetRetryQueue = initialState.targetRetryQueue;
-let audioContext = null;
-const narration = {
-  available: "speechSynthesis" in window && "SpeechSynthesisUtterance" in window,
-  enabled: false,
-  unlocked: false,
-  voices: [],
-  voice: null
+const narrationStatus = document.getElementById("narrationStatus");
+const services = {
+  audio: createAudioService(),
+  narration: createNarrationService({
+    onDiagnostic: setNarrationStatus
+  })
 };
 
 function getLevel() {
   return getCurrentLevel(LEVELS, currentLevelIndex);
 }
 
+function setNarrationStatus(text) {
+  if (narrationStatus) narrationStatus.textContent = text || "";
+}
+
 function initNarration() {
-  try {
-    narration.enabled = localStorage.getItem("chevalierNarration") !== "off";
-  } catch {
-    narration.enabled = true;
-  }
-  console.log("[Narration] disponible:", narration.available);
-  console.log("[Narration] activée:", narration.enabled);
-  console.log("[Narration] déverrouillée:", narration.unlocked);
+  services.narration.init();
   updateNarrationButton();
-  if (!narration.available) return;
-  loadVoices();
-  if (window.speechSynthesis.addEventListener) {
-    window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
-  } else {
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-  }
+  setNarrationStatus(services.narration.getDiagnosticMessage());
 }
 
-function unlockNarration() {
-  if (!narration.available) return;
-  narration.unlocked = true;
-  window.speechSynthesis.resume();
-  loadVoices();
-  console.log("[Narration] déverrouillée:", narration.unlocked);
+function ensureAudio() {
+  services.audio.ensureReady();
 }
 
-function loadVoices() {
-  if (!narration.available) return [];
-  narration.voices = window.speechSynthesis.getVoices();
-  narration.voice = pickFrenchVoice();
-  console.log("[Narration] voix disponibles:", narration.voices.length);
-  if (narration.voice) {
-    console.log("[Narration] voix choisie:", narration.voice.name, narration.voice.lang);
-  } else {
-    console.warn("[Narration] aucune voix disponible");
-  }
-  return narration.voices;
-}
-
-function pickFrenchVoice() {
-  const voices = narration.voices || [];
-  return voices.find(voice => voice.lang === "fr-FR")
-    || voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith("fr"))
-    || voices.find(voice => /french|français|francais/i.test(voice.name || ""))
-    || voices.find(voice => voice.default)
-    || voices[0]
-    || null;
-}
-
-function narrate(text, options = {}) {
-  if (!narration.available || !narration.enabled || !narration.unlocked || !text) return;
-  const utterance = new SpeechSynthesisUtterance(text);
-  const voice = narration.voice || pickFrenchVoice();
-  utterance.lang = voice && voice.lang ? voice.lang : "fr-FR";
-  utterance.rate = options.rate || 0.95;
-  utterance.pitch = options.pitch || 1;
-  if (voice) utterance.voice = voice;
-  utterance.onstart = () => console.log("[Narration] start");
-  utterance.onend = () => console.log("[Narration] end");
-  utterance.onerror = event => console.warn("[Narration] error:", event.error);
-  console.log("[Narration] speak:", text);
-  window.speechSynthesis.resume();
-  if (options.mode === "queue") {
-    window.speechSynthesis.speak(utterance);
-  } else {
-    window.speechSynthesis.cancel();
-    setTimeout(() => window.speechSynthesis.speak(utterance), 40);
-  }
-}
-
-function stopNarration() {
-  if (narration.available) window.speechSynthesis.cancel();
+function playSweetSound() {
+  services.audio.playSweetSound();
 }
 
 function enableNarration() {
-  narration.enabled = true;
-  try {
-    localStorage.setItem("chevalierNarration", "on");
-  } catch {}
+  services.narration.setEnabled(true);
   updateNarrationButton();
-  console.log("[Narration] activée:", narration.enabled);
-  unlockNarration();
-  narrate("Voix activée.");
+  setNarrationStatus(services.narration.getDiagnosticMessage());
+  services.narration.speak("Voix activée.");
 }
 
 function disableNarration() {
-  narration.enabled = false;
-  try {
-    localStorage.setItem("chevalierNarration", "off");
-  } catch {}
-  stopNarration();
+  services.narration.setEnabled(false);
   updateNarrationButton();
-  console.log("[Narration] activée:", narration.enabled);
+  setNarrationStatus(services.narration.getDiagnosticMessage());
 }
 
 function toggleNarration() {
-  if (narration.enabled) {
+  if (services.narration.isEnabled()) {
     disableNarration();
   } else {
     enableNarration();
@@ -156,20 +92,14 @@ function toggleNarration() {
 
 function updateNarrationButton() {
   if (!voiceBtn) return;
-  if (!narration.available) {
-    voiceBtn.disabled = true;
-    voiceBtn.textContent = "Voix indisponible";
-    voiceBtn.setAttribute("aria-label", "Narration vocale indisponible");
-    return;
-  }
-  voiceBtn.disabled = false;
-  voiceBtn.textContent = narration.enabled ? "Désactiver la voix" : "Activer la voix";
-  voiceBtn.setAttribute("aria-label", narration.enabled ? "Désactiver la narration vocale" : "Activer la narration vocale");
+  voiceBtn.disabled = !services.narration.isAvailable();
+  voiceBtn.textContent = services.narration.getButtonLabel();
+  voiceBtn.setAttribute("aria-label", services.narration.isEnabled() ? "Désactiver la narration vocale" : "Activer la narration vocale");
 }
 
 window.testNarration = function() {
   enableNarration();
-  narrate("Bonjour chevalier. La voix fonctionne.");
+  services.narration.speak("Bonjour chevalier. La voix fonctionne.");
 };
 
 function shortFeedback(text) {
@@ -188,48 +118,8 @@ function updateHud() {
   startSubtitle.textContent = "Niveau " + current.id + " : " + current.title;
 }
 
-function ensureAudio() {
-  if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioContext.state === "suspended") audioContext.resume();
-}
-
-function playSweetSound() {
-  ensureAudio();
-  const now = audioContext.currentTime;
-  [523.25, 659.25, 783.99].forEach((freq, i) => {
-    const osc = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(freq, now + i * 0.06);
-    gain.gain.setValueAtTime(0, now + i * 0.06);
-    gain.gain.linearRampToValueAtTime(0.12, now + i * 0.06 + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.22);
-    osc.connect(gain).connect(audioContext.destination);
-    osc.start(now + i * 0.06);
-    osc.stop(now + i * 0.06 + 0.25);
-  });
-}
-
 function playSwordSound() {
-  ensureAudio();
-  const now = audioContext.currentTime;
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-  const filter = audioContext.createBiquadFilter();
-
-  osc.type = "sawtooth";
-  osc.frequency.setValueAtTime(880, now);
-  osc.frequency.exponentialRampToValueAtTime(180, now + 0.12);
-  filter.type = "bandpass";
-  filter.frequency.setValueAtTime(1500, now);
-  filter.Q.setValueAtTime(7, now);
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.13, now + 0.015);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
-
-  osc.connect(filter).connect(gain).connect(audioContext.destination);
-  osc.start(now);
-  osc.stop(now + 0.15);
+  services.audio.playSwordSound();
 }
 
 const keyboardInput = createKeyboardInput();
@@ -331,7 +221,7 @@ function strike() {
     stars++;
     updateHud();
     setMessage(hit.data.feedbackOk + (hit.data.correction ? "" : ""));
-    narrate(shortFeedback(hit.data.feedbackOk));
+    services.narration.speak(shortFeedback(hit.data.feedbackOk));
     playSweetSound();
     makeConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
     hit.el.remove();
@@ -340,7 +230,7 @@ function strike() {
   } else {
     bounceWord(hit);
     setMessage(hit.data.feedbackKo);
-    narrate(shortFeedback(hit.data.feedbackKo));
+    services.narration.speak(shortFeedback(hit.data.feedbackKo));
   }
 }
 
@@ -358,7 +248,7 @@ function finishLevel() {
     document.getElementById("levelText").textContent = "Niveau " + current.id + " réussi. Prochaine mission : " + LEVELS[currentLevelIndex + 1].title + " !";
     document.getElementById("nextBtn").textContent = "Continuer";
   }
-  narrate("Bravo, niveau terminé.");
+  services.narration.speak("Bravo, niveau terminé.");
 }
 
 function startGame(easy) {
@@ -390,7 +280,7 @@ function startGame(easy) {
   pauseBtn.textContent = "⏸";
   setMessage(getLevel().instruction);
   unlockNarration();
-  narrate(getLevel().instruction);
+  services.narration.speak(getLevel().instruction);
   ensureAudio();
   spawnWord();
 }
@@ -419,13 +309,13 @@ function togglePause() {
     pauseBtn.classList.add("paused");
     pauseBtn.textContent = "▶";
     setMessage("Pause");
-    narrate("Pause");
+    services.narration.speak("Pause");
   } else if (state === "paused") {
     state = "playing";
     pauseBtn.classList.remove("paused");
     pauseBtn.textContent = "⏸";
     setMessage(getLevel().instruction);
-    narrate("C’est reparti.");
+    services.narration.speak("C’est reparti.");
   }
 }
 

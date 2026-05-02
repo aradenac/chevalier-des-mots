@@ -352,12 +352,16 @@ h1 {
 .bigBtn:active { translate: 0 5px; box-shadow: 0 2px 0 #bd7600; }
 .secondary { background: #b9f5ff; border-color: #258dc7; box-shadow: 0 7px 0 #258dc7; }
 .pink { background: #ffcae4; border-color: #bd3a7c; box-shadow: 0 7px 0 #bd3a7c; }
-#gamepadStatus {
+#gamepadStatus, #narrationStatus {
   margin-top: 18px;
   min-height: 28px;
   font-size: 19px;
   font-weight: 900;
   color: #087d4d;
+}
+#narrationStatus {
+  margin-top: 8px;
+  color: #bd3a7c;
 }
 #levelGrid {
   display: grid;
