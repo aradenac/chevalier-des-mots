@@ -256,9 +256,9 @@ function getLevel() {
 
 function initNarration() {
   try {
-    narration.enabled = localStorage.getItem("chevalierNarration") === "on";
+    narration.enabled = localStorage.getItem("chevalierNarration") !== "off";
   } catch {
-    narration.enabled = false;
+    narration.enabled = true;
   }
   console.log("[Narration] disponible:", narration.available);
   console.log("[Narration] activée:", narration.enabled);
