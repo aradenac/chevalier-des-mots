@@ -23,3 +23,7 @@ export function findSwordCollision({ words, swordCenterX, swordCenterY, veryEasy
 
   return hit;
 }
+
+export function isTargetHit(hit) {
+  return Boolean(hit?.data?.target);
+}

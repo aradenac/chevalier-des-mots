@@ -35,15 +35,15 @@ Status: approved
 Priority: high
 Verification: test
 
-Le système doit considérer comme valides uniquement les mots marqués comme cibles et sélectionner le mot le plus pertinent dans la zone d'épée.
+Le système doit résoudre une frappe en choisissant le mot le plus pertinent dans la zone d'épée, puis considérer la frappe comme réussie uniquement si le mot résolu est une cible.
 
 Rationale:
-La mécanique centrale du jeu repose sur la distinction entre les bonnes et les mauvaises cibles.
+La mécanique centrale du jeu repose sur la distinction entre le mot touché et la réussite liée à la propriété `target`.
 
 Acceptance criteria:
-- Un mot non cible ne compte pas comme réussite.
+- Un mot non cible peut être résolu par la frappe mais ne compte pas comme réussite.
 - Si plusieurs mots sont dans la zone d'épée, le plus plausible est retenu.
-- Le comportement reste identique en mode facile et normal, à la différence de la taille de la zone.
+- Un mot cible résolu compte comme réussite.
 
 Needs:
 - impl
@@ -120,7 +120,7 @@ Needs:
 
 Status: draft
 Priority: high
-Verification: inspection
+Verification: manual-review
 
 Le système doit afficher la consigne du niveau courant dans l'interface et la mettre à jour quand le niveau change.
 
@@ -162,7 +162,7 @@ Needs:
 
 Status: draft
 Priority: high
-Verification: inspection
+Verification: manual-review
 
 Le système doit afficher immédiatement un feedback lisible après une frappe correcte ou incorrecte.
 
@@ -226,7 +226,7 @@ Needs:
 
 Status: draft
 Priority: medium
-Verification: inspection
+Verification: test
 
 Le système doit conserver la logique de jeu pure dans `src/core/` et les accès aux API navigateur dans `src/adapters/`.
 
@@ -235,11 +235,12 @@ La séparation réduit le couplage et simplifie les tests.
 
 Acceptance criteria:
 - Les modules core restent testables sans DOM.
-- Les accès aux API navigateur restent cantonnés aux adapters.
+- Les fichiers de `src/core/` n'utilisent pas directement `document`, `window`, `navigator`, `localStorage`, `AudioContext` ou `speechSynthesis`.
 - `src/main.js` orchestre sans réimplémenter la logique métier.
 
 Needs:
 - impl
+- utest
 
 ## Exigences de vérification
 

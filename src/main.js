@@ -2,7 +2,7 @@ import { LEVELS } from "./data/levels.js";
 import { clamp, createGameState, resetGameStateForLevel } from "./core/gameState.js";
 import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLevelIndex } from "./core/progression.js";
 import { chooseNextItem, getMaxActiveWords, getSpawnDelay, getWordSpeedBase } from "./core/wordSpawner.js";
-import { findSwordCollision } from "./core/collision.js";
+import { findSwordCollision, isTargetHit } from "./core/collision.js";
 import { createKeyboardInput } from "./adapters/keyboardInput.js";
 import { createTouchInput } from "./adapters/touchInput.js";
 import { createGamepadInput } from "./adapters/gamepadInput.js";
@@ -219,7 +219,7 @@ function strike() {
   if (!hit) return;
 
   const rect = hit.el.getBoundingClientRect();
-  if (hit.data.target) {
+  if (isTargetHit(hit)) {
     stars++;
     updateHud();
     // [impl->req~feedback.immediate-result~1]
