@@ -40,6 +40,12 @@ Acceptance criteria:
 Needs:
 - impl
 - utest
+
+## Change history
+
+| Date | Spec version | Game version | Location | Modification | Justification |
+|---|---|---|---|---|---|
+| 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/feedback-audio.md | Added feedback, narration, and audio requirements | Keep feedback and audio behaviors together for review |
 #### Le service audio ne doit pas bloquer le jeu
 `req~audio.service-failure-non-blocking~1`
 

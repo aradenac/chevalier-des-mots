@@ -22,3 +22,9 @@ Les exigences purement documentaires ou de processus sont évitées.
 
 - `// [impl->req~...~1]`
 - `// [utest->req~...~1]`
+
+## Change history
+
+| Date | Spec version | Game version | Location | Modification | Justification |
+|---|---|---|---|---|---|
+| 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/format.md | Added required format and OpenFastTrace examples | Keep requirement formatting explicit and machine-readable |

@@ -20,3 +20,9 @@ Acceptance criteria:
 Needs:
 - impl
 - utest
+
+## Change history
+
+| Date | Spec version | Game version | Location | Modification | Justification |
+|---|---|---|---|---|---|
+| 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/technical.md | Added the core/adapters separation requirement | Keep technical separation explicit without over-specifying implementation |

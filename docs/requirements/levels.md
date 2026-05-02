@@ -157,6 +157,7 @@ Acceptance criteria:
 Needs:
 - impl
 - utest
+
 #### La progression doit avancer niveau par niveau
 `req~level.progression-model~1`
 
@@ -177,3 +178,9 @@ Acceptance criteria:
 Needs:
 - impl
 - utest
+
+## Change history
+
+| Date | Spec version | Game version | Location | Modification | Justification |
+|---|---|---|---|---|---|
+| 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/levels.md | Added level structure, pedagogical overview, synthesis table, and progression requirement | Let readers understand progression without duplicating level data |

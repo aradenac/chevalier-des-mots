@@ -39,3 +39,9 @@ Acceptance criteria:
 Needs:
 - impl
 - utest
+
+## Change history
+
+| Date | Spec version | Game version | Location | Modification | Justification |
+|---|---|---|---|---|---|
+| 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/inputs-ui.md | Added interface and input requirements | Keep input and visible instruction expectations in one themed page |

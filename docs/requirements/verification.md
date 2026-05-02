@@ -40,6 +40,12 @@ Acceptance criteria:
 Needs:
 - impl
 
+## Change history
+
+| Date | Spec version | Game version | Location | Modification | Justification |
+|---|---|---|---|---|---|
+| 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/verification.md | Added verification requirements for traceability, tests, build, docs and verify command | Keep local proof obligations explicit |
+
 #### Le build applicatif doit rester vert
 `req~verify.build-pass~1`
 

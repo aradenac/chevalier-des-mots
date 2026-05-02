@@ -64,6 +64,8 @@ Après validation explicite :
 - `docs/requirements/version-history.md` est obligatoire et relie les versions de specs et les versions du jeu.
 - Codex doit le maintenir à chaque changement de specs ou de code.
 - Ne pas supprimer l'historique.
+- La revue SPEC REVIEW ne peut pas modifier `src/` ni `tests/`.
+- Le code ne peut être modifié qu'après validation explicite de l'utilisateur : `Spec validée. Passe à l’implémentation.`
 
 ## 5. Commandes de vérification
 
