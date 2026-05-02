@@ -2,7 +2,7 @@ site_name: Le Chevalier des Mots
 site_description: Référentiel d'exigences du jeu éducatif Le Chevalier des Mots
 site_url: ""
 use_directory_urls: false
-# [impl->verreq~docs.mkdocs-build-pass~1]
+# [impl->req~verify.docs-build-pass~1]
 repo_url: https://github.com/aradenac/chevalier-des-mots
 repo_name: aradenac/chevalier-des-mots
 theme:
@@ -36,15 +36,4 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 nav:
   - Accueil: index.md
-  - Requirements:
-      - Vue d'ensemble: requirements/index.md
-      - System overview: requirements/00-system-overview.md
-      - Needs: requirements/01-needs.md
-      - Stakeholder requirements: requirements/02-stakeholder-requirements.md
-      - System requirements: requirements/03-system-requirements.md
-      - Software requirements: requirements/04-software-requirements.md
-      - Verification requirements: requirements/05-verification-requirements.md
-      - Traceability rules: requirements/06-traceability-rules.md
-      - Tooling: requirements/07-tooling.md
-      - Change process: requirements/08-change-process.md
-      - Glossary: requirements/09-glossary.md
+  - Exigences: requirements.md

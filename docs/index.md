@@ -1,4 +1,4 @@
 # Le Chevalier des Mots
 
-La source de vérité est `docs/requirements/`.
-Cette page sert d'entrée minimale vers le référentiel d'exigences.
+La source de vérité est `docs/requirements.md`.
+OpenFastTrace valide la traçabilité entre exigences, code, tests et résultats locaux.

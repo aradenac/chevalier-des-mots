@@ -1,4 +1,4 @@
-// [utest->swreq~speech.brave-failure-handling~1]
+// [utest->req~speech.brave-failure-handling~1]
 import { describe, expect, it } from "vitest";
 import { getSpeechDiagnostics, SPEECH_UNAVAILABLE_MESSAGE } from "../src/diagnostics/speechDiagnostics.js";
 

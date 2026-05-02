@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# [impl->verreq~trace.openfasttrace-validation~1]
+# [impl->req~verify.traceability-validation~1]
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

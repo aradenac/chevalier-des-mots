@@ -1,4 +1,4 @@
-// [impl->swreq~speech.brave-failure-handling~1]
+// [impl->req~speech.brave-failure-handling~1]
 export const SPEECH_UNAVAILABLE_MESSAGE = "Voix indisponible dans ce navigateur. Le jeu reste jouable.";
 
 export function getSpeechDiagnostics({ available, enabled, voicesLength = 0, error = "" } = {}) {

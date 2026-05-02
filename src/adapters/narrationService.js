@@ -1,4 +1,4 @@
-// [impl->swreq~speech.brave-failure-handling~1]
+// [impl->req~speech.brave-failure-handling~1]
 import { getSpeechDiagnostics, SPEECH_UNAVAILABLE_MESSAGE } from "../diagnostics/speechDiagnostics.js";
 
 function pickFrenchVoice(voices) {

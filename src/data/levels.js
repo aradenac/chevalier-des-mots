@@ -1,4 +1,4 @@
-// [impl->swreq~data.levels-separated-from-engine~1]
+// [impl->req~data.levels-separated-from-engine~1]
 const item = (text, target, feedbackOk, feedbackKo, correction, category) => ({ text, target, feedbackOk, feedbackKo, correction, category });
 const level = (id, title, instruction, shortInstruction, difficulty, starsToWin, maxActiveWords, fallSpeed, items) => ({ id, title, instruction, shortInstruction, difficulty, starsToWin, maxActiveWords, fallSpeed, items });
 

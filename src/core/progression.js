@@ -1,4 +1,4 @@
-// [impl->swreq~level.progression-model~1]
+// [impl->req~level.progression-model~1]
 import { clamp } from "./gameState.js";
 
 export function selectLevelIndex(index, levelsLength) {

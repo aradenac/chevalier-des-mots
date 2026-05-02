@@ -113,7 +113,7 @@ function setMessage(text) {
 function updateHud() {
   const current = getLevel();
   levelInfo.textContent = "Niveau " + current.id + " · " + current.title;
-  // [impl->swreq~ui.instruction-rendering~1]
+  // [impl->req~ui.visible-instruction~1]
   instruction.textContent = current.shortInstruction;
   starsEl.textContent = "⭐ " + stars + " / " + current.starsToWin;
   startSubtitle.textContent = "Niveau " + current.id + " : " + current.title;
@@ -213,7 +213,7 @@ function strike() {
   const swordRect = knight.querySelector(".sword").getBoundingClientRect();
   const swordCenterX = swordRect.left + swordRect.width / 2;
   const swordCenterY = swordRect.top + swordRect.height / 2;
-  // [impl->swreq~game.target-only-slicing~1]
+  // [impl->req~game.target-only-slicing~1]
   const hit = findSwordCollision({ words: activeWords, swordCenterX, swordCenterY, veryEasy });
   makeSlash(knightX + 40, window.innerHeight - 185);
   if (!hit) return;
@@ -222,7 +222,7 @@ function strike() {
   if (hit.data.target) {
     stars++;
     updateHud();
-    // [impl->swreq~ui.feedback-rendering~1]
+    // [impl->req~feedback.immediate-result~1]
     setMessage(hit.data.feedbackOk + (hit.data.correction ? "" : ""));
     services.narration.speak(shortFeedback(hit.data.feedbackOk));
     playSweetSound();
@@ -232,7 +232,7 @@ function strike() {
     if (hasWonLevel(stars, getLevel())) finishLevel();
   } else {
     bounceWord(hit);
-    // [impl->swreq~game.no-game-over-punishment~1]
+    // [impl->req~game.no-blocking-punishment~1]
     setMessage(hit.data.feedbackKo);
     services.narration.speak(shortFeedback(hit.data.feedbackKo));
   }
@@ -276,6 +276,7 @@ function startGame(easy) {
   activeWords = nextState.activeWords;
   spawnTimer = nextState.spawnTimer;
   targetRetryQueue = nextState.targetRetryQueue;
+  // [impl->req~ui.visible-instruction~1]
   updateHud();
   startOverlay.classList.add("hidden");
   selectOverlay.classList.add("hidden");
@@ -333,6 +334,7 @@ function tick(time) {
   const dt = Math.min(0.033, (time - lastTime) / 1000 || 0);
   lastTime = time;
 
+  // [impl->req~input.normalized-state~1]
   const keyboardState = keyboardInput.read();
   const touchState = touchInput.read();
   const gamepadState = updateGamepadStatus();
@@ -377,6 +379,7 @@ function tick(time) {
 
 function buildLevelGrid() {
   levelGrid.innerHTML = "";
+  // [impl->req~data.levels-separated-from-engine~1]
   LEVELS.forEach((levelData, index) => {
     const button = document.createElement("button");
     button.className = "levelChoice";

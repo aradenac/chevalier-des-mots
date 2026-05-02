@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
-# [impl->verreq~verify.single-command~1]
-# [impl->verreq~test.unit-tests-pass~1]
-# [impl->verreq~test.build-pass~1]
-# [impl->verreq~test.execution-results-produced~1]
-# [impl->verreq~docs.mkdocs-build-pass~1]
+# [impl->req~verify.single-command~1]
+# [impl->req~verify.unit-tests-pass~1]
+# [impl->req~verify.build-pass~1]
+# [impl->req~verify.traceability-validation~1]
+# [impl->req~verify.docs-build-pass~1]
 set -euo pipefail
 
 echo "Lancement de la vérification du dépôt..."
-exec npm run verify
+npm run test:report
+npm run build
+npm run trace
+npm run docs:build

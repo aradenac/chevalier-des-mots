@@ -1,4 +1,4 @@
-// [utest->swreq~data.levels-separated-from-engine~1]
+// [utest->req~data.levels-separated-from-engine~1]
 import { describe, expect, it } from "vitest";
 import { LEVELS } from "../src/data/levels.js";
 

@@ -1,4 +1,4 @@
-// [impl->swreq~core.no-browser-api-dependency~1]
+// [impl->req~tech.core-adapters-separation~1]
 export function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
