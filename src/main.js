@@ -3,6 +3,9 @@ import { clamp, createGameState, resetGameStateForLevel } from "./core/gameState
 import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLevelIndex } from "./core/progression.js";
 import { chooseNextItem, getMaxActiveWords, getSpawnDelay, getWordSpeedBase } from "./core/wordSpawner.js";
 import { findSwordCollision } from "./core/collision.js";
+import { createKeyboardInput } from "./adapters/keyboardInput.js";
+import { createTouchInput } from "./adapters/touchInput.js";
+import { createGamepadInput } from "./adapters/gamepadInput.js";
 
 const game = document.getElementById("game");
 const arena = document.getElementById("arena");
@@ -35,8 +38,6 @@ let spawnTimer = initialState.spawnTimer;
 let wordIndex = initialState.wordIndex;
 let targetRetryQueue = initialState.targetRetryQueue;
 let audioContext = null;
-let previousPadStrike = false;
-let previousPadStart = false;
 const narration = {
   available: "speechSynthesis" in window && "SpeechSynthesisUtterance" in window,
   enabled: false,
@@ -230,6 +231,10 @@ function playSwordSound() {
   osc.start(now);
   osc.stop(now + 0.15);
 }
+
+const keyboardInput = createKeyboardInput();
+const touchInput = createTouchInput({ onActivate: ensureAudio });
+const gamepadInput = createGamepadInput();
 
 function makeConfetti(x, y) {
   const colors = ["#ffd94a", "#ff75b7", "#43c55f", "#3e8cff", "#6849d8", "#ff8b3d"];
@@ -425,36 +430,22 @@ function togglePause() {
 }
 
 function updateGamepadStatus() {
-  const pads = navigator.getGamepads ? Array.from(navigator.getGamepads()).filter(Boolean) : [];
-  if (pads.length) gamepadStatus.textContent = "Manette détectée";
-  return pads[0];
-}
-
-function readGamepad() {
-  const pad = updateGamepadStatus();
-  if (!pad) return;
-  const axisX = pad.axes[0] || 0;
-  const dLeft = pad.buttons[14] && pad.buttons[14].pressed;
-  const dRight = pad.buttons[15] && pad.buttons[15].pressed;
-  moveLeft = moveLeft || axisX < -0.35 || dLeft;
-  moveRight = moveRight || axisX > 0.35 || dRight;
-  const strikePressed = [0, 1, 2, 3].some(i => pad.buttons[i] && pad.buttons[i].pressed);
-  if (strikePressed && !previousPadStrike) strike();
-  previousPadStrike = strikePressed;
-  const startPressed = pad.buttons[9] && pad.buttons[9].pressed;
-  if (startPressed && !previousPadStart) togglePause();
-  previousPadStart = startPressed;
+  const padState = gamepadInput.read();
+  gamepadStatus.textContent = padState.connected ? "Manette détectée" : "Appuie sur un bouton de la manette";
+  return padState;
 }
 
 function tick(time) {
   const dt = Math.min(0.033, (time - lastTime) / 1000 || 0);
   lastTime = time;
 
-  const keyboardLeft = keys.ArrowLeft || keys.KeyA;
-  const keyboardRight = keys.ArrowRight || keys.KeyD;
-  moveLeft = keyboardLeft || touch.left;
-  moveRight = keyboardRight || touch.right;
-  readGamepad();
+  const keyboardState = keyboardInput.read();
+  const touchState = touchInput.read();
+  const gamepadState = updateGamepadStatus();
+  moveLeft = keyboardState.left || touchState.left || gamepadState.left;
+  moveRight = keyboardState.right || touchState.right || gamepadState.right;
+  if (keyboardState.strikePressed || touchState.strikePressed || gamepadState.strikePressed) strike();
+  if (keyboardState.pausePressed || touchState.pausePressed || gamepadState.pausePressed) togglePause();
 
   if (state === "playing") {
     const current = getLevel();
@@ -502,28 +493,9 @@ function buildLevelGrid() {
   });
 }
 
-const keys = {};
-const touch = { left: false, right: false };
-
-window.addEventListener("keydown", (event) => {
-  keys[event.code] = true;
-  if (["ArrowLeft", "ArrowRight", "Space", "Enter"].includes(event.code)) event.preventDefault();
-  if (event.code === "Space" || event.code === "Enter") strike();
-});
-window.addEventListener("keyup", (event) => { keys[event.code] = false; });
-
-function bindHold(button, prop) {
-  const on = (event) => { event.preventDefault(); touch[prop] = true; ensureAudio(); };
-  const off = (event) => { event.preventDefault(); touch[prop] = false; };
-  button.addEventListener("pointerdown", on);
-  button.addEventListener("pointerup", off);
-  button.addEventListener("pointercancel", off);
-  button.addEventListener("pointerleave", off);
-}
-
-bindHold(document.getElementById("leftTouch"), "left");
-bindHold(document.getElementById("rightTouch"), "right");
-document.getElementById("touchStrike").addEventListener("pointerdown", (event) => { event.preventDefault(); strike(); });
+touchInput.bindHold(document.getElementById("leftTouch"), "left");
+touchInput.bindHold(document.getElementById("rightTouch"), "right");
+touchInput.bindStrike(document.getElementById("touchStrike"));
 document.getElementById("strikeBtnTop").addEventListener("click", strike);
 menuBtn.addEventListener("click", returnToMenu);
 pauseBtn.addEventListener("click", togglePause);
@@ -543,12 +515,10 @@ document.getElementById("backBtn").addEventListener("click", () => {
 document.getElementById("nextBtn").addEventListener("click", continueLevel);
 document.getElementById("padBtn").addEventListener("click", () => {
   ensureAudio();
-  const pad = updateGamepadStatus();
-  gamepadStatus.textContent = pad ? "Manette détectée" : "Appuie sur un bouton de la manette";
+  const padState = updateGamepadStatus();
+  gamepadStatus.textContent = padState.connected ? "Manette détectée" : "Appuie sur un bouton de la manette";
 });
 
-window.addEventListener("gamepadconnected", () => { gamepadStatus.textContent = "Manette détectée"; });
-window.addEventListener("gamepaddisconnected", () => { gamepadStatus.textContent = "Manette débranchée"; });
 window.addEventListener("resize", () => { knightX = clamp(knightX, 52, window.innerWidth - 52); });
 
 buildLevelGrid();
