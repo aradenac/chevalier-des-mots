@@ -1,5 +1,6 @@
 import { LEVELS } from "./data/levels.js";
 import { getWorldForLevel } from "./data/worlds.js";
+import { DEFAULT_CHARACTER_ID, getCharacterById, getCharacters } from "./data/characters.js";
 import { clamp, createGameState, resetGameStateForLevel } from "./core/gameState.js";
 import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLevelIndex } from "./core/progression.js";
 import { chooseNextItem, getMaxActiveWords, getSpawnDelay, getWordSpeedBase } from "./core/wordSpawner.js";
@@ -26,6 +27,8 @@ const levelOverlay = document.getElementById("levelOverlay");
 const gamepadStatus = document.getElementById("gamepadStatus");
 const levelGrid = document.getElementById("levelGrid");
 const startSubtitle = document.getElementById("startSubtitle");
+const characterGrid = document.getElementById("characterGrid");
+const characterStatus = document.getElementById("characterStatus");
 
 const initialState = createGameState({ knightX: window.innerWidth / 2 });
 let state = initialState.state;
@@ -40,6 +43,7 @@ let lastTime = 0;
 let spawnTimer = initialState.spawnTimer;
 let wordIndex = initialState.wordIndex;
 let targetRetryQueue = initialState.targetRetryQueue;
+let selectedCharacterId = DEFAULT_CHARACTER_ID;
 const narrationStatus = document.getElementById("narrationStatus");
 const services = {
   audio: createAudioService(),
@@ -50,6 +54,10 @@ const services = {
 
 function getLevel() {
   return getCurrentLevel(LEVELS, currentLevelIndex);
+}
+
+function getSelectedCharacter() {
+  return getCharacterById(selectedCharacterId);
 }
 
 function setNarrationStatus(text) {
@@ -121,6 +129,32 @@ function updateHud() {
   startSubtitle.textContent = world.title + " : Niveau " + current.id + " — " + current.title;
 }
 
+function updateCharacterPreview() {
+  const character = getSelectedCharacter();
+  if (characterStatus) {
+    characterStatus.textContent = "Personnage choisi : " + character.label + " · arme : " + character.weaponLabel;
+  }
+  if (!characterGrid) return;
+  for (const button of characterGrid.querySelectorAll("button[data-character-id]")) {
+    button.classList.toggle("is-selected", button.dataset.characterId === character.id);
+    button.setAttribute("aria-pressed", button.dataset.characterId === character.id ? "true" : "false");
+  }
+}
+
+function applySelectedCharacter() {
+  const character = getSelectedCharacter();
+  knight.classList.remove("character-knight", "character-pepe", "character-laser");
+  knight.classList.add(character.cssClass);
+  knight.dataset.characterId = character.id;
+  // [impl->req~character.cosmetic-only~1]
+  updateCharacterPreview();
+}
+
+function chooseCharacter(characterId) {
+  selectedCharacterId = getCharacterById(characterId).id;
+  applySelectedCharacter();
+}
+
 function playSwordSound() {
   services.audio.playSwordSound();
 }
@@ -144,9 +178,9 @@ function makeConfetti(x, y) {
   }
 }
 
-function makeSlash(x, y) {
+function makeSlash(character, x, y) {
   const slash = document.createElement("div");
-  slash.className = "slash";
+  slash.className = "slash slash--" + character.strikeEffect;
   slash.style.left = x + "px";
   slash.style.top = y + "px";
   game.appendChild(slash);
@@ -208,6 +242,7 @@ function strike() {
   if (state !== "playing") return;
   ensureAudio();
   playSwordSound();
+  const character = getSelectedCharacter();
   knight.classList.remove("striking");
   void knight.offsetWidth;
   knight.classList.add("striking");
@@ -217,7 +252,8 @@ function strike() {
   const swordCenterY = swordRect.top + swordRect.height / 2;
   // [impl->req~game.target-only-slicing~1]
   const hit = findSwordCollision({ words: activeWords, swordCenterX, swordCenterY, veryEasy });
-  makeSlash(knightX + 40, window.innerHeight - 185);
+  // [impl->req~character.cosmetic-only~1]
+  makeSlash(character, knightX + 40, window.innerHeight - 185);
   if (!hit) return;
 
   const rect = hit.el.getBoundingClientRect();
@@ -279,6 +315,7 @@ function startGame(easy) {
   activeWords = nextState.activeWords;
   spawnTimer = nextState.spawnTimer;
   targetRetryQueue = nextState.targetRetryQueue;
+  applySelectedCharacter();
   // [impl->req~ui.visible-instruction~1]
   updateHud();
   startOverlay.classList.add("hidden");
@@ -394,6 +431,23 @@ function buildLevelGrid() {
   });
 }
 
+function buildCharacterGrid() {
+  if (!characterGrid) return;
+  characterGrid.innerHTML = "";
+  // [impl->req~character.start-selection~1]
+  getCharacters().forEach(character => {
+    const button = document.createElement("button");
+    button.className = "characterChoice";
+    button.type = "button";
+    button.dataset.characterId = character.id;
+    button.setAttribute("aria-pressed", character.id === selectedCharacterId ? "true" : "false");
+    button.innerHTML = "<span class=\"characterChoice__label\">" + character.label + "</span><span class=\"characterChoice__weapon\">Arme : " + character.weaponLabel + "</span>";
+    button.addEventListener("click", () => chooseCharacter(character.id));
+    characterGrid.appendChild(button);
+  });
+  updateCharacterPreview();
+}
+
 touchInput.bindHold(document.getElementById("leftTouch"), "left");
 touchInput.bindHold(document.getElementById("rightTouch"), "right");
 touchInput.bindStrike(document.getElementById("touchStrike"));
@@ -423,6 +477,8 @@ document.getElementById("padBtn").addEventListener("click", () => {
 window.addEventListener("resize", () => { knightX = clamp(knightX, 52, window.innerWidth - 52); });
 
 buildLevelGrid();
+buildCharacterGrid();
+applySelectedCharacter();
 updateHud();
 initNarration();
 setMessage(getLevel().instruction);

@@ -22,7 +22,7 @@
 
     <section id="arena"></section>
 
-    <div id="knight" aria-hidden="true">
+    <div id="knight" class="character character-knight" aria-hidden="true">
       <div class="plume"></div>
       <div class="head"><div class="visor"></div></div>
       <div class="body"></div>
@@ -46,6 +46,9 @@
       <div class="panel">
         <h1>Le Chevalier des Mots</h1>
         <p id="startSubtitle" class="subtitle">Niveau 1 : Les mots mal écrits</p>
+        <p class="subtitle characterIntro">Choisis ton personnage avant de commencer.</p>
+        <div id="characterGrid" class="characterGrid" role="group" aria-label="Choix du personnage"></div>
+        <div id="characterStatus" class="characterStatus" aria-live="polite"></div>
         <div class="menuBtns">
           <button id="playBtn" class="bigBtn" type="button">Jouer</button>
           <button id="easyBtn" class="bigBtn secondary" type="button">Mode très facile</button>

@@ -1,3 +1,4 @@
+// [utest->req~character.cosmetic-only~1]
 import { describe, expect, it } from "vitest";
 import { findSwordCollision, getSwordHitRanges, isTargetHit } from "../src/core/collision.js";
 
