@@ -19,3 +19,5 @@ Les exigences sont regroupées par thème pour rester faciles à éditer sans r�
 - [Feedback et audio](feedback-audio.md)
 - [Technique](technical.md)
 - [Vérification](verification.md)
+
+La page [Niveaux](levels.md) rassemble les exigences de structure, une vue pédagogique synthétique des 20 niveaux et une table non exhaustive pour faciliter la lecture sans dupliquer `src/data/levels.js`.
