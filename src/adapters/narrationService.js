@@ -1,3 +1,4 @@
+// impl~cdm.speech-optional~1
 import { getSpeechDiagnostics, SPEECH_UNAVAILABLE_MESSAGE } from "../diagnostics/speechDiagnostics.js";
 
 function pickFrenchVoice(voices) {

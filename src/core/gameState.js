@@ -1,3 +1,4 @@
+// impl~cdm.state-model~1
 export function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }

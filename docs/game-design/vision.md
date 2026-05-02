@@ -1,43 +1,36 @@
 # Vision
 
-Le projet vise un apprentissage par action.
-Le joueur lit une consigne, identifie les mots pertinents, puis tranche ce qui correspond à la mission.
+Le jeu doit être assez simple pour être compris en quelques secondes, mais assez structuré pour soutenir un apprentissage réel.
 
-## Concept
+## Intention
 
-Le décor est volontairement simple.
-Le chevalier est le support visuel et mécanique de l’attention.
-Le mot affiché n’est pas abstrait : il est un objet de jeu.
+`feat~cdm.vision~1`
 
-## Mission initiale
+Le jeu doit aider l'enfant à reconnaître des formes correctes ou incorrectes sans interrompre la partie.
 
-La mission de départ consiste à trancher les mots mal orthographiés.
+Needs: req
 
-Exemple :
+## Règle directrice
 
-- consigne : "tranche les mots mal orthographiés"
-- mot correct : `chat`
-- mot incorrect : `chatt`
+- pas de punition dure;
+- pas de blocage;
+- pas de jargon inutile;
+- pas de feedback ambigu;
+- pas d'effet secondaire qui casse la jouabilité.
 
-## Missions futures
+## Ce que le jeu doit transmettre
 
-Le jeu est conçu pour accueillir progressivement d’autres familles grammaticales :
+Le joueur doit comprendre :
 
-- verbes
-- pronoms
-- noms
-- adjectifs
-- déterminants
-- adverbes
-- prépositions
-- conjonctions
-- temps verbaux
-- accords
-- homophones
+- ce qui est correct;
+- ce qui est à corriger;
+- pourquoi la correction est juste;
+- comment recommencer immédiatement.
 
-## Critères d’acceptation
+## Ce que le jeu ne cherche pas à faire
 
-- le joueur comprend quoi faire en lisant la consigne
-- le niveau peut être joué sans connaissance technique du système
-- la mission reste visible dans le texte, le son et le feedback
+- enseigner toute la grammaire;
+- évaluer un niveau scolaire complet;
+- remplacer un exercice de classe;
+- imposer la voix ou le son pour jouer.
 

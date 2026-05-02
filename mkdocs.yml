@@ -1,5 +1,5 @@
 site_name: Le Chevalier des Mots
-site_description: Documentation du jeu éducatif Le Chevalier des Mots
+site_description: Spécifications, architecture et notice du jeu éducatif Le Chevalier des Mots
 site_url: ""
 use_directory_urls: false
 repo_url: https://github.com/aradenac/chevalier-des-mots
@@ -43,9 +43,18 @@ nav:
       - Vue d'ensemble: game-design/index.md
       - Vision: game-design/vision.md
       - Boucle de jeu: game-design/gameplay-loop.md
-      - Niveaux: game-design/levels.md
-      - Règles pédagogiques: game-design/pedagogical-rules.md
+      - Design des niveaux: game-design/level-design.md
+      - Règles de feedback: game-design/feedback-rules.md
       - Progression: game-design/difficulty-progression.md
+  - Exigences:
+      - Vue d'ensemble: requirements/index.md
+      - Format OpenFastTrace: requirements/format.md
+      - Besoins parties prenantes: requirements/stakeholder-needs.md
+      - Exigences du jeu: requirements/game-requirements.md
+      - Exigences des niveaux: requirements/level-requirements.md
+      - Exigences techniques: requirements/software-requirements.md
+      - Exigences de vérification: requirements/verification-requirements.md
+      - Traçabilité: requirements/traceability.md
   - Architecture:
       - Vue d'ensemble: architecture/index.md
       - Architecture actuelle: architecture/overview.md
@@ -56,7 +65,8 @@ nav:
       - Décisions:
           - ADR-0001: architecture/decisions/adr-0001-docs-as-code.md
           - ADR-0002: architecture/decisions/adr-0002-vanilla-js-vite.md
-          - ADR-0003: architecture/decisions/adr-0003-speech-synthesis-as-optional.md
+          - ADR-0003: architecture/decisions/adr-0003-openfasttrace-traceability.md
+          - ADR-0004: architecture/decisions/adr-0004-speech-synthesis-optional.md
   - Notice utilisateur:
       - Vue d'ensemble: user-guide/index.md
       - Lancement: user-guide/launch.md
@@ -64,6 +74,9 @@ nav:
       - Niveaux: user-guide/levels.md
       - Dépannage: user-guide/troubleshooting.md
   - Développement:
+      - Vue d'ensemble: development/index.md
       - Commandes: development/commands.md
+      - Vérification: development/testing.md
+      - Règles de contribution: development/contribution-rules.md
+      - Guide LLM: development/llm-maintenance-guide.md
   - Glossaire: glossary.md
-  - Guide LLM: llm-maintenance-guide.md

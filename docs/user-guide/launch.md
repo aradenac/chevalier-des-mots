@@ -1,27 +1,24 @@
 # Lancement
 
-## Développement
+## Lancer le jeu
 
-Pour lancer le jeu en mode développement :
+Ouvrir le `index.html` du jeu dans le navigateur suffit.
 
-```bash
-npm install
-npm run dev
-```
+Si un serveur local est déjà utilisé en développement, le jeu peut aussi être servi via Vite.
 
-Le serveur Vite écoute sur `127.0.0.1`.
+## Lancer la documentation
 
-## Version build
+La documentation générée reste consultable directement dans `site/index.html`.
 
-Pour produire une version statique :
+## Exemple concret
 
-```bash
-npm run build
-```
+- jeu : ouvrir la page d'accueil du projet;
+- documentation : ouvrir `site/index.html` dans Brave ou Chrome;
+- build statique : vérifier que les liens internes pointent vers des `.html`.
 
-Le résultat est placé dans `dist/`.
+## Critères d'acceptation
 
-## Vérification
-
-Le build doit s’exécuter sans erreur avant diffusion.
+- le jeu démarre sans étape obscure;
+- la documentation s'ouvre sans serveur HTTP;
+- le chemin de consultation reste simple pour un enfant ou un mainteneur.
 

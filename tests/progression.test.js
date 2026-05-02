@@ -1,3 +1,4 @@
+// utest~cdm.progression-core~1
 import { describe, expect, it } from "vitest";
 import { LEVELS } from "../src/data/levels.js";
 import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLevelIndex } from "../src/core/progression.js";

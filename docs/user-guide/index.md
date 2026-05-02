@@ -1,11 +1,19 @@
 # Notice utilisateur
 
-Cette partie explique comment lancer le jeu et comment l’utiliser.
+Cette notice explique comment jouer sans lire le code.
 
-## Ce que le joueur doit savoir
+## Ce que l'utilisateur doit savoir
 
-- comment démarrer en développement
-- comment ouvrir une version construite
-- comment jouer au clavier, au tactile et à la manette
-- comment gérer la voix si elle ne fonctionne pas
+- lancer le jeu;
+- choisir un niveau;
+- utiliser le clavier, le tactile ou la manette;
+- comprendre les retours;
+- diagnostiquer un problème de son ou de voix.
+
+## Lecture rapide
+
+- [Lancement](launch.md)
+- [Contrôles](controls.md)
+- [Niveaux](levels.md)
+- [Dépannage](troubleshooting.md)
 

@@ -1,91 +1,107 @@
 # Modules
 
-Cette page explique le rôle des modules les plus importants.
+Cette page mappe les principaux modules du dépôt.
 
-## `levels.js`
+## `src/data/levels.js`
+
+`dsn~cdm.level-data-model~1`
 
 Contient les données pédagogiques.
-Il doit rester indépendant du moteur.
+Ce module ne doit pas contenir de logique de gameplay.
 
-Pourquoi :
+Needs: impl, utest
 
-- éviter de mélanger contenu et règles
-- permettre des tests de structure
-- faciliter l’ajout de nouveaux niveaux
+## `src/core/gameState.js`
 
-## `gameState.js`
+`dsn~cdm.state-model~1`
 
-Contient la création et la réinitialisation de l’état de partie.
+Construit et réinitialise l'état de jeu.
 
-Pourquoi :
+Needs: impl, utest
 
-- garder les transitions de statut testables
-- éviter les effets de bord dispersés
+## `src/core/collision.js`
 
-## `collision.js`
+`dsn~cdm.collision-core~1`
 
-Contient la détection de collision entre l’épée et les mots.
+Détecte les collisions entre l'épée et les mots.
 
-Pourquoi :
+Needs: impl, utest
 
-- la géométrie peut être testée sans DOM réel
-- la logique de frappe doit rester stable
+## `src/core/progression.js`
 
-## `gamepadInput.js`
+`dsn~cdm.progression-core~1`
+
+Gère la sélection, le passage au niveau suivant et les conditions de réussite.
+
+Needs: impl, utest
+
+## `src/core/wordSpawner.js`
+
+`dsn~cdm.word-spawner-core~1`
+
+Gère le tirage, la vitesse et la densité des mots.
+
+Needs: impl, utest
+
+## `src/adapters/keyboardInput.js`
+
+`dsn~cdm.input-adapters~1`
+
+Normalise le clavier.
+
+Needs: impl, utest
+
+## `src/adapters/touchInput.js`
+
+`dsn~cdm.input-adapters~1`
+
+Normalise le tactile.
+
+Needs: impl, utest
+
+## `src/adapters/gamepadInput.js`
+
+`dsn~cdm.input-adapters~1`
 
 Normalise la manette.
 
-Pourquoi :
+Needs: impl, utest
 
-- support SNES USB
-- support des mappings standards
-- évite la lecture directe dans la boucle de jeu
+## `src/adapters/audioService.js`
 
-## `audioService.js`
+`dsn~cdm.audio-optional~1`
 
-Encapsule le WebAudio pour les petits sons.
+Encapsule les sons courts.
 
-Pourquoi :
+Needs: impl, utest
 
-- le jeu reste jouable si l’API manque
-- les sons restent centralisés
+## `src/adapters/narrationService.js`
 
-## `narrationService.js`
+`dsn~cdm.speech-optional~1`
 
-Encapsule `speechSynthesis` comme option.
+Encapsule la synthèse vocale.
 
-Pourquoi :
+Needs: impl, utest
 
-- Brave peut exposer une API instable ou vide
-- le jeu doit continuer sans narration
+## `src/diagnostics/speechDiagnostics.js`
 
-## Vue des dépendances
+`dsn~cdm.speech-diagnostics~1`
 
-```mermaid
-graph TD
-  levels[src/data/levels.js]
-  state[src/core/gameState.js]
-  prog[src/core/progression.js]
-  collision[src/core/collision.js]
-  spawner[src/core/wordSpawner.js]
-  keyboard[src/adapters/keyboardInput.js]
-  touch[src/adapters/touchInput.js]
-  gamepad[src/adapters/gamepadInput.js]
-  audio[src/adapters/audioService.js]
-  narration[src/adapters/narrationService.js]
-  main[src/main.js]
+Traduit les erreurs de voix en diagnostic lisible.
 
-  levels --> state
-  levels --> prog
-  levels --> spawner
-  state --> main
-  prog --> main
-  collision --> main
-  spawner --> main
-  keyboard --> main
-  touch --> main
-  gamepad --> main
-  audio --> main
-  narration --> main
-```
+Needs: impl, utest
 
+## `src/main.js`
+
+`dsn~cdm.main-runtime~1`
+
+Orchestre la partie, les services et le DOM.
+
+Needs: impl, utest
+
+## Critères d'acceptation
+
+- chaque module a une responsabilité lisible;
+- les API navigateur restent hors du core;
+- les tests peuvent viser un module sans ouvrir le navigateur;
+- les données restent séparées du moteur.

@@ -1,32 +1,39 @@
 # Flux runtime
 
-Cette page décrit le chemin d’une action du joueur jusqu’au rendu.
+Cette page décrit le chemin des données pendant une partie.
 
 ## Flux principal
 
-```mermaid
-flowchart TD
-  I[Entrée clavier / tactile / manette] --> M[main.js]
-  M --> S[core: état, progression, collision]
-  S --> U[UI DOM]
-  M --> A[audioService]
-  M --> N[narrationService]
-  N --> D[diagnostic facultatif]
-```
+`dsn~cdm.main-runtime~1`
 
-## Séquence d’une frappe
+Le runtime doit suivre cet ordre:
 
-1. le joueur déclenche une action
-2. l’adaptateur produit un état uniforme
-3. `main.js` appelle la logique de collision
-4. le jeu met à jour l’état
-5. le jeu affiche le texte
-6. le service audio joue le son
-7. le service narration peut parler si disponible
+1. charger les données de niveau;
+2. créer l'état initial;
+3. lire les entrées;
+4. déplacer le chevalier;
+5. faire tomber les mots;
+6. détecter la collision;
+7. mettre à jour les étoiles;
+8. produire du feedback;
+9. passer au niveau suivant si besoin.
 
-## Points de stabilité
+Needs: impl, utest
 
-- pas d’accès direct à `speechSynthesis` depuis le core
-- pas d’accès direct à `AudioContext` depuis le core
-- pas de lecture directe de `navigator.getGamepads()` dans la boucle principale
+## Ce qui ne doit pas arriver
+
+- lire `speechSynthesis` directement dans le core;
+- lire le DOM depuis `src/core/`;
+- faire dépendre la logique de la présence d'un son;
+- mélanger la donnée de niveau et la logique de collision.
+
+## Exemple concret
+
+Si le joueur tranche le mot cible, le runtime doit:
+
+- retirer le mot actif;
+- ajouter une étoile;
+- afficher un retour court;
+- éventuellement lancer un son;
+- continuer la partie sans recharger la page.
 

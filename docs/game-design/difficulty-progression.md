@@ -1,39 +1,37 @@
 # Progression de difficulté
 
-La difficulté progresse de façon graduelle.
+La difficulté monte par paliers.
+Elle ne doit pas casser la compréhension du jeu.
 
-## Variables qui augmentent
+`feat~cdm.difficulty-progression~1`
 
-- vitesse de chute
-- nombre de mots actifs
-- proximité des distracteurs
-- variété grammaticale
-- rapidité de lecture nécessaire
+Needs: req
 
-## Variables qui restent stables
+## Les leviers de difficulté
 
-- la forme générale du jeu
-- la boucle de jeu
-- la lisibilité des retours
-- la règle d’erreur douce
+- vitesse de chute;
+- nombre de mots actifs;
+- complexité de la règle de langue;
+- proximité visuelle entre bonnes réponses et distracteurs;
+- seuil d'étoiles à atteindre.
 
-## Logique de progression
+## Règle de progression
 
-Les premiers niveaux rassurent.
-Les niveaux intermédiaires combinent plusieurs catégories.
-Les derniers niveaux demandent plus d’attention et de discrimination.
+La progression doit commencer par des erreurs évidentes et finir par des distinctions plus fines.
 
-## Exemple de progression
+Exemple :
 
-1. mot simple vs mot incorrect
-2. mots proches visuellement
-3. catégories grammaticales
-4. homophones et accords
-5. mélange de plusieurs familles
+- orthographe simple;
+- lettres manquantes;
+- nature des mots;
+- temps verbaux;
+- accords et homophones;
+- synthèse finale.
 
-## Critères d’acceptation
+## Critères d'acceptation
 
-- la difficulté monte sans rupture brutale
-- les consignes restent lisibles
-- les niveaux avancés restent jouables sans connaissance technique
+- les premiers niveaux sont rapides à comprendre;
+- les niveaux intermédiaires introduisent un tri grammatical;
+- les derniers niveaux combinent plusieurs confusions possibles;
+- la difficulté reste jouable sans dépendre d'une réaction parfaite.
 

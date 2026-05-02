@@ -1,50 +1,35 @@
 # Boucle de jeu
 
-La boucle de jeu doit rester courte et répétable.
+`feat~cdm.gameplay-loop~1`
 
-## Déroulé
+La boucle doit rester lisible:
 
-1. le niveau démarre
-2. une consigne est affichée
-3. des mots tombent
-4. le joueur se déplace
-5. le joueur tranche
-6. le jeu donne un feedback
-7. le niveau se termine ou continue
+1. un niveau s'affiche;
+2. des mots tombent;
+3. le joueur se déplace;
+4. le joueur frappe ou laisse passer;
+5. le jeu donne un retour immédiat;
+6. le score monte;
+7. le niveau se termine quand le seuil d'étoiles est atteint.
 
-## Feedbacks
+Needs: req
 
-Le jeu utilise plusieurs canaux en même temps :
+## Ce que la boucle doit garantir
 
-- texte à l’écran
-- son court positif
-- confettis
-- correction courte
+- une action claire à chaque tour de jeu;
+- une réponse immédiate après une bonne ou mauvaise frappe;
+- un redémarrage rapide au niveau suivant;
+- une difficulté qui monte sans casser la compréhension.
 
-Exemple :
+## Exemple concret
 
-- réussite : `Bien joué`
-- erreur : `Ce mot ne correspond pas`
+Si le niveau cible les accents, le joueur doit voir des mots comme `ecole` et `école`.
+La bonne décision doit faire gagner une étoile, un son de réussite et un retour texte court.
 
-## Règle "aucune punition dure"
+## Critères d'acceptation
 
-Une erreur ne doit pas casser le rythme du jeu.
-Le système peut :
-
-- corriger
-- repousser un mot
-- montrer un message bref
-- laisser continuer
-
-Il ne doit pas :
-
-- bloquer la partie longtemps
-- retirer brutalement le contrôle
-- créer une sanction lourde
-
-## Critères d’acceptation
-
-- une erreur laisse le joueur en situation de rejouer
-- un mot juste déclenche un retour immédiat
-- les confettis ne masquent pas l’interface
+- le joueur sait toujours quoi faire;
+- le feedback arrive en moins d'une action;
+- une erreur n'empêche pas de continuer;
+- le niveau peut être rejoué.
 

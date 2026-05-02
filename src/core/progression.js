@@ -1,3 +1,4 @@
+// impl~cdm.progression-core~1
 import { clamp } from "./gameState.js";
 
 export function selectLevelIndex(index, levelsLength) {

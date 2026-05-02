@@ -1,23 +1,28 @@
-# Choisir un niveau
+# Niveaux
 
-## Depuis l’écran de départ
+Le joueur peut choisir un niveau depuis l'écran de sélection.
 
-Le joueur peut ouvrir la sélection de niveau depuis l’écran d’accueil.
+`uman~cdm.level-selection~1`
 
-## Comment ça marche
+Needs: req
 
-Chaque bouton correspond à un niveau.
-Le niveau choisi charge sa consigne, son vocabulaire et sa difficulté.
+## Ce qu'il faut retenir
 
-## Exemple
+- les 20 niveaux sont tous accessibles;
+- le titre annonce le thème;
+- la consigne rappelle la règle à apprendre;
+- la difficulté progresse sans changer la logique du jeu.
 
-- cliquer sur `Niveau 3`
-- la mission affichée change
-- la partie démarre avec la progression associée
+## Exemple concret
 
-## Critères d’acceptation
+- niveau 1 : orthographe de base;
+- niveau 10 : adverbes;
+- niveau 19 : homophones;
+- niveau 20 : synthèse.
 
-- le choix de niveau est visible
-- le niveau démarre sans action supplémentaire compliquée
-- l’utilisateur peut revenir au menu
+## Critères d'acceptation
+
+- le joueur peut revenir à un niveau déjà connu;
+- le niveau choisi est lisible sans ambiguïté;
+- la liste reste cohérente avec le tableau du game design.
 

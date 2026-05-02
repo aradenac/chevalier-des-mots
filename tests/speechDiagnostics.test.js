@@ -1,3 +1,4 @@
+// utest~cdm.speech-diagnostics~1
 import { describe, expect, it } from "vitest";
 import { getSpeechDiagnostics, SPEECH_UNAVAILABLE_MESSAGE } from "../src/diagnostics/speechDiagnostics.js";
 

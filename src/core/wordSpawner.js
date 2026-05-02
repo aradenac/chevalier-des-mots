@@ -1,3 +1,4 @@
+// impl~cdm.word-spawner-core~1
 export function chooseNextItem({ level, retryQueue, wordIndex, veryEasy, random = Math.random }) {
   if (retryQueue.length && random() < 0.7) {
     return {

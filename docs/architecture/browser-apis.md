@@ -1,33 +1,36 @@
 # APIs navigateur
 
-Le projet dépend de quelques APIs navigateur, mais toutes ne sont pas critiques.
+Les APIs navigateur sont optionnelles.
+Le jeu doit continuer à fonctionner si elles manquent ou se comportent mal.
 
-## APIs essentielles
+## APIs utilisées
 
-- DOM
-- événements clavier
-- événements tactiles
-- `requestAnimationFrame`
+- `AudioContext` / `webkitAudioContext`;
+- `speechSynthesis`;
+- `SpeechSynthesisUtterance`;
+- `navigator.getGamepads()`;
+- événements clavier et pointeur.
 
-## APIs optionnelles
+## Cible navigateur
 
-- `navigator.getGamepads()`
-- `AudioContext`
-- `speechSynthesis`
+`dsn~cdm.brave-target~1`
 
-## Règle de robustesse
+Brave doit être considéré comme un navigateur cible.
+La documentation doit expliquer ses limites sur la voix.
 
-Si une API optionnelle échoue, le jeu doit continuer.
+Needs: req
 
-Exemples :
+## SpeechSynthesis optionnelle
 
-- la manette est absente
-- le son WebAudio n’est pas disponible
-- la synthèse vocale est indisponible dans Brave
+`dsn~cdm.browser-apis-optional~1`
 
-## Diagnostic attendu pour la voix
+La narration doit rester optionnelle parce que certains navigateurs exposent `speechSynthesis` sans voix exploitable.
 
-Quand la synthèse vocale ne peut pas fonctionner, le message attendu est :
+Needs: impl, utest
 
-> Voix indisponible dans ce navigateur. Le jeu reste jouable.
+## Comportement attendu
 
+- si la voix manque, le jeu reste jouable;
+- si `getVoices()` retourne `[]`, un diagnostic explicite apparaît;
+- si l'audio manque, le feedback texte reste disponible;
+- si la manette manque, le clavier et le tactile restent utilisables.

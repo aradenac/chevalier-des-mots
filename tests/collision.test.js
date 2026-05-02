@@ -1,3 +1,4 @@
+// utest~cdm.collision-core~1
 import { describe, expect, it } from "vitest";
 import { findSwordCollision, getSwordHitRanges } from "../src/core/collision.js";
 

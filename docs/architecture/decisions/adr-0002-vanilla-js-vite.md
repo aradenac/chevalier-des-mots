@@ -1,26 +1,16 @@
-# ADR-0002 - Vanilla JS + Vite
+# ADR-0002 - Vanilla JS et Vite
 
-## Statut
-
-Accepté.
-
-## Contexte
-
-Le jeu est simple, mono-page et fortement centré sur le navigateur.
+Le jeu reste en Vanilla JS avec Vite.
 
 ## Décision
 
-Le projet reste en Vanilla JS avec Vite comme outil de développement et de build.
-
-## Pourquoi
-
-- peu de surface de maintenance
-- démarrage rapide
-- build simple
-- séparation nette entre code source et artefacts
+Le moteur n'introduit pas de framework UI.
+Le code reste simple à lire et à tester.
 
 ## Conséquences
 
-- les modules doivent rester explicites
-- la structure de fichiers doit porter la lisibilité
+- le runtime est léger;
+- le jeu reste facile à déployer en statique;
+- le core peut rester indépendant du DOM;
+- l'architecture doit être documentée avec précision.
 

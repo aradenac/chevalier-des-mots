@@ -1,27 +1,47 @@
 # Le Chevalier des Mots
 
-Le Chevalier des Mots est un jeu éducatif web où un chevalier tranche des mots qui tombent.
-Le but est simple : associer une action de jeu claire à une règle de langue précise.
+Le dépôt contient un système de spécifications versionnées pour le jeu éducatif.
+Le but est de pouvoir lire, tester et maintenir le projet sans dépendre d'un prompt ponctuel.
 
-## Ce que contient cette documentation
+Cette documentation est organisée pour rester :
 
-- le game design du projet
-- l’architecture technique actuelle
-- le mode d’emploi pour lancer et utiliser le jeu
-- un glossaire des termes importants
-- un guide de maintenance pour un agent IA
+- consultable directement dans GitHub;
+- consultable directement via `site/index.html`;
+- traçable avec OpenFastTrace;
+- simple à modifier pour un LLM ou un humain.
 
-## Lecture rapide
+## Comment lire ce site
 
-Si vous voulez comprendre le jeu en quelques minutes, commencez par :
+1. Lire le [statut du projet](project-status.md).
+2. Lire le [game design](game-design/index.md).
+3. Lire les [exigences](requirements/index.md).
+4. Lire l'[architecture](architecture/index.md).
+5. Lire la [notice utilisateur](user-guide/index.md).
+6. Lire le [guide de développement](development/index.md).
 
-1. [Vision](game-design/vision.md)
-2. [Boucle de jeu](game-design/gameplay-loop.md)
-3. [Architecture actuelle](architecture/overview.md)
-4. [Contrôles](user-guide/controls.md)
+## Contrat du dépôt
 
-## Règle de fond
+`feat~cdm.documentation-system~1`
 
-Le projet privilégie une punition légère et réversible.
-Une erreur doit informer, corriger et laisser rejouer, pas bloquer l’enfant.
+Le dépôt doit exposer des spécifications versionnées, auditables et reliées à leurs niveaux de conception, d'implémentation, de test et d'usage.
+
+Needs: req
+
+Critères d'acceptation :
+
+- chaque grande famille de besoin a sa page dédiée;
+- les pages utilisent des IDs stables;
+- la génération HTML reste statique;
+- les liens internes restent utilisables sans serveur HTTP.
+
+## Ce qui change
+
+Le contenu ne cherche pas à faire du marketing.
+Il décrit :
+
+- ce que fait le jeu;
+- ce que le jeu doit garantir;
+- comment le code est organisé;
+- comment vérifier la couverture;
+- comment reprendre la maintenance.
 

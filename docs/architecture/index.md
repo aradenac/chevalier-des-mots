@@ -1,22 +1,35 @@
 # Architecture
 
-Cette section décrit l’organisation technique du projet.
+L'architecture décrit comment les exigences sont matérialisées dans le code et dans le site de documentation.
 
-## Résumé
+## Organisation
 
-Le projet suit une séparation simple :
+- `src/data/` : données pédagogiques;
+- `src/core/` : logique pure;
+- `src/adapters/` : accès navigateur;
+- `src/main.js` : orchestration DOM et boucle de jeu;
+- `docs/` : spécifications versionnées et notice.
 
-- `data` pour les contenus pédagogiques
-- `core` pour les règles testables
-- `adapters` pour les entrées et services navigateur
-- `main.js` pour l’orchestration UI
+## Lecture rapide
 
-## Objectif de structure
+- [Vue d'ensemble](overview.md)
+- [Interfaces](interfaces.md)
+- [Modules](modules.md)
+- [Flux runtime](runtime-flow.md)
+- [APIs navigateur](browser-apis.md)
 
-Le code doit rester :
+## Principe
 
-- lisible
-- testable
-- modifiable par petits lots
-- compatible avec le navigateur cible
+`dsn~cdm.core-adapters-ui-separation~1`
+
+Le projet doit conserver une séparation nette entre données, core, adapters et UI.
+
+Needs: impl, utest
+
+## Critères d'acceptation
+
+- la logique de jeu reste testable sans DOM;
+- les APIs navigateur restent encapsulées;
+- les données pédagogiques restent séparées du moteur;
+- la documentation d'architecture reste cohérente avec les exigences.
 

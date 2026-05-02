@@ -1,24 +1,15 @@
-# ADR-0001 - Documentation as Code
+# ADR-0001 - Docs as Code
 
-## Statut
-
-Accepté.
-
-## Contexte
-
-Le projet a besoin d’une documentation :
-
-- versionnée avec le code
-- lisible sur GitHub
-- modifiable sans outil propriétaire
+La documentation vit dans le dépôt au même titre que le code.
 
 ## Décision
 
-La documentation est stockée en Markdown dans `docs/` et construite avec MkDocs Material.
+Les spécifications, le game design, l'architecture, la notice et la maintenance sont écrits en Markdown.
 
 ## Conséquences
 
-- la source reste lisible directement
-- la documentation peut être revue comme du code
-- le rendu HTML statique peut être généré plus tard
+- les docs peuvent être versionnées;
+- les docs peuvent être relues dans GitHub;
+- les docs peuvent être générées en HTML statique;
+- les docs peuvent servir de base à OpenFastTrace.
 

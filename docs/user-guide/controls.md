@@ -2,29 +2,38 @@
 
 ## Clavier
 
-- flèche gauche : aller à gauche
-- flèche droite : aller à droite
-- `A` / `D` : alternative gauche / droite
-- `Espace` : trancher
-- `Entrée` : trancher
+- `ArrowLeft` ou `A` : aller à gauche;
+- `ArrowRight` ou `D` : aller à droite;
+- `Space` ou `Enter` : frapper.
+
+`uman~cdm.keyboard-controls~1`
+
+Needs: req
 
 ## Tactile
 
-- bouton gauche : aller à gauche
-- bouton droite : aller à droite
-- bouton de frappe : trancher
+- bouton gauche : aller à gauche;
+- bouton droit : aller à droite;
+- bouton de frappe : attaquer;
+- bouton pause : mettre en pause.
+
+`uman~cdm.touch-controls~1`
+
+Needs: req
 
 ## Manette SNES USB
 
-La manette SNES USB reste supportée.
+- croix ou stick : déplacer le chevalier;
+- bouton d'action : frapper;
+- bouton pause : interrompre ou reprendre.
 
-Comportement attendu :
+`uman~cdm.gamepad-controls~1`
 
-- gauche / droite pour se déplacer
-- bouton d’action pour trancher
-- bouton pause si mappé par l’adaptateur
+Needs: req
 
-## Voix
+## Critères d'acceptation
 
-La voix peut ne pas fonctionner dans Brave.
-Dans ce cas, le jeu reste jouable et affiche un diagnostic discret.
+- chaque contrôle a une fonction claire;
+- le clavier reste disponible même si la manette ou le tactile manque;
+- les commandes sont simples à mémoriser;
+- l'interface ne force pas un périphérique unique.

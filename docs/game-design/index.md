@@ -1,26 +1,45 @@
 # Game Design
 
-Cette section décrit l’intention pédagogique et la logique de progression du jeu.
+Le jeu associe une action simple à une règle de langue claire.
+Le joueur coupe des mots qui tombent pour apprendre à repérer une forme correcte ou incorrecte.
 
-## Résumé
+## Public cible
 
-Le joueur dirige un chevalier qui tranche les mots correspondant à une mission donnée.
-La première mission porte sur les mots mal orthographiés.
-Les niveaux suivants élargissent progressivement le champ grammatical.
+`feat~cdm.audience~1`
 
-## Points clés
+Le jeu vise un enfant d'environ 10 ans.
+Le texte doit rester court, lisible et compréhensible sans vocabulaire scolaire lourd.
 
-- un objectif pédagogique par niveau
-- des feedbacks courts et lisibles
-- une difficulté progressive
-- aucune punition dure
-- une boucle de jeu rapide, répétable, compréhensible
+Needs: req
 
-## Pages associées
+Critères d'acceptation :
 
-- [Vision](vision.md)
-- [Boucle de jeu](gameplay-loop.md)
-- [Niveaux](levels.md)
-- [Règles pédagogiques](pedagogical-rules.md)
-- [Progression](difficulty-progression.md)
+- les consignes tiennent en une ou deux phrases;
+- chaque feedback peut être compris sans explication externe;
+- l'erreur corrige, elle ne punit pas durement.
+
+## Concept
+
+`feat~cdm.game-concept~1`
+
+Le joueur observe des mots qui tombent.
+Il décide vite s'il faut les trancher.
+Chaque niveau focalise une règle de langue différente.
+
+Needs: req
+
+## Piliers
+
+- association visuelle entre mot et règle;
+- répétition courte;
+- correction immédiate;
+- difficulté progressive;
+- aucun blocage irréversible.
+
+## Lecture croisée
+
+- la boucle de jeu est décrite dans [Boucle de jeu](gameplay-loop.md);
+- les thèmes de niveaux sont décrits dans [Design des niveaux](level-design.md);
+- les règles de feedback sont décrites dans [Règles de feedback](feedback-rules.md);
+- la progression de difficulté est décrite dans [Progression](difficulty-progression.md).
 

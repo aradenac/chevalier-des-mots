@@ -1,30 +1,36 @@
 # Architecture actuelle
 
 Le projet est une application Vanilla JS servie par Vite.
+Le rendu final est une page HTML statique pour le jeu et un site MkDocs pour la documentation.
 
-## Organisation actuelle
+## État actuel
 
-- `src/data/levels.js` contient les données pédagogiques
-- `src/core/` contient la logique pure testable
-- `src/adapters/` contient les interfaces vers le navigateur
-- `src/main.js` relie le DOM, les services et la boucle de jeu
+- `src/data/levels.js` contient les niveaux;
+- `src/core/` contient la logique testable;
+- `src/adapters/` contient les interfaces navigateur;
+- `src/main.js` connecte tout au DOM;
+- la documentation est versionnée dans `docs/`.
 
-## Pourquoi cette structure
+## Architecture cible
 
-Elle permet de modifier un domaine sans casser les autres :
+`dsn~cdm.runtime-flow~1`
 
-- changer les niveaux sans toucher au moteur
-- tester la collision sans ouvrir le navigateur
-- remplacer une API navigateur par un adaptateur
-
-## État cible
-
-Le projet cible une architecture à quatre couches :
+Le projet doit suivre ce flux:
 
 ```mermaid
 flowchart LR
   D[data] --> C[core]
   C --> A[adapters]
   A --> U[UI / DOM]
+  U --> C
 ```
+
+Needs: impl, utest
+
+## Ce que cela garantit
+
+- on peut changer les niveaux sans casser le moteur;
+- on peut tester le core sans navigateur;
+- on peut faire échouer une API optionnelle sans casser la partie;
+- on peut lire la doc en parallèle du code.
 

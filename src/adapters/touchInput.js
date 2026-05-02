@@ -1,3 +1,4 @@
+// impl~cdm.input-adapters~1
 const EMPTY_INPUT_STATE = {
   left: false,
   right: false,
