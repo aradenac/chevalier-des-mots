@@ -6,25 +6,41 @@ Ce dépôt est piloté par des spécifications versionnées. Codex doit travaill
 
 - Les spécifications versionnées du repo sont la source de vérité.
 - Avant toute modification fonctionnelle, lire :
-  - `docs/requirements/index.md`
-  - la sous-page d'exigences concernée dans `docs/requirements/`
+  - `docs/requirements/`
   - `docs/index.md`
 - Si une évolution touche plusieurs thèmes, lire plusieurs sous-pages concernées.
 - Si la demande utilisateur contredit les specs, ne pas modifier le code directement.
 - Proposer d'abord une mise à jour des specs.
 
-## 2. Workflow de modification fonctionnelle
+## 2. Workflow en deux phases
 
-Pour toute évolution fonctionnelle :
+### Phase SPEC REVIEW
 
-1. identifier les exigences impactées;
-2. créer ou modifier les exigences si nécessaire;
-3. modifier le code;
-4. modifier ou ajouter les tests;
-5. mettre à jour les annotations OpenFastTrace;
-6. mettre à jour la documentation utilisateur si nécessaire;
-7. lancer les vérifications;
-8. commit et push.
+Pour toute demande fonctionnelle :
+
+1. lire `docs/requirements/` et les sous-pages concernées ;
+2. produire une revue des exigences impactées ;
+3. identifier les ambiguïtés, trous de spec et impacts code/tests ;
+4. ne pas modifier `src/` ni `tests/` ;
+5. si la spec doit changer, modifier uniquement `docs/requirements/` ;
+6. mettre à jour le `Change history` des pages modifiées ;
+7. mettre à jour `docs/requirements/version-history.md`.
+
+### Gate d'approbation
+
+- Ne pas modifier le code sans validation explicite de l'utilisateur.
+- La phrase de validation attendue est : `Spec validée. Passe à l’implémentation.`
+- Sans cette validation, rester dans les specs.
+
+### Phase IMPLEMENTATION
+
+Après validation explicite :
+
+1. modifier `src/` et `tests/` ;
+2. ajouter ou mettre à jour les liens OpenFastTrace ;
+3. lancer `npm run verify` ;
+4. mettre à jour `docs/requirements/version-history.md` ;
+5. commit et push.
 
 ## 3. Traçabilité
 
@@ -35,7 +51,21 @@ Pour toute évolution fonctionnelle :
 - Les liens de test utilisent `// [utest->req~...~1]`.
 - Les liens documentaires utilisent `<!-- [doc->req~...~1] -->`.
 
-## 4. Commandes de vérification
+## 4. Historique des changements
+
+- Chaque page dans `docs/requirements/` doit contenir une section `Change history`.
+- Chaque modification de spec doit ajouter une ligne avec :
+  - date ;
+  - spec version ;
+  - game version ;
+  - location ;
+  - modification ;
+  - justification.
+- `docs/requirements/version-history.md` est obligatoire et relie les versions de specs et les versions du jeu.
+- Codex doit le maintenir à chaque changement de specs ou de code.
+- Ne pas supprimer l'historique.
+
+## 5. Commandes de vérification
 
 Avant commit, exécuter autant que possible :
 
@@ -47,7 +77,7 @@ Avant commit, exécuter autant que possible :
 Si `npm run trace` échoue parce que le JAR OpenFastTrace est absent, ne pas créer de validateur maison.
 Afficher les instructions d'installation du JAR.
 
-## 5. Architecture
+## 6. Architecture
 
 Respecter la séparation :
 
@@ -57,23 +87,25 @@ Respecter la séparation :
 - `src/main.js` : orchestration UI
 - `docs/` : référentiel d'exigences uniquement
 
-## 6. Interdictions
+## 7. Interdictions
 
 - Ne pas faire de refactor big-bang.
 - Ne pas modifier le gameplay sans exigence associée.
 - Ne pas modifier les niveaux sans mettre à jour les specs.
+- Ne pas modifier `src/` ou `tests/` pendant la phase SPEC REVIEW.
+- Ne pas modifier le code si une exigence correspondante n'existe pas.
 - Ne pas rendre `speechSynthesis` obligatoire.
 - Ne pas introduire de framework UI sans ADR.
 - Ne pas mélanger contenu pédagogique et moteur de jeu.
 - Ne pas mettre la vérité documentaire dans un PDF ou dans un artefact généré.
 
-## 7. Brave
+## 8. Brave
 
 - Brave est un navigateur cible.
 - La synthèse vocale peut échouer dans Brave avec `getVoices() = []` ou `synthesis-failed`.
 - Le jeu doit rester jouable sans narration vocale.
 
-## 8. Documentation
+## 9. Documentation
 
 - Markdown est la source de vérité.
 - MkDocs est seulement le rendu consultable.
