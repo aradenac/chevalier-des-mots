@@ -2,6 +2,9 @@ const item = (text, target, feedbackOk, feedbackKo, correction, category) => ({ 
 const level = (id, title, instruction, shortInstruction, difficulty, starsToWin, maxActiveWords, fallSpeed, items) => ({ id, title, instruction, shortInstruction, difficulty, starsToWin, maxActiveWords, fallSpeed, items });
 
 // [impl->req~data.levels-separated-from-engine~1]
+// [impl->req~level.extended-campaign-worlds~1]
+// [impl->req~level.world-two-grammar-consolidation~1]
+// [impl->req~level.longer-play-session~1]
 export const LEVELS = [
   level(1, "Les mots mal écrits", "Tranche les mots qui ne sont pas bien orthographiés.", "Tranche les mots mal écrits", "facile", 5, 3, 42, [
     item("chatt", true, "Bien joué ! On écrit : chat", "Oups, ce mot était une cible.", "chat", "orthographe"),
@@ -204,5 +207,207 @@ export const LEVELS = [
     item("Le dragon magik", true, "Bravo ! On écrit : Le dragon magique", "Il y avait une erreur d'orthographe.", "Le dragon magique", "orthographe"),
     item("Nous irons au château", false, "Phrase correcte, rien à trancher.", "Oups, cette phrase était correcte", undefined, "phrase correcte"),
     item("Nous irons au chateau", true, "Bravo ! On écrit : Nous irons au château", "Il manquait un accent.", "Nous irons au château", "accent")
+  ]),
+  level(21, "Les mots presque corrects", "Tranche les mots qui sont presque écrits correctement.", "Tranche les mots presque corrects", "moyen", 6, 5, 84, [
+    item("maizson", true, "Oui ! On écrit : maison", "Ce mot était presque correct mais faux.", "maison", "orthographe fine"),
+    item("maison", false, "Maison est bien écrit.", "Oups, maison était correct", undefined, "mot correct"),
+    item("chattaigne", true, "Oui ! On écrit : châtaigne", "Ce mot était presque correct mais faux.", "châtaigne", "orthographe fine"),
+    item("châtaigne", false, "Châtaigne est bien écrit.", "Oups, châtaigne était correct", undefined, "mot correct"),
+    item("apprendrre", true, "Oui ! On écrit : apprendre", "Ce mot était presque correct mais faux.", "apprendre", "orthographe fine"),
+    item("apprendre", false, "Apprendre est bien écrit.", "Oups, apprendre était correct", undefined, "mot correct"),
+    item("recolte", true, "Oui ! On écrit : récolte", "Ce mot était presque correct mais faux.", "récolte", "orthographe fine"),
+    item("récolte", false, "Récolte est bien écrit.", "Oups, récolte était correct", undefined, "mot correct")
+  ]),
+  level(22, "Les accents et les cédilles", "Tranche les mots où un accent ou une cédille manque.", "Tranche les accents et cédilles", "moyen", 6, 5, 85, [
+    item("garcon", true, "Oui ! On écrit : garçon", "Il manquait un accent ou une cédille.", "garçon", "accent"),
+    item("garçon", false, "Garçon est bien écrit.", "Oups, garçon était correct", undefined, "accent correct"),
+    item("francais", true, "Oui ! On écrit : français", "Il manquait un accent ou une cédille.", "français", "accent"),
+    item("français", false, "Français est bien écrit.", "Oups, français était correct", undefined, "accent correct"),
+    item("eleve", true, "Oui ! On écrit : élève", "Il manquait un accent ou une cédille.", "élève", "accent"),
+    item("élève", false, "Élève est bien écrit.", "Oups, élève était correct", undefined, "accent correct"),
+    item("facade", true, "Oui ! On écrit : façade", "Il manquait un accent ou une cédille.", "façade", "accent"),
+    item("façade", false, "Façade est bien écrit.", "Oups, façade était correct", undefined, "accent correct")
+  ]),
+  level(23, "Le genre du nom", "Tranche les groupes nominaux au mauvais genre.", "Tranche le genre du nom", "moyen", 6, 5, 86, [
+    item("la lion", true, "Oui ! On écrit : le lion", "Le genre était incorrect.", "le lion", "genre"),
+    item("le lion", false, "Le lion a le bon genre.", "Oups, le lion était correct", undefined, "genre correct"),
+    item("le girafe", true, "Oui ! On écrit : la girafe", "Le genre était incorrect.", "la girafe", "genre"),
+    item("la girafe", false, "La girafe a le bon genre.", "Oups, la girafe était correct", undefined, "genre correct"),
+    item("un pomme", true, "Oui ! On écrit : une pomme", "Le genre était incorrect.", "une pomme", "genre"),
+    item("une pomme", false, "Une pomme a le bon genre.", "Oups, une pomme était correct", undefined, "genre correct"),
+    item("la château", true, "Oui ! On écrit : le château", "Le genre était incorrect.", "le château", "genre"),
+    item("le château", false, "Le château a le bon genre.", "Oups, le château était correct", undefined, "genre correct")
+  ]),
+  level(24, "Le nombre du nom", "Tranche les groupes nominaux qui n'ont pas le bon nombre.", "Tranche le nombre du nom", "moyen", 6, 5, 87, [
+    item("le chats", true, "Oui ! On écrit : les chats", "Le nombre était incorrect.", "les chats", "nombre"),
+    item("les chats", false, "Les chats ont le bon nombre.", "Oups, les chats étaient corrects", undefined, "nombre correct"),
+    item("la fleurs", true, "Oui ! On écrit : les fleurs", "Le nombre était incorrect.", "les fleurs", "nombre"),
+    item("les fleurs", false, "Les fleurs ont le bon nombre.", "Oups, les fleurs étaient correctes", undefined, "nombre correct"),
+    item("un arbres", true, "Oui ! On écrit : un arbre", "Le nombre était incorrect.", "un arbre", "nombre"),
+    item("un arbre", false, "Un arbre a le bon nombre.", "Oups, un arbre était correct", undefined, "nombre correct"),
+    item("des cheval", true, "Oui ! On écrit : des chevaux", "Le nombre était incorrect.", "des chevaux", "nombre"),
+    item("des chevaux", false, "Des chevaux ont le bon nombre.", "Oups, des chevaux étaient corrects", undefined, "nombre correct")
+  ]),
+  level(25, "L'accord déterminant-nom", "Tranche les groupes nominaux où le déterminant n'accorde pas avec le nom.", "Tranche l'accord déterminant-nom", "moyen", 6, 5, 88, [
+    item("la chien", true, "Oui ! On écrit : le chien", "Le déterminant était incorrect.", "le chien", "déterminant-nom"),
+    item("le chien", false, "Le chien est accordé.", "Oups, le chien était correct", undefined, "accord correct"),
+    item("un maison", true, "Oui ! On écrit : une maison", "Le déterminant était incorrect.", "une maison", "déterminant-nom"),
+    item("une maison", false, "Une maison est accordée.", "Oups, une maison était correcte", undefined, "accord correct"),
+    item("les arbre", true, "Oui ! On écrit : les arbres", "Le déterminant était incorrect.", "les arbres", "déterminant-nom"),
+    item("les arbres", false, "Les arbres sont accordés.", "Oups, les arbres étaient corrects", undefined, "accord correct"),
+    item("des fleur", true, "Oui ! On écrit : des fleurs", "Le déterminant était incorrect.", "des fleurs", "déterminant-nom"),
+    item("des fleurs", false, "Des fleurs sont accordées.", "Oups, des fleurs étaient correctes", undefined, "accord correct")
+  ]),
+  level(26, "L'accord adjectif-nom", "Tranche les groupes où l'adjectif n'accorde pas avec le nom.", "Tranche l'accord adjectif-nom", "moyen", 7, 5, 89, [
+    item("la petit fille", true, "Oui ! On écrit : la petite fille", "L'adjectif était mal accordé.", "la petite fille", "adjectif-nom"),
+    item("la petite fille", false, "La petite fille est accordée.", "Oups, la petite fille était correcte", undefined, "accord correct"),
+    item("les grand arbres", true, "Oui ! On écrit : les grands arbres", "L'adjectif était mal accordé.", "les grands arbres", "adjectif-nom"),
+    item("les grands arbres", false, "Les grands arbres sont accordés.", "Oups, les grands arbres étaient corrects", undefined, "accord correct"),
+    item("un joli maison", true, "Oui ! On écrit : une jolie maison", "L'adjectif était mal accordé.", "une jolie maison", "adjectif-nom"),
+    item("une jolie maison", false, "Une jolie maison est accordée.", "Oups, une jolie maison était correcte", undefined, "accord correct"),
+    item("des chat noir", true, "Oui ! On écrit : des chats noirs", "L'adjectif était mal accordé.", "des chats noirs", "adjectif-nom"),
+    item("des chats noirs", false, "Des chats noirs sont accordés.", "Oups, des chats noirs étaient corrects", undefined, "accord correct")
+  ]),
+  level(27, "Les pronoms sujets", "Tranche les pronoms personnels sujets.", "Tranche les pronoms sujets", "moyen", 7, 5, 90, [
+    item("je", true, "Oui ! Je est un pronom sujet.", "Je était un pronom sujet.", undefined, "pronom sujet"),
+    item("me", false, "Me est un pronom complément.", "Oups, me n'était pas un sujet", undefined, "pronom complément"),
+    item("tu", true, "Oui ! Tu est un pronom sujet.", "Tu était un pronom sujet.", undefined, "pronom sujet"),
+    item("le", false, "Le est un pronom complément.", "Oups, le n'était pas un sujet", undefined, "pronom complément"),
+    item("nous", true, "Oui ! Nous est un pronom sujet.", "Nous était un pronom sujet.", undefined, "pronom sujet"),
+    item("lui", false, "Lui est un pronom complément.", "Oups, lui n'était pas un sujet", undefined, "pronom complément"),
+    item("vous", true, "Oui ! Vous est un pronom sujet.", "Vous était un pronom sujet.", undefined, "pronom sujet"),
+    item("la", false, "La est un pronom complément.", "Oups, la n'était pas un sujet", undefined, "pronom complément")
+  ]),
+  level(28, "Les pronoms compléments", "Tranche les pronoms compléments simples.", "Tranche les pronoms compléments", "moyen", 7, 5, 91, [
+    item("me", true, "Oui ! Me est un pronom complément.", "Me était un pronom complément.", undefined, "pronom complément"),
+    item("je", false, "Je est un pronom sujet.", "Oups, je n'était pas un complément", undefined, "pronom sujet"),
+    item("te", true, "Oui ! Te est un pronom complément.", "Te était un pronom complément.", undefined, "pronom complément"),
+    item("il", false, "Il est un pronom sujet.", "Oups, il n'était pas un complément", undefined, "pronom sujet"),
+    item("le", true, "Oui ! Le est un pronom complément.", "Le était un pronom complément.", undefined, "pronom complément"),
+    item("nous", false, "Nous est un pronom sujet.", "Oups, nous n'était pas un complément", undefined, "pronom sujet"),
+    item("lui", true, "Oui ! Lui est un pronom complément.", "Lui était un pronom complément.", undefined, "pronom complément"),
+    item("elles", false, "Elles est un pronom sujet.", "Oups, elles n'était pas un complément", undefined, "pronom sujet")
+  ]),
+  level(29, "Les verbes du premier groupe", "Tranche les verbes réguliers en -er.", "Tranche les verbes en -er", "difficile", 7, 5, 92, [
+    item("chanter", true, "Oui ! Chanter est un verbe du premier groupe.", "Chanter était un verbe du premier groupe.", undefined, "1er groupe"),
+    item("finir", false, "Finir appartient au deuxième groupe.", "Oups, finir n'était pas du premier groupe", undefined, "2e groupe"),
+    item("manger", true, "Oui ! Manger est un verbe du premier groupe.", "Manger était un verbe du premier groupe.", undefined, "1er groupe"),
+    item("prendre", false, "Prendre appartient au troisième groupe.", "Oups, prendre n'était pas du premier groupe", undefined, "3e groupe"),
+    item("jouer", true, "Oui ! Jouer est un verbe du premier groupe.", "Jouer était un verbe du premier groupe.", undefined, "1er groupe"),
+    item("venir", false, "Venir appartient au troisième groupe.", "Oups, venir n'était pas du premier groupe", undefined, "3e groupe"),
+    item("travailler", true, "Oui ! Travailler est un verbe du premier groupe.", "Travailler était un verbe du premier groupe.", undefined, "1er groupe"),
+    item("être", false, "Être appartient au troisième groupe.", "Oups, être n'était pas du premier groupe", undefined, "3e groupe")
+  ]),
+  level(30, "Les verbes du deuxième groupe", "Tranche les verbes réguliers en -ir.", "Tranche les verbes en -ir", "difficile", 7, 5, 93, [
+    item("finir", true, "Oui ! Finir est un verbe du deuxième groupe.", "Finir était un verbe du deuxième groupe.", undefined, "2e groupe"),
+    item("manger", false, "Manger appartient au premier groupe.", "Oups, manger n'était pas du deuxième groupe", undefined, "1er groupe"),
+    item("choisir", true, "Oui ! Choisir est un verbe du deuxième groupe.", "Choisir était un verbe du deuxième groupe.", undefined, "2e groupe"),
+    item("aller", false, "Aller appartient au troisième groupe.", "Oups, aller n'était pas du deuxième groupe", undefined, "3e groupe"),
+    item("grandir", true, "Oui ! Grandir est un verbe du deuxième groupe.", "Grandir était un verbe du deuxième groupe.", undefined, "2e groupe"),
+    item("voir", false, "Voir appartient au troisième groupe.", "Oups, voir n'était pas du deuxième groupe", undefined, "3e groupe"),
+    item("réussir", true, "Oui ! Réussir est un verbe du deuxième groupe.", "Réussir était un verbe du deuxième groupe.", undefined, "2e groupe"),
+    item("faire", false, "Faire appartient au troisième groupe.", "Oups, faire n'était pas du deuxième groupe", undefined, "3e groupe")
+  ]),
+  level(31, "Les verbes fréquents du troisième groupe", "Tranche les verbes irréguliers les plus courants.", "Tranche les verbes du 3e groupe", "difficile", 8, 5, 94, [
+    item("être", true, "Oui ! Être est un verbe fréquent du troisième groupe.", "Être était un verbe fréquent du troisième groupe.", undefined, "3e groupe"),
+    item("chanter", false, "Chanter appartient au premier groupe.", "Oups, chanter n'était pas du troisième groupe", undefined, "1er groupe"),
+    item("avoir", true, "Oui ! Avoir est un verbe fréquent du troisième groupe.", "Avoir était un verbe fréquent du troisième groupe.", undefined, "3e groupe"),
+    item("finir", false, "Finir appartient au deuxième groupe.", "Oups, finir n'était pas du troisième groupe", undefined, "2e groupe"),
+    item("aller", true, "Oui ! Aller est un verbe fréquent du troisième groupe.", "Aller était un verbe fréquent du troisième groupe.", undefined, "3e groupe"),
+    item("jouer", false, "Jouer appartient au premier groupe.", "Oups, jouer n'était pas du troisième groupe", undefined, "1er groupe"),
+    item("faire", true, "Oui ! Faire est un verbe fréquent du troisième groupe.", "Faire était un verbe fréquent du troisième groupe.", undefined, "3e groupe"),
+    item("réussir", false, "Réussir appartient au deuxième groupe.", "Oups, réussir n'était pas du troisième groupe", undefined, "2e groupe")
+  ]),
+  level(32, "Le présent : terminaisons", "Tranche les verbes qui sont correctement conjugués au présent.", "Tranche le présent", "difficile", 8, 5, 95, [
+    item("je parles", true, "Oui ! On écrit : je parle", "La terminaison du présent était incorrecte.", "je parle", "présent"),
+    item("je parle", false, "Je parle est au présent.", "Oups, je parle était correct", undefined, "présent correct"),
+    item("tu finit", true, "Oui ! On écrit : tu finis", "La terminaison du présent était incorrecte.", "tu finis", "présent"),
+    item("tu finis", false, "Tu finis est au présent.", "Oups, tu finis était correct", undefined, "présent correct"),
+    item("nous parlon", true, "Oui ! On écrit : nous parlons", "La terminaison du présent était incorrecte.", "nous parlons", "présent"),
+    item("nous parlons", false, "Nous parlons est au présent.", "Oups, nous parlons était correct", undefined, "présent correct"),
+    item("vous chante", true, "Oui ! On écrit : vous chantez", "La terminaison du présent était incorrecte.", "vous chantez", "présent"),
+    item("vous chantez", false, "Vous chantez est au présent.", "Oups, vous chantez était correct", undefined, "présent correct")
+  ]),
+  level(33, "Le futur : terminaisons", "Tranche les verbes qui sont correctement conjugués au futur.", "Tranche le futur", "difficile", 8, 5, 96, [
+    item("je parlerai", false, "Je parlerai est au futur.", "Oups, je parlerai était correct", undefined, "futur correct"),
+    item("je parleras", true, "Oui ! On écrit : je parlerai", "La terminaison du futur était incorrecte.", "je parlerai", "futur"),
+    item("tu finiras", false, "Tu finiras est au futur.", "Oups, tu finiras était correct", undefined, "futur correct"),
+    item("tu finira", true, "Oui ! On écrit : tu finiras", "La terminaison du futur était incorrecte.", "tu finiras", "futur"),
+    item("nous irons", false, "Nous irons est au futur.", "Oups, nous irons était correct", undefined, "futur correct"),
+    item("nous iront", true, "Oui ! On écrit : nous irons", "La terminaison du futur était incorrecte.", "nous irons", "futur"),
+    item("vous ferez", false, "Vous ferez est au futur.", "Oups, vous ferez était correct", undefined, "futur correct"),
+    item("vous ferai", true, "Oui ! On écrit : vous ferez", "La terminaison du futur était incorrecte.", "vous ferez", "futur")
+  ]),
+  level(34, "L'imparfait", "Tranche les verbes correctement conjugués à l'imparfait.", "Tranche l'imparfait", "difficile", 8, 5, 97, [
+    item("je parlait", true, "Oui ! On écrit : je parlais", "L'imparfait était mal formé.", "je parlais", "imparfait"),
+    item("je parlais", false, "Je parlais est à l'imparfait.", "Oups, je parlais était correct", undefined, "imparfait correct"),
+    item("tu finissais", false, "Tu finissais est à l'imparfait.", "Oups, tu finissais était correct", undefined, "imparfait correct"),
+    item("tu finit", true, "Oui ! On écrit : tu finissais", "L'imparfait était mal formé.", "tu finissais", "imparfait"),
+    item("nous parlions", false, "Nous parlions est à l'imparfait.", "Oups, nous parlions était correct", undefined, "imparfait correct"),
+    item("nous parlion", true, "Oui ! On écrit : nous parlions", "L'imparfait était mal formé.", "nous parlions", "imparfait"),
+    item("ils venaient", false, "Ils venaient est à l'imparfait.", "Oups, ils venaient était correct", undefined, "imparfait correct"),
+    item("ils venais", true, "Oui ! On écrit : ils venaient", "L'imparfait était mal formé.", "ils venaient", "imparfait")
+  ]),
+  level(35, "Le passé composé avec avoir", "Tranche les verbes correctement conjugués au passé composé avec avoir.", "Tranche le passé composé avec avoir", "difficile", 8, 5, 98, [
+    item("j'ai mangé", true, "Oui ! C'est du passé composé avec avoir.", "J'ai mangé était correct.", undefined, "passé composé"),
+    item("je mange", false, "Je mange est au présent.", "Oups, je mange n'était pas au passé composé", undefined, "présent"),
+    item("nous avons choisi", true, "Oui ! C'est du passé composé avec avoir.", "Nous avons choisi était correct.", undefined, "passé composé"),
+    item("nous choisissons", false, "Nous choisissons est au présent.", "Oups, nous choisissons n'était pas au passé composé", undefined, "présent"),
+    item("ils ont fini", true, "Oui ! C'est du passé composé avec avoir.", "Ils ont fini était correct.", undefined, "passé composé"),
+    item("ils finissent", false, "Ils finissent est au présent.", "Oups, ils finissent n'était pas au passé composé", undefined, "présent"),
+    item("vous avez vu", true, "Oui ! C'est du passé composé avec avoir.", "Vous avez vu était correct.", undefined, "passé composé"),
+    item("vous verrez", false, "Vous verrez est au futur.", "Oups, vous verrez n'était pas au passé composé", undefined, "futur")
+  ]),
+  level(36, "Le passé composé avec être", "Tranche les verbes correctement conjugués au passé composé avec être.", "Tranche le passé composé avec être", "difficile", 8, 5, 99, [
+    item("il est allé", true, "Oui ! C'est du passé composé avec être.", "Il est allé était correct.", undefined, "passé composé"),
+    item("il va aller", false, "Il va aller est au futur proche.", "Oups, il va aller n'était pas au passé composé", undefined, "futur proche"),
+    item("elle est venue", true, "Oui ! C'est du passé composé avec être.", "Elle est venue était correcte.", undefined, "passé composé"),
+    item("elle vient", false, "Elle vient est au présent.", "Oups, elle vient n'était pas au passé composé", undefined, "présent"),
+    item("nous sommes partis", true, "Oui ! C'est du passé composé avec être.", "Nous sommes partis était correct.", undefined, "passé composé"),
+    item("nous partons", false, "Nous partons est au présent.", "Oups, nous partons n'était pas au passé composé", undefined, "présent"),
+    item("elles sont arrivées", true, "Oui ! C'est du passé composé avec être.", "Elles sont arrivées était correct.", undefined, "passé composé"),
+    item("elles arriveront", false, "Elles arriveront est au futur.", "Oups, elles arriveront n'était pas au passé composé", undefined, "futur")
+  ]),
+  level(37, "L'accord sujet-verbe au pluriel", "Tranche les phrases où le sujet pluriel et le verbe ne sont pas accordés.", "Tranche l'accord au pluriel", "difficile", 9, 5, 100, [
+    item("Les chats dorment", false, "Les chats dorment est bien accordé.", "Oups, la phrase était correcte", undefined, "accord correct"),
+    item("Les chats dort", true, "Oui ! On écrit : Les chats dorment", "L'accord sujet-verbe était faux.", "Les chats dorment", "accord pluriel"),
+    item("Mes amis viennent", false, "Mes amis viennent est bien accordé.", "Oups, la phrase était correcte", undefined, "accord correct"),
+    item("Mes amis vient", true, "Oui ! On écrit : Mes amis viennent", "L'accord sujet-verbe était faux.", "Mes amis viennent", "accord pluriel"),
+    item("Les filles jouent", false, "Les filles jouent est bien accordé.", "Oups, la phrase était correcte", undefined, "accord correct"),
+    item("Les filles joue", true, "Oui ! On écrit : Les filles jouent", "L'accord sujet-verbe était faux.", "Les filles jouent", "accord pluriel"),
+    item("Nos parents travaillent", false, "Nos parents travaillent est bien accordé.", "Oups, la phrase était correcte", undefined, "accord correct"),
+    item("Nos parents travaille", true, "Oui ! On écrit : Nos parents travaillent", "L'accord sujet-verbe était faux.", "Nos parents travaillent", "accord pluriel")
+  ]),
+  level(38, "Les homophones grammaticaux 1", "Tranche les phrases où a/à, et/est ou son/sont sont mal choisis.", "Tranche les homophones 1", "difficile", 9, 5, 101, [
+    item("Il à un chien", true, "Oui ! On écrit : Il a un chien", "L'homophone était faux.", "Il a un chien", "homophone"),
+    item("Il a un chien", false, "Il a un chien est correct.", "Oups, la phrase était correcte", undefined, "homophone correct"),
+    item("Je vais a Paris", true, "Oui ! On écrit : Je vais à Paris", "L'homophone était faux.", "Je vais à Paris", "homophone"),
+    item("Je vais à Paris", false, "Je vais à Paris est correct.", "Oups, la phrase était correcte", undefined, "homophone correct"),
+    item("Le chat et noir", true, "Oui ! On écrit : Le chat est noir", "L'homophone était faux.", "Le chat est noir", "homophone"),
+    item("Le chat est noir", false, "Le chat est noir est correct.", "Oups, la phrase était correcte", undefined, "homophone correct"),
+    item("Sont frère est grand", true, "Oui ! On écrit : Son frère est grand", "L'homophone était faux.", "Son frère est grand", "homophone"),
+    item("Son frère est grand", false, "Son frère est grand est correct.", "Oups, la phrase était correcte", undefined, "homophone correct")
+  ]),
+  level(39, "Les homophones grammaticaux 2", "Tranche les phrases où ou/où, ce/se ou ces/ses sont mal choisis.", "Tranche les homophones 2", "difficile", 9, 5, 102, [
+    item("Je ne sais ou aller", true, "Oui ! On écrit : Je ne sais où aller", "L'homophone était faux.", "Je ne sais où aller", "homophone"),
+    item("Je ne sais où aller", false, "Je ne sais où aller est correct.", "Oups, la phrase était correcte", undefined, "homophone correct"),
+    item("Se chat dort", true, "Oui ! On écrit : Ce chat dort", "L'homophone était faux.", "Ce chat dort", "homophone"),
+    item("Ce chat dort", false, "Ce chat dort est correct.", "Oups, la phrase était correcte", undefined, "homophone correct"),
+    item("Ses fleurs sentent bon", true, "Oui ! On écrit : Ces fleurs sentent bon", "L'homophone était faux.", "Ces fleurs sentent bon", "homophone"),
+    item("Ces fleurs sentent bon", false, "Ces fleurs sentent bon est correct.", "Oups, la phrase était correcte", undefined, "homophone correct"),
+    item("La maison ou je dors", true, "Oui ! On écrit : La maison où je dors", "L'homophone était faux.", "La maison où je dors", "homophone"),
+    item("La maison où je dors", false, "La maison où je dors est correct.", "Oups, la phrase était correcte", undefined, "homophone correct")
+  ]),
+  level(40, "Le boss chevalier", "Tranche les phrases qui mélangent plusieurs notions du monde 2.", "Tranche le boss chevalier", "expert", 10, 5, 104, [
+    item("Les enfants a fini", true, "Oui ! On écrit : Les enfants ont fini", "Cette phrase mélangeait plusieurs notions.", "Les enfants ont fini", "boss"),
+    item("Les enfants ont fini", false, "Les enfants ont fini est correct.", "Oups, la phrase était correcte", undefined, "boss correct"),
+    item("La petit maison", true, "Oui ! On écrit : La petite maison", "Cette phrase mélangeait plusieurs notions.", "La petite maison", "boss"),
+    item("La petite maison", false, "La petite maison est correct.", "Oups, la phrase était correcte", undefined, "boss correct"),
+    item("Il est arrivé", false, "Il est arrivé est correct.", "Oups, la phrase était correcte", undefined, "boss correct"),
+    item("Il a arrivé", true, "Oui ! On écrit : Il est arrivé", "Cette phrase mélangeait plusieurs notions.", "Il est arrivé", "boss"),
+    item("Mes amis joue", true, "Oui ! On écrit : Mes amis jouent", "Cette phrase mélangeait plusieurs notions.", "Mes amis jouent", "boss"),
+    item("Mes amis jouent", false, "Mes amis jouent est correct.", "Oups, la phrase était correcte", undefined, "boss correct"),
+    item("Je vais a l'école", true, "Oui ! On écrit : Je vais à l'école", "Cette phrase mélangeait plusieurs notions.", "Je vais à l'école", "boss"),
+    item("Je vais à l'école", false, "Je vais à l'école est correct.", "Oups, la phrase était correcte", undefined, "boss correct")
   ])
 ];

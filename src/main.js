@@ -1,4 +1,5 @@
 import { LEVELS } from "./data/levels.js";
+import { getWorldForLevel } from "./data/worlds.js";
 import { clamp, createGameState, resetGameStateForLevel } from "./core/gameState.js";
 import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLevelIndex } from "./core/progression.js";
 import { chooseNextItem, getMaxActiveWords, getSpawnDelay, getWordSpeedBase } from "./core/wordSpawner.js";
@@ -112,11 +113,12 @@ function setMessage(text) {
 
 function updateHud() {
   const current = getLevel();
-  levelInfo.textContent = "Niveau " + current.id + " · " + current.title;
+  const world = getWorldForLevel(current.id);
+  levelInfo.textContent = world.title + " · Niveau " + current.id + " · " + current.title;
   // [impl->req~ui.visible-instruction~1]
   instruction.textContent = current.shortInstruction;
   starsEl.textContent = "⭐ " + stars + " / " + current.starsToWin;
-  startSubtitle.textContent = "Niveau " + current.id + " : " + current.title;
+  startSubtitle.textContent = world.title + " : Niveau " + current.id + " — " + current.title;
 }
 
 function playSwordSound() {
@@ -245,11 +247,12 @@ function finishLevel() {
   resetWords();
   if (isFinalLevel(currentLevelIndex, LEVELS.length)) {
     document.getElementById("levelTitle").textContent = "Victoire finale !";
-    document.getElementById("levelText").textContent = "Le chevalier maîtrise les 20 niveaux des mots.";
+    document.getElementById("levelText").textContent = "Le chevalier maîtrise les 40 niveaux des mots.";
     document.getElementById("nextBtn").textContent = "Rejouer";
   } else {
     document.getElementById("levelTitle").textContent = "Bravo !";
-    document.getElementById("levelText").textContent = "Niveau " + current.id + " réussi. Prochaine mission : " + LEVELS[currentLevelIndex + 1].title + " !";
+    const world = getWorldForLevel(current.id);
+    document.getElementById("levelText").textContent = world.title + " terminé. Prochaine mission : " + LEVELS[currentLevelIndex + 1].title + " !";
     document.getElementById("nextBtn").textContent = "Continuer";
   }
   services.narration.speak("Bravo, niveau terminé.");
@@ -345,7 +348,8 @@ function tick(time) {
 
   if (state === "playing") {
     const current = getLevel();
-    const speed = 280 + current.id * 6;
+    // [impl->req~level.longer-play-session~1]
+    const speed = 280 + Math.min(current.id, 20) * 6;
     if (moveLeft) knightX -= speed * dt;
     if (moveRight) knightX += speed * dt;
     knightX = clamp(knightX, 52, window.innerWidth - 52);

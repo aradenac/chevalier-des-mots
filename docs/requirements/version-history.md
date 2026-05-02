@@ -8,6 +8,7 @@ Elle permet de suivre les changements globaux sans disperser l'historique dans l
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/ | Split the monolithic requirements document into themed pages | Make the requirements easier to maintain while keeping the same meaning |
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/gameplay.md | Restored explicit utest linkage under Needs for target slicing | Keep traceability structurally valid for OpenFastTrace |
 | 2026-05-02 | 1.1.0 | 1.0.0 | docs/requirements/levels.md, docs/requirements/index.md | Extended the campaign spec from one short world to two progressive worlds | Make the game longer while preserving a readable pedagogical progression |
+| 2026-05-03 | 1.1.0 | 1.1.0 | src/data/levels.js, src/data/worlds.js, src/data/pedagogicalProgression.js, src/main.js, tests/levels.test.js, tests/worlds.test.js | Implemented the extended 40-level campaign with two progressive worlds | Deliver the new campaign length while keeping the progression and traceability coherent |
 
 ## Change history
 
@@ -16,3 +17,4 @@ Elle permet de suivre les changements globaux sans disperser l'historique dans l
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/version-history.md | Introduced global version mapping | Keep a single cross-page view of spec and game versions |
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/version-history.md | Recorded gameplay traceability fix | Keep version history aligned with spec edits |
 | 2026-05-02 | 1.1.0 | 1.0.0 | docs/requirements/version-history.md | Recorded the extended campaign specification update | Keep the global spec-game mapping aligned with the new world structure |
+| 2026-05-03 | 1.1.0 | 1.1.0 | docs/requirements/version-history.md | Recorded the 40-level world implementation | Keep the version history aligned with the delivered campaign extension |
