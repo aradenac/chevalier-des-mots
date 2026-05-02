@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Le Chevalier des Mots</title>
+  <style>
+    :root {
+      --sky: #8ee7ff;
+      --blue: #3e8cff;
+      --green: #43c55f;
+      --gold: #ffd94a;
+      --pink: #ff75b7;
+      --ink: #27304f;
+      --cream: #fff7d6;
+      --shadow: rgba(39, 48, 79, .22);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family: "Trebuchet MS", Verdana, Arial, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(#7bdcff 0%, #c9f6ff 62%, #7bd56f 63%, #45b853 100%);
+      touch-action: manipulation;
+      user-select: none;
+    }
+    button {
+      font: inherit;
+      border: 0;
+      color: var(--ink);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    #game {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      min-height: 420px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(255,255,255,.95) 0 4%, transparent 4.2%),
+        radial-gradient(circle at 19% 10%, rgba(255,255,255,.95) 0 3%, transparent 3.2%),
+        radial-gradient(circle at 24% 13%, rgba(255,255,255,.95) 0 4.5%, transparent 4.7%),
+        radial-gradient(circle at 80% 17%, rgba(255,255,255,.85) 0 3.5%, transparent 3.7%),
+        linear-gradient(#73d9ff 0%, #c8f6ff 58%, #8edb6c 58.3%, #47bf55 100%);
+    }
+    #sun {
+      position: absolute;
+      right: 6vw;
+      top: 5vh;
+      width: clamp(70px, 10vw, 130px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: #ffe96a;
+      box-shadow: 0 0 0 14px rgba(255, 233, 106, .24), 0 0 40px rgba(255, 210, 44, .35);
+    }
+    #hills {
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 34vh;
+      background:
+        radial-gradient(65vw 23vh at 12% 100%, #59c766 0 60%, transparent 61%),
+        radial-gradient(70vw 27vh at 83% 100%, #66d970 0 60%, transparent 61%),
+        linear-gradient(transparent 0 34%, #3caf4d 35% 100%);
+      pointer-events: none;
+    }
+    #topbar {
+      position: absolute;
+      top: max(10px, env(safe-area-inset-top));
+      left: 10px;
+      right: 10px;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .pill {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 247, 214, .94);
+      box-shadow: 0 5px 0 rgba(39, 48, 79, .14), 0 10px 24px var(--shadow);
+      font-weight: 900;
+      border: 2px solid rgba(255,255,255,.8);
+    }
+    #instruction {
+      justify-self: center;
+      text-align: center;
+      max-width: min(620px, 100%);
+      font-size: clamp(14px, 2.1vw, 22px);
+    }
+    #stars { font-size: clamp(18px, 2.4vw, 27px); color: #bd7600; }
+    #pauseBtn, #strikeBtnTop {
+      min-width: 48px;
+      background: #fff7d6;
+    }
+    #pauseBtn.paused { background: #ffcae4; }
+    #arena {
+      position: absolute;
+      inset: 72px 0 0 0;
+      z-index: 4;
+    }
+    .word {
+      position: absolute;
+      min-width: 86px;
+      padding: 10px 16px;
+      text-align: center;
+      border-radius: 18px;
+      background: #fffdf2;
+      border: 4px solid #6849d8;
+      box-shadow: 0 7px 0 #42269f, 0 12px 18px var(--shadow);
+      font-size: clamp(22px, 3vw, 36px);
+      font-weight: 900;
+      color: #412568;
+      transform: translate(-50%, -50%);
+      will-change: transform;
+    }
+    .word::before, .word::after {
+      content: "";
+      position: absolute;
+      top: -11px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fffdf2;
+      border: 3px solid #6849d8;
+    }
+    .word::before { left: 10px; }
+    .word::after { right: 10px; }
+    .word.bounce {
+      animation: wobble .55s ease;
+      background: #d8fff0;
+      border-color: #14a46b;
+      box-shadow: 0 7px 0 #087d4d, 0 12px 18px var(--shadow);
+    }
+    @keyframes wobble {
+      0% { scale: 1; rotate: 0deg; }
+      25% { scale: 1.1; rotate: -7deg; }
+      55% { scale: .94; rotate: 6deg; }
+      100% { scale: 1; rotate: 0deg; }
+    }
+    .slash {
+      position: absolute;
+      width: 150px;
+      height: 18px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, #fff, #85f7ff, transparent);
+      box-shadow: 0 0 20px #fff, 0 0 28px #4de7ff;
+      transform: translate(-50%, -50%) rotate(-28deg);
+      pointer-events: none;
+      animation: slash .25s ease-out forwards;
+      z-index: 12;
+    }
+    @keyframes slash {
+      from { opacity: 1; scale: .35; }
+      to { opacity: 0; scale: 1.5; }
+    }
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 16px;
+      border-radius: 3px;
+      pointer-events: none;
+      z-index: 15;
+      animation: pop 850ms ease-out forwards;
+    }
+    @keyframes pop {
+      to { translate: var(--dx) var(--dy); rotate: 540deg; opacity: 0; }
+    }
+    #knight {
+      position: absolute;
+      left: 50%;
+      bottom: 8vh;
+      width: 118px;
+      height: 142px;
+      transform: translateX(-50%);
+      z-index: 10;
+      will-change: left;
+    }
+    #knight .body {
+      position: absolute;
+      left: 30px;
+      bottom: 16px;
+      width: 58px;
+      height: 70px;
+      border-radius: 18px 18px 12px 12px;
+      background: linear-gradient(#78d7ff, #398eea);
+      border: 4px solid #31549f;
+      box-shadow: 0 6px 0 #23386f;
+    }
+    #knight .head {
+      position: absolute;
+      left: 27px;
+      bottom: 78px;
+      width: 64px;
+      height: 54px;
+      border-radius: 22px 22px 16px 16px;
+      background: #d7e0ef;
+      border: 4px solid #596985;
+      box-shadow: inset 0 -8px 0 rgba(0,0,0,.08);
+    }
+    #knight .visor {
+      position: absolute;
+      left: 12px;
+      top: 19px;
+      width: 40px;
+      height: 14px;
+      border-radius: 12px;
+      background: #27304f;
+      box-shadow: inset 0 0 0 3px #596985;
+    }
+    #knight .plume {
+      position: absolute;
+      left: 43px;
+      bottom: 126px;
+      width: 38px;
+      height: 26px;
+      border-radius: 50% 50% 50% 8px;
+      background: #ff75b7;
+      border: 3px solid #b92f77;
+      transform: rotate(-18deg);
+    }
+    #knight .leg {
+      position: absolute;
+      bottom: 0;
+      width: 22px;
+      height: 30px;
+      border-radius: 10px;
+      background: #27304f;
+    }
+    #knight .leg.left { left: 34px; }
+    #knight .leg.right { right: 34px; }
+    #knight .shield {
+      position: absolute;
+      left: 12px;
+      bottom: 32px;
+      width: 34px;
+      height: 45px;
+      border-radius: 18px 18px 18px 18px / 14px 14px 26px 26px;
+      background: #ffd94a;
+      border: 4px solid #bd7600;
+    }
+    #knight .sword {
+      position: absolute;
+      right: 10px;
+      bottom: 54px;
+      width: 14px;
+      height: 84px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #c9f6ff, #fff, #8deeff);
+      border: 2px solid #5789b5;
+      transform-origin: 50% 88%;
+      rotate: 33deg;
+      box-shadow: 0 0 16px rgba(255,255,255,.8);
+    }
+    #knight .sword::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -14px;
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 17px solid #fff;
+      transform: translateX(-50%);
+    }
+    #knight.striking .sword { animation: strike .26s ease-out; }
+    @keyframes strike {
+      0% { rotate: 33deg; }
+      45% { rotate: -72deg; scale: 1.06; }
+      100% { rotate: 33deg; }
+    }
+    #message {
+      position: absolute;
+      left: 50%;
+      bottom: calc(20vh + 58px);
+      width: min(760px, calc(100vw - 24px));
+      min-height: 52px;
+      translate: -50% 0;
+      z-index: 18;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 10px 16px;
+      border-radius: 18px;
+      background: rgba(255, 253, 242, .93);
+      border: 3px solid rgba(39, 48, 79, .16);
+      box-shadow: 0 8px 20px var(--shadow);
+      font-size: clamp(18px, 2.6vw, 30px);
+      font-weight: 900;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(70, 190, 240, .4);
+      backdrop-filter: blur(4px);
+    }
+    .panel {
+      width: min(720px, 96vw);
+      padding: clamp(18px, 4vw, 38px);
+      border-radius: 26px;
+      background: #fffdf2;
+      border: 5px solid #6849d8;
+      box-shadow: 0 12px 0 #42269f, 0 22px 44px var(--shadow);
+      text-align: center;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(36px, 7vw, 76px);
+      line-height: .98;
+      color: #6849d8;
+      text-shadow: 0 5px 0 #ffd94a;
+    }
+    .subtitle {
+      margin: 8px auto 22px;
+      max-width: 560px;
+      font-size: clamp(18px, 2.6vw, 27px);
+      font-weight: 900;
+    }
+    .menuBtns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+    .bigBtn {
+      min-width: 170px;
+      min-height: 58px;
+      padding: 14px 20px;
+      border-radius: 18px;
+      background: var(--gold);
+      border: 3px solid #bd7600;
+      box-shadow: 0 7px 0 #bd7600;
+      font-size: 21px;
+      font-weight: 900;
+    }
+    .bigBtn:active { translate: 0 5px; box-shadow: 0 2px 0 #bd7600; }
+    .secondary { background: #b9f5ff; border-color: #258dc7; box-shadow: 0 7px 0 #258dc7; }
+    .pink { background: #ffcae4; border-color: #bd3a7c; box-shadow: 0 7px 0 #bd3a7c; }
+    #gamepadStatus {
+      margin-top: 18px;
+      min-height: 28px;
+      font-size: 19px;
+      font-weight: 900;
+      color: #087d4d;
+    }
+    #touchControls {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      z-index: 25;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: end;
+      padding: 0 14px;
+      pointer-events: none;
+    }
+    .touchGroup { display: flex; gap: 12px; pointer-events: auto; }
+    .touchBtn {
+      width: clamp(66px, 13vw, 96px);
+      height: clamp(60px, 11vw, 86px);
+      border-radius: 22px;
+      background: rgba(255, 253, 242, .92);
+      border: 4px solid #27304f;
+      box-shadow: 0 7px 0 rgba(39, 48, 79, .5);
+      font-size: clamp(24px, 4vw, 38px);
+      font-weight: 900;
+    }
+    #touchStrike {
+      width: clamp(92px, 17vw, 130px);
+      background: #ffcae4;
+      border-color: #bd3a7c;
+      box-shadow: 0 7px 0 #bd3a7c;
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 720px) {
+      #topbar { grid-template-columns: auto auto auto; }
+      #instruction { grid-column: 1 / -1; grid-row: 2; width: 100%; }
+      #arena { inset-top: 118px; }
+      #knight { width: 98px; height: 122px; bottom: 8.5vh; }
+      #knight .body { left: 24px; width: 52px; height: 62px; }
+      #knight .head { left: 22px; width: 58px; height: 50px; bottom: 70px; }
+      #knight .plume { bottom: 115px; }
+      #message { bottom: calc(22vh + 42px); }
+    }
+  </style>
+</head>
+<body>
+  <main id="game" aria-label="Le Chevalier des Mots">
+    <div id="sun"></div>
+    <div id="hills"></div>
+
+    <div id="topbar">
+      <div id="stars" class="pill">⭐ 0 / 5</div>
+      <div id="instruction" class="pill">Tranche seulement les mots mal orthographiés</div>
+      <button id="pauseBtn" class="pill" type="button" aria-label="Pause">⏸</button>
+      <button id="strikeBtnTop" class="pill" type="button" aria-label="Frapper">⚔</button>
+    </div>
+
+    <section id="arena"></section>
+
+    <div id="knight" aria-hidden="true">
+      <div class="plume"></div>
+      <div class="head"><div class="visor"></div></div>
+      <div class="body"></div>
+      <div class="shield"></div>
+      <div class="sword"></div>
+      <div class="leg left"></div>
+      <div class="leg right"></div>
+    </div>
+
+    <div id="message">Prêt à aider le chevalier ?</div>
+
+    <div id="touchControls">
+      <div class="touchGroup">
+        <button class="touchBtn" id="leftTouch" type="button" aria-label="Gauche">◀</button>
+        <button class="touchBtn" id="rightTouch" type="button" aria-label="Droite">▶</button>
+      </div>
+      <button class="touchBtn" id="touchStrike" type="button" aria-label="Frapper">⚔</button>
+    </div>
+
+    <div id="startOverlay" class="overlay">
+      <div class="panel">
+        <h1>Le Chevalier des Mots</h1>
+        <p class="subtitle">Des mots tombent du ciel. Coupe seulement ceux qui sont mal écrits.</p>
+        <div class="menuBtns">
+          <button id="playBtn" class="bigBtn" type="button">Jouer</button>
+          <button id="easyBtn" class="bigBtn secondary" type="button">Mode très facile</button>
+          <button id="padBtn" class="bigBtn pink" type="button">Tester la manette</button>
+        </div>
+        <div id="gamepadStatus">Branche une manette puis appuie sur un bouton.</div>
+      </div>
+    </div>
+
+    <div id="levelOverlay" class="overlay hidden">
+      <div class="panel">
+        <h1 id="levelTitle">Bravo !</h1>
+        <p id="levelText" class="subtitle">Niveau suivant</p>
+        <button id="nextBtn" class="bigBtn" type="button">Continuer</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const words = [
+      { affichage: "chatt", correct: "chat", faux: true },
+      { affichage: "chat", correct: "chat", faux: false },
+      { affichage: "méson", correct: "maison", faux: true },
+      { affichage: "maison", correct: "maison", faux: false },
+      { affichage: "chevau", correct: "cheval", faux: true },
+      { affichage: "cheval", correct: "cheval", faux: false },
+      { affichage: "lapain", correct: "lapin", faux: true },
+      { affichage: "lapin", correct: "lapin", faux: false },
+      { affichage: "solleil", correct: "soleil", faux: true },
+      { affichage: "soleil", correct: "soleil", faux: false },
+      { affichage: "arbbre", correct: "arbre", faux: true },
+      { affichage: "arbre", correct: "arbre", faux: false },
+      { affichage: "fleure", correct: "fleur", faux: true },
+      { affichage: "fleur", correct: "fleur", faux: false }
+    ];
+
+    const game = document.getElementById("game");
+    const arena = document.getElementById("arena");
+    const knight = document.getElementById("knight");
+    const message = document.getElementById("message");
+    const starsEl = document.getElementById("stars");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const startOverlay = document.getElementById("startOverlay");
+    const levelOverlay = document.getElementById("levelOverlay");
+    const gamepadStatus = document.getElementById("gamepadStatus");
+
+    let state = "menu";
+    let veryEasy = false;
+    let level = 1;
+    let stars = 0;
+    let knightX = window.innerWidth / 2;
+    let moveLeft = false;
+    let moveRight = false;
+    let activeWords = [];
+    let lastTime = 0;
+    let spawnTimer = 0;
+    let wordIndex = 0;
+    let audioContext = null;
+    let previousPadStrike = false;
+    let previousPadStart = false;
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function setMessage(text) {
+      message.textContent = text;
+    }
+
+    function updateStars() {
+      starsEl.textContent = "⭐ " + stars + " / 5";
+    }
+
+    function ensureAudio() {
+      if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === "suspended") audioContext.resume();
+    }
+
+    function playSweetSound() {
+      ensureAudio();
+      const now = audioContext.currentTime;
+      [523.25, 659.25, 783.99].forEach((freq, i) => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + i * 0.06);
+        gain.gain.setValueAtTime(0, now + i * 0.06);
+        gain.gain.linearRampToValueAtTime(0.12, now + i * 0.06 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.22);
+        osc.connect(gain).connect(audioContext.destination);
+        osc.start(now + i * 0.06);
+        osc.stop(now + i * 0.06 + 0.25);
+      });
+    }
+
+    function makeConfetti(x, y) {
+      const colors = ["#ffd94a", "#ff75b7", "#43c55f", "#3e8cff", "#6849d8", "#ff8b3d"];
+      for (let i = 0; i < 22; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti";
+        piece.style.left = x + "px";
+        piece.style.top = y + "px";
+        piece.style.background = colors[i % colors.length];
+        piece.style.setProperty("--dx", (Math.random() * 180 - 90) + "px");
+        piece.style.setProperty("--dy", (-40 - Math.random() * 120) + "px");
+        game.appendChild(piece);
+        setTimeout(() => piece.remove(), 900);
+      }
+    }
+
+    function makeSlash(x, y) {
+      const slash = document.createElement("div");
+      slash.className = "slash";
+      slash.style.left = x + "px";
+      slash.style.top = y + "px";
+      game.appendChild(slash);
+      setTimeout(() => slash.remove(), 280);
+    }
+
+    function resetWords() {
+      activeWords.forEach(w => w.el.remove());
+      activeWords = [];
+      spawnTimer = 0;
+    }
+
+    function nextWordData() {
+      const falseWords = words.filter(w => w.faux);
+      const correctWords = words.filter(w => !w.faux);
+      let pool;
+      if (veryEasy) {
+        pool = Math.random() < 0.72 ? falseWords : correctWords;
+      } else {
+        pool = words;
+      }
+      const item = pool[wordIndex % pool.length];
+      wordIndex++;
+      return item;
+    }
+
+    function spawnWord() {
+      const data = nextWordData();
+      const el = document.createElement("div");
+      el.className = "word";
+      el.textContent = data.affichage;
+      arena.appendChild(el);
+      const width = window.innerWidth;
+      const speedBase = veryEasy ? 38 : 50;
+      activeWords.push({
+        el,
+        data,
+        x: 80 + Math.random() * Math.max(120, width - 160),
+        y: -40,
+        speed: speedBase + Math.random() * (veryEasy ? 16 : 28) + level * 3,
+        bouncing: 0
+      });
+    }
+
+    function strike() {
+      if (state !== "playing") return;
+      ensureAudio();
+      knight.classList.remove("striking");
+      void knight.offsetWidth;
+      knight.classList.add("striking");
+
+      const hitRangeX = veryEasy ? 115 : 90;
+      const hitRangeY = 145;
+      let target = null;
+      let best = Infinity;
+      for (const word of activeWords) {
+        const dx = Math.abs(word.x - knightX);
+        const dy = Math.abs(word.y - (window.innerHeight - 170));
+        const score = dx + dy * .35;
+        if (dx < hitRangeX && dy < hitRangeY && score < best) {
+          target = word;
+          best = score;
+        }
+      }
+      makeSlash(knightX + 40, window.innerHeight - 185);
+      if (!target) return;
+
+      const rect = target.el.getBoundingClientRect();
+      if (target.data.faux) {
+        stars++;
+        updateStars();
+        setMessage("Bien joué ! On écrit : " + target.data.correct);
+        playSweetSound();
+        makeConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        target.el.remove();
+        activeWords = activeWords.filter(w => w !== target);
+        if (stars >= 5) finishLevel();
+      } else {
+        target.bouncing = .65;
+        target.speed = -120;
+        target.el.classList.add("bounce");
+        setTimeout(() => target.el.classList.remove("bounce"), 580);
+        setMessage("Oups, celui-ci était déjà correct");
+      }
+    }
+
+    function finishLevel() {
+      state = "level";
+      levelOverlay.classList.remove("hidden");
+      document.getElementById("levelTitle").textContent = "Bravo !";
+      document.getElementById("levelText").textContent = "Tu as gagné 5 étoiles. Niveau " + (level + 1) + " !";
+      resetWords();
+    }
+
+    function startGame(easy) {
+      veryEasy = easy;
+      state = "playing";
+      stars = 0;
+      knightX = window.innerWidth / 2;
+      updateStars();
+      resetWords();
+      startOverlay.classList.add("hidden");
+      levelOverlay.classList.add("hidden");
+      pauseBtn.classList.remove("paused");
+      pauseBtn.textContent = "⏸";
+      setMessage(easy ? "Mode très facile activé" : "À toi de jouer !");
+      ensureAudio();
+      spawnWord();
+    }
+
+    function continueLevel() {
+      level++;
+      startGame(veryEasy);
+    }
+
+    function togglePause() {
+      if (state === "playing") {
+        state = "paused";
+        pauseBtn.classList.add("paused");
+        pauseBtn.textContent = "▶";
+        setMessage("Pause");
+      } else if (state === "paused") {
+        state = "playing";
+        pauseBtn.classList.remove("paused");
+        pauseBtn.textContent = "⏸";
+        setMessage("C'est reparti !");
+      }
+    }
+
+    function updateGamepadStatus() {
+      const pads = navigator.getGamepads ? Array.from(navigator.getGamepads()).filter(Boolean) : [];
+      if (pads.length) gamepadStatus.textContent = "Manette détectée";
+      return pads[0];
+    }
+
+    function readGamepad() {
+      const pad = updateGamepadStatus();
+      if (!pad) return;
+      const axisX = pad.axes[0] || 0;
+      const dLeft = pad.buttons[14] && pad.buttons[14].pressed;
+      const dRight = pad.buttons[15] && pad.buttons[15].pressed;
+      moveLeft = moveLeft || axisX < -0.35 || dLeft;
+      moveRight = moveRight || axisX > 0.35 || dRight;
+      const strikePressed = [0, 1, 2, 3].some(i => pad.buttons[i] && pad.buttons[i].pressed);
+      if (strikePressed && !previousPadStrike) strike();
+      previousPadStrike = strikePressed;
+      const startPressed = pad.buttons[9] && pad.buttons[9].pressed;
+      if (startPressed && !previousPadStart) togglePause();
+      previousPadStart = startPressed;
+    }
+
+    function tick(time) {
+      const dt = Math.min(0.033, (time - lastTime) / 1000 || 0);
+      lastTime = time;
+
+      const keyboardLeft = keys.ArrowLeft || keys.KeyA;
+      const keyboardRight = keys.ArrowRight || keys.KeyD;
+      moveLeft = keyboardLeft || touch.left;
+      moveRight = keyboardRight || touch.right;
+      readGamepad();
+
+      if (state === "playing") {
+        const speed = 270 + level * 12;
+        if (moveLeft) knightX -= speed * dt;
+        if (moveRight) knightX += speed * dt;
+        knightX = clamp(knightX, 52, window.innerWidth - 52);
+        knight.style.left = knightX + "px";
+
+        spawnTimer -= dt;
+        if (spawnTimer <= 0 && activeWords.length < (veryEasy ? 3 : 4)) {
+          spawnWord();
+          spawnTimer = veryEasy ? 2.1 : 1.55;
+        }
+
+        const ground = window.innerHeight - 78;
+        for (const word of [...activeWords]) {
+          word.y += word.speed * dt;
+          if (word.bouncing > 0) {
+            word.bouncing -= dt;
+            word.speed += 420 * dt;
+          }
+          word.el.style.transform = "translate(-50%, -50%) translate(" + word.x + "px, " + word.y + "px)";
+          if (word.y > ground) {
+            word.el.remove();
+            activeWords = activeWords.filter(w => w !== word);
+            if (word.data.faux) wordIndex = Math.max(0, wordIndex - 1);
+          }
+        }
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    const keys = {};
+    const touch = { left: false, right: false };
+
+    window.addEventListener("keydown", (event) => {
+      keys[event.code] = true;
+      if (["ArrowLeft", "ArrowRight", "Space", "Enter"].includes(event.code)) event.preventDefault();
+      if (event.code === "Space" || event.code === "Enter") strike();
+    });
+    window.addEventListener("keyup", (event) => { keys[event.code] = false; });
+
+    function bindHold(button, prop) {
+      const on = (event) => { event.preventDefault(); touch[prop] = true; ensureAudio(); };
+      const off = (event) => { event.preventDefault(); touch[prop] = false; };
+      button.addEventListener("pointerdown", on);
+      button.addEventListener("pointerup", off);
+      button.addEventListener("pointercancel", off);
+      button.addEventListener("pointerleave", off);
+    }
+
+    bindHold(document.getElementById("leftTouch"), "left");
+    bindHold(document.getElementById("rightTouch"), "right");
+    document.getElementById("touchStrike").addEventListener("pointerdown", (event) => { event.preventDefault(); strike(); });
+    document.getElementById("strikeBtnTop").addEventListener("click", strike);
+    pauseBtn.addEventListener("click", togglePause);
+    document.getElementById("playBtn").addEventListener("click", () => startGame(false));
+    document.getElementById("easyBtn").addEventListener("click", () => startGame(true));
+    document.getElementById("nextBtn").addEventListener("click", continueLevel);
+    document.getElementById("padBtn").addEventListener("click", () => {
+      ensureAudio();
+      const pad = updateGamepadStatus();
+      gamepadStatus.textContent = pad ? "Manette détectée" : "Appuie sur un bouton de la manette";
+    });
+
+    window.addEventListener("gamepadconnected", () => { gamepadStatus.textContent = "Manette détectée"; });
+    window.addEventListener("gamepaddisconnected", () => { gamepadStatus.textContent = "Manette débranchée"; });
+    window.addEventListener("resize", () => { knightX = clamp(knightX, 52, window.innerWidth - 52); });
+
+    updateStars();
+    knight.style.left = knightX + "px";
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>
