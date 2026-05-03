@@ -6,7 +6,7 @@ Le jeu est un jeu éducatif web en Vanilla JS. Le joueur incarne un chevalier qu
 
 ## Périmètre
 
-Le périmètre couvre le jeu jouable dans un navigateur, la documentation d'exigences consultable dans MkDocs et la validation locale de la traçabilité avec OpenFastTrace. Le projet ne prévoit pas de compte utilisateur, pas de backend, pas de sauvegarde distante et pas de synchronisation réseau.
+Le périmètre couvre le jeu jouable dans un navigateur, la documentation d'exigences consultable dans MkDocs et la validation locale de la traçabilité avec OpenFastTrace. Le projet prévoit des comptes locaux sans authentification et sans backend. Il ne prévoit pas de compte distant, pas de sauvegarde distante et pas de synchronisation réseau.
 
 ## Structure
 
@@ -27,6 +27,7 @@ La page [Audit de traçabilité](traceability-audit.md) donne une matrice manuel
 - [Gameplay](gameplay.md)
 - [Niveaux](levels.md)
 - [Interface et entrées](inputs-ui.md)
+- [Comptes locaux et progression](accounts-progress.md)
 - [Feedback et audio](feedback-audio.md)
 - [Technique](technical.md)
 - [Vérification](verification.md)
@@ -34,6 +35,7 @@ La page [Audit de traçabilité](traceability-audit.md) donne une matrice manuel
 La page [Niveaux](levels.md) rassemble les exigences de structure, une vue pédagogique synthétique des mondes, le Monde 1 — Écuyer, le Monde 2 — Chevalier et une table non exhaustive pour faciliter la lecture sans dupliquer `src/data/levels.js`.
 Un Monde 3 — Maître chevalier pourra être spécifié dans une évolution ultérieure.
 La page [Interface et entrées](inputs-ui.md) couvre aussi le choix du personnage au démarrage en plus des entrées et de la consigne visible.
+La page [Comptes locaux et progression](accounts-progress.md) couvre les comptes stockés dans le navigateur, le niveau atteint et la reprise linéaire.
 
 ## Change history
 
@@ -44,3 +46,4 @@ La page [Interface et entrées](inputs-ui.md) couvre aussi le choix du personnag
 | 2026-05-03 | 1.1.0 | 1.1.0 | docs/requirements/index.md | Documented the character selection entry point in the interface page | Keep the navigation aligned with the updated interface requirements |
 | 2026-05-03 | 1.3.0 | 1.2.0 | docs/requirements/index.md | Added the requirement writing rules entry point | Make the spec authoring rules discoverable from the requirements overview |
 | 2026-05-03 | 1.5.0 | 1.2.0 | docs/requirements/index.md | Added the traceability audit entry point | Make bidirectional traceability review discoverable from the requirements overview |
+| 2026-05-03 | 1.7.0 | 1.2.0 | docs/requirements/index.md | Added local accounts and progression page to the overview | Keep the requirements index aligned with the new local progress specification |

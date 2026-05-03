@@ -44,6 +44,7 @@ nav:
       - Gameplay: requirements/gameplay.md
       - Niveaux: requirements/levels.md
       - Interface et entrées: requirements/inputs-ui.md
+      - Comptes locaux et progression: requirements/accounts-progress.md
       - Feedback et audio: requirements/feedback-audio.md
       - Technique: requirements/technical.md
       - Vérification: requirements/verification.md
