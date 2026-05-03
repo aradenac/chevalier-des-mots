@@ -18,8 +18,10 @@ Le workflow attendu est en deux phases:
 
 Chaque page de `docs/requirements/` se termine par un `Change history` qui enregistre les modifications locales de cette page.
 La page [Version history](version-history.md) relie les versions de specs et les versions du jeu pour garder un suivi global.
+La page [Règles de rédaction](writing-rules.md) définit les règles obligatoires à appliquer avant toute création ou modification d'exigence.
 
 - [Format](format.md)
+- [Règles de rédaction](writing-rules.md)
 - [Gameplay](gameplay.md)
 - [Niveaux](levels.md)
 - [Interface et entrées](inputs-ui.md)
@@ -38,3 +40,4 @@ La page [Interface et entrées](inputs-ui.md) couvre aussi le choix du personnag
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/index.md | Added workflow explanation and history references | Clarify how to use the themed requirements set |
 | 2026-05-02 | 1.1.0 | 1.0.0 | docs/requirements/index.md | Documented the extended campaign structure with worlds | Clarify how the level specification expands without duplicating level data |
 | 2026-05-03 | 1.1.0 | 1.1.0 | docs/requirements/index.md | Documented the character selection entry point in the interface page | Keep the navigation aligned with the updated interface requirements |
+| 2026-05-03 | 1.3.0 | 1.2.0 | docs/requirements/index.md | Added the requirement writing rules entry point | Make the spec authoring rules discoverable from the requirements overview |

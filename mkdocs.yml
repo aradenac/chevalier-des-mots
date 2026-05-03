@@ -39,6 +39,7 @@ nav:
   - Exigences:
       - Vue d'ensemble: requirements/index.md
       - Format: requirements/format.md
+      - Règles de rédaction: requirements/writing-rules.md
       - Gameplay: requirements/gameplay.md
       - Niveaux: requirements/levels.md
       - Interface et entrées: requirements/inputs-ui.md

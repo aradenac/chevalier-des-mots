@@ -9,6 +9,8 @@ Ce dépôt est piloté par des spécifications versionnées. Codex doit travaill
   - `docs/requirements/`
   - `docs/index.md`
 - Si une évolution touche plusieurs thèmes, lire plusieurs sous-pages concernées.
+- Avant toute modification de specs, lire `docs/requirements/writing-rules.md`.
+- La source de vérité des règles de rédaction est `docs/requirements/writing-rules.md`; les prompts utilisateur n'ont pas à répéter toutes les contraintes de rédaction.
 - Si la demande utilisateur contredit les specs, ne pas modifier le code directement.
 - Proposer d'abord une mise à jour des specs.
 
@@ -19,12 +21,15 @@ Ce dépôt est piloté par des spécifications versionnées. Codex doit travaill
 Pour toute demande fonctionnelle :
 
 1. lire `docs/requirements/` et les sous-pages concernées ;
-2. produire une revue des exigences impactées ;
-3. identifier les ambiguïtés, trous de spec et impacts code/tests ;
-4. ne pas modifier `src/` ni `tests/` ;
-5. si la spec doit changer, modifier uniquement `docs/requirements/` ;
-6. mettre à jour le `Change history` des pages modifiées ;
-7. mettre à jour `docs/requirements/version-history.md`.
+2. lire `docs/requirements/writing-rules.md` avant toute création ou modification d'exigence ;
+3. produire une revue des exigences impactées ;
+4. identifier les ambiguïtés, trous de spec et impacts code/tests ;
+5. ne pas modifier `src/` ni `tests/` ;
+6. si la spec doit changer, modifier uniquement `docs/requirements/` ;
+7. appliquer `docs/requirements/writing-rules.md` à toute exigence créée ou modifiée ;
+8. si une exigence existante enfreint ces règles, proposer ou appliquer une correction pendant la phase `SPEC REVIEW` ;
+9. mettre à jour le `Change history` des pages modifiées ;
+10. mettre à jour `docs/requirements/version-history.md`.
 
 ### Gate d'approbation
 
