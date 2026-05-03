@@ -185,9 +185,8 @@ Acceptance criteria:
 * Le menu debug propose une action permettant de quitter le mode debug et de revenir au menu principal.
 
 Needs:
-
-* impl
-* utest
+  * impl
+  * utest
 
 #### Le mode debug doit respecter les prérequis techniques des niveaux
 
@@ -241,9 +240,8 @@ Acceptance criteria:
 * L'enchaînement ne modifie aucune donnée de compte joueur, même si un compte joueur est actif en arrière-plan.
 
 Needs:
-
-* impl
-* utest
+  * impl
+  * utest
 
 #### Le mode debug enchaîné doit signaler la fin de séquence
 
@@ -266,9 +264,8 @@ Acceptance criteria:
 * La fin de séquence debug ne crée ni ne modifie les statistiques joueur.
 
 Needs:
-
-* impl
-* utest
+  * impl
+  * utest
 
 #### Le mode debug doit permettre de terminer un niveau avec la note maximale
 
@@ -298,9 +295,8 @@ Acceptance criteria:
 * La complétion maximale ne modifie aucune donnée de compte joueur, même si un compte joueur est actif en arrière-plan.
 
 Needs:
-
-* impl
-* utest
+  * impl
+  * utest
 
 
 ## Change history
