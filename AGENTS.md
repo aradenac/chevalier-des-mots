@@ -49,7 +49,6 @@ L'agent peut modifier :
 - les fixtures et données nécessaires à l'implémentation ;
 - les scripts de build ou de vérification lorsque c'est nécessaire et justifié ;
 - les liens OpenFastTrace dans le code et les tests ;
-- `docs/traceability/audit.md`.
 
 L'agent ne doit pas modifier :
 
@@ -70,16 +69,15 @@ Avant toute modification de code ou de test, l'agent doit :
 1. lire `docs/requirements/index.md` ;
 2. lire les pages d'exigences directement concernées ;
 3. lire les exigences liées par références croisées, `Needs` ou dépendances fonctionnelles ;
-4. lire `docs/traceability/audit.md` si le fichier existe ;
-5. exécuter `npm run trace` lorsque OpenFastTrace est disponible ;
-6. examiner le rapport OpenFastTrace pour identifier :
+4. exécuter `npm run trace` lorsque OpenFastTrace est disponible ;
+5. examiner le rapport OpenFastTrace pour identifier :
    - les exigences déjà couvertes ;
    - les exigences non couvertes ;
    - les liens `impl` ou `utest` existants ;
    - les liens `orphaned` ;
    - les liens `outdated` ;
    - les incohérences de couverture ;
-7. utiliser les exigences et le rapport OpenFastTrace pour déterminer les fichiers de code, de test et d'audit à modifier.
+6. utiliser les exigences et le rapport OpenFastTrace pour déterminer les fichiers de code, de test et d'audit à modifier.
 
 Après cette phase de cadrage seulement, l'agent peut :
 
@@ -88,10 +86,9 @@ Après cette phase de cadrage seulement, l'agent peut :
 3. appliquer des modifications ciblées ;
 4. ajouter ou mettre à jour les tests correspondant aux exigences ;
 5. ajouter ou mettre à jour les liens OpenFastTrace ;
-6. mettre à jour `docs/traceability/audit.md` ;
-7. exécuter les vérifications disponibles ;
-8. corriger les échecs liés aux modifications courantes ;
-9. résumer les exigences couvertes, les liens de traçabilité et les vérifications exécutées.
+6. exécuter les vérifications disponibles ;
+7. corriger les échecs liés aux modifications courantes ;
+8. résumer les exigences couvertes, les liens de traçabilité et les vérifications exécutées.
 
 L'agent doit privilégier les modifications incrémentales et localisées.  
 L'agent ne doit pas effectuer de refonte globale sans demande explicite et exigence associée.
@@ -122,7 +119,6 @@ L'agent peut proposer une rédaction ou une clarification à l'utilisateur, mais
 - Ne pas conserver de lien vers une exigence supprimée, remplacée ou absente.
 - Si un lien existant devient `orphaned` ou `outdated`, l'agent doit corriger le lien lorsque la nouvelle exigence applicable est claire.
 - Si la nouvelle exigence applicable n'est pas claire, l'agent doit signaler le cas à l'utilisateur.
-- L'audit de traçabilité doit être mis à jour dans `docs/traceability/audit.md`.
 
 ## 7. Critère de validation par traçabilité
 
@@ -136,7 +132,6 @@ Avant de déclarer une tâche terminée, l'agent doit vérifier que :
 - aucun lien `impl` ou `utest` ne pointe vers une exigence absente, supprimée ou remplacée ;
 - aucun lien `orphaned`, `outdated`, incohérent ou suspect n'est laissé sans justification explicite ;
 - le rapport OpenFastTrace ne contient pas de défaut non traité dans le périmètre de la tâche ;
-- `docs/traceability/audit.md` reflète l'état réel de la couverture après modification.
 
 Si la traçabilité ne peut pas être rendue complète, l'agent doit arrêter la validation de la tâche et signaler :
 
@@ -146,24 +141,6 @@ Si la traçabilité ne peut pas être rendue complète, l'agent doit arrêter la
 - les actions nécessaires pour atteindre une traçabilité complète.
 
 L'agent ne doit pas déclarer une implémentation prête si la traçabilité OpenFastTrace du périmètre modifié est incomplète, incohérente ou non vérifiée.
-
-## 8. Audit de traçabilité
-
-`docs/traceability/audit.md` est un document de suivi de couverture. Il n'est pas une source d'exigences.
-
-L'agent doit le maintenir à jour après modification du code ou des tests.
-
-L'audit doit refléter :
-
-- les exigences couvertes ;
-- les liens d'implémentation ;
-- les liens de tests ;
-- les exigences non couvertes ;
-- les liens orphelins ou obsolètes ;
-- les vérifications exécutées ;
-- les écarts restants.
-
-L'agent ne doit pas transformer une information d'audit en exigence normative.
 
 ## 9. Vérifications
 
@@ -221,7 +198,6 @@ L'agent doit :
 - les principaux fichiers modifiés ;
 - les tests ajoutés ou modifiés ;
 - les liens OpenFastTrace ajoutés ou modifiés ;
-- les mises à jour faites dans `docs/traceability/audit.md` ;
 - les commandes exécutées ;
 - le résultat des vérifications ;
 - l'état final de la traçabilité OpenFastTrace ;

@@ -101,21 +101,6 @@ Needs:
 
 ## Usage d'audit non normatif
 
-Pour auditer une exigence vers l'implémentation et les tests :
-
-1. Ouvrir `docs/requirements/traceability-audit.md`.
-2. Rechercher l'exigence dans la matrice d'audit.
-3. Consulter `build/traceability/openfasttrace.txt` ou `build/traceability/openfasttrace.html` pour suivre les liens statiques vers `impl` et `utest`.
-4. Consulter `build/test-results/vitest-junit.xml` pour relier les tests automatisés à leur résultat d'exécution.
-
-Pour auditer un test vers une exigence :
-
-1. Rechercher l'annotation OpenFastTrace du test dans `build/traceability/openfasttrace.txt` ou `build/traceability/openfasttrace.html`.
-2. Vérifier l'exigence couverte dans la matrice `docs/requirements/traceability-audit.md`.
-3. Vérifier le résultat du test dans `build/test-results/vitest-junit.xml`.
-
-Pour auditer les commandes locales :
-
 - `npm run trace` produit `build/traceability/openfasttrace.txt` et `build/traceability/openfasttrace.html`.
 - `npm run test:report` produit `build/test-results/vitest-junit.xml`.
 - `npm run build` produit `dist/`.

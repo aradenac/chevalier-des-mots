@@ -21,11 +21,9 @@ Le workflow attendu est le suivant:
 Chaque page de `docs/requirements/` se termine par un `Change history` qui enregistre les modifications locales de cette page.
 La page [Version history](version-history.md) relie les versions de specs et les versions du jeu pour garder un suivi global.
 La page [Règles de rédaction](writing-rules.md) définit les règles obligatoires à appliquer avant toute création ou modification d'exigence.
-La page [Audit de traçabilité](traceability-audit.md) donne une matrice manuelle pour relier exigences, liens statiques et artefacts d'exécution.
 
 - [Format](format.md)
 - [Règles de rédaction](writing-rules.md)
-- [Audit de traçabilité](traceability-audit.md)
 - [Gameplay](gameplay.md)
 - [Niveaux](levels.md)
 - [Dictée](dictation.md)
