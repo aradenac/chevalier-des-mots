@@ -28,6 +28,7 @@ La page [Audit de traçabilité](traceability-audit.md) donne une matrice manuel
 - [Niveaux](levels.md)
 - [Interface et entrées](inputs-ui.md)
 - [Comptes locaux et progression](accounts-progress.md)
+- [Statistiques](statistics.md)
 - [Feedback et audio](feedback-audio.md)
 - [Technique](technical.md)
 - [Vérification](verification.md)
@@ -36,6 +37,7 @@ La page [Niveaux](levels.md) rassemble les exigences de structure, une vue péda
 Un Monde 3 — Maître chevalier pourra être spécifié dans une évolution ultérieure.
 La page [Interface et entrées](inputs-ui.md) couvre aussi le choix du personnage au démarrage en plus des entrées et de la consigne visible.
 La page [Comptes locaux et progression](accounts-progress.md) couvre les comptes sans authentification, le stockage serveur du niveau atteint et la reprise linéaire.
+La page [Statistiques](statistics.md) couvre les scores persistants par niveau, le score global, le Tableau des champions et le rejeu des niveaux accomplis.
 
 ## Change history
 
@@ -48,3 +50,4 @@ La page [Comptes locaux et progression](accounts-progress.md) couvre les comptes
 | 2026-05-03 | 1.5.0 | 1.2.0 | docs/requirements/index.md | Added the traceability audit entry point | Make bidirectional traceability review discoverable from the requirements overview |
 | 2026-05-03 | 1.7.0 | 1.2.0 | docs/requirements/index.md | Added local accounts and progression page to the overview | Keep the requirements index aligned with the new local progress specification |
 | 2026-05-03 | 1.8.0 | 1.2.0 | docs/requirements/index.md | Updated the account progression scope to server-side persistence | Keep the overview aligned with the corrected storage boundary |
+| 2026-05-03 | 1.9.0 | 1.3.0 | docs/requirements/index.md | Added the statistics page to the requirements overview | Make persistent scores and completed-level replay requirements discoverable |

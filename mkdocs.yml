@@ -45,6 +45,7 @@ nav:
       - Niveaux: requirements/levels.md
       - Interface et entrées: requirements/inputs-ui.md
       - Comptes locaux et progression: requirements/accounts-progress.md
+      - Statistiques: requirements/statistics.md
       - Feedback et audio: requirements/feedback-audio.md
       - Technique: requirements/technical.md
       - Vérification: requirements/verification.md

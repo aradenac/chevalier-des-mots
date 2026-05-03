@@ -4,10 +4,12 @@
 
 Le système de comptes couvre uniquement des comptes joueur sans authentification.
 Il couvre une sauvegarde de progression dans une base de données côté serveur.
-Il ne couvre pas les mots de passe, les comptes distants authentifiés, la synchronisation multi-appareil, ni les statistiques pédagogiques.
+Il ne couvre pas les mots de passe, les comptes distants authentifiés, la synchronisation multi-appareil, ni les statistiques pédagogiques avancées.
 
-La progression sauvegardée couvre uniquement le niveau atteint.
-La progression est linéaire et ne couvre pas le rejeu libre des anciens niveaux.
+La progression sauvegardée couvre le niveau atteint pour déterminer le prochain niveau non terminé.
+La progression débloque les niveaux dans l'ordre.
+Le rejeu est autorisé uniquement pour les niveaux déjà accomplis et ne modifie pas à la baisse le prochain niveau non terminé.
+Les scores persistants et le Tableau des champions sont spécifiés dans [Statistiques](statistics.md).
 
 ## Traçabilité attendue
 
@@ -224,16 +226,17 @@ Status: approved
 Priority: high
 Verification: test
 
-Le système doit limiter la progression sauvegardée à un avancement linéaire dans la campagne.
+Le système doit limiter le déblocage des niveaux non accomplis à un avancement linéaire dans la campagne.
 
 Rationale:
 La première version du suivi de progression doit rester simple et prévisible.
 
 Acceptance criteria:
-- Le système sauvegarde un niveau atteint, pas une carte libre de niveaux.
-- Le joueur progresse dans l'ordre des niveaux.
-- Le système ne propose pas de rejouer librement les niveaux déjà terminés.
-- Les statistiques détaillées de réussite ou d'erreur sont hors périmètre.
+- Le système sauvegarde le plus haut niveau accompli pour déterminer le prochain niveau non terminé.
+- Les niveaux non accomplis sont débloqués dans l'ordre.
+- Les niveaux déjà accomplis peuvent être rejoués uniquement pour améliorer le score.
+- Le rejeu ne permet pas de sélectionner un niveau non accompli.
+- Le rejeu d'un niveau accompli ne diminue pas le plus haut niveau accompli.
 
 Needs:
 - impl
@@ -290,3 +293,4 @@ Needs:
 | 2026-05-03 | 1.7.0 | 1.2.0 | docs/requirements/accounts-progress.md | Added local account and saved progression requirements without implementation | Specify local multi-player progression before code changes |
 | 2026-05-03 | 1.8.0 | 1.2.0 | docs/requirements/accounts-progress.md | Replaced browser-side database storage with server-side database storage | Correct the persistence boundary before implementation |
 | 2026-05-03 | 1.8.0 | 1.3.0 | docs/requirements/accounts-progress.md | Updated traceability status after account progression implementation | Keep the requirements page aligned with delivered implementation and tests |
+| 2026-05-03 | 1.9.0 | 1.3.0 | docs/requirements/accounts-progress.md | Updated progression scope for completed-level replay and statistics linkage | Keep linear unlock rules while allowing score improvement on accomplished levels |
