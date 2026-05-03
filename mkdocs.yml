@@ -53,3 +53,5 @@ nav:
       - Technique: requirements/technical.md
       - Vérification: requirements/verification.md
       - Version history: requirements/version-history.md
+      - Traçabilité:
+        - Audit: traceability/audit.md
