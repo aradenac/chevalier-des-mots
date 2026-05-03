@@ -27,6 +27,7 @@ La page [Règles de rédaction](writing-rules.md) définit les règles obligatoi
 - [Gameplay](gameplay.md)
 - [Niveaux](levels.md)
 - [Dictée](dictation.md)
+- [Cannon](cannon.md)
 - [Interface et entrées](inputs-ui.md)
 - [Comptes locaux et progression](accounts-progress.md)
 - [Statistiques](statistics.md)
@@ -38,6 +39,7 @@ La page [Règles de rédaction](writing-rules.md) définit les règles obligatoi
 La page [Niveaux](levels.md) rassemble les exigences de structure, une vue pédagogique synthétique des mondes, le Monde 1 — Écuyer, le Monde 2 — Chevalier et une table non exhaustive pour faciliter la lecture sans dupliquer `src/data/levels.js`.
 Un Monde 3 — Maître chevalier pourra être spécifié dans une évolution ultérieure.
 La page [Dictée](dictation.md) couvre les niveaux de dictée obligatoires, leur audio, leur saisie, leur notation, leur feedback et leur intégration aux statistiques globales.
+La page [Cannon](cannon.md) couvre les niveaux à texte à trous, leur canon, leur visée, leur score et leur progression pédagogique.
 La page [Interface et entrées](inputs-ui.md) couvre aussi le choix du personnage au démarrage en plus des entrées et de la consigne visible.
 La page [Comptes locaux et progression](accounts-progress.md) couvre les comptes sans authentification, le stockage serveur du niveau atteint et la reprise linéaire.
 La page [Statistiques](statistics.md) couvre les scores persistants par niveau, le score global, le Tableau des champions et le rejeu des niveaux accomplis.
@@ -56,3 +58,4 @@ La page [Mode debug](debug.md) couvre la sélection libre des niveaux à des fin
 | 2026-05-03 | 1.8.0 | 1.2.0 | docs/requirements/index.md | Updated the account progression scope to server-side persistence | Keep the overview aligned with the corrected storage boundary |
 | 2026-05-03 | 1.9.0 | 1.3.0 | docs/requirements/index.md | Added the statistics page to the requirements overview | Make persistent scores and completed-level replay requirements discoverable |
 | 2026-05-03 | 2.1.0 | 1.3.0 | docs/requirements/index.md | Added debug requirements entry and corrected implementation workflow wording | Align the requirements overview with the agent workflow and the moved traceability audit |
+| 2026-05-03 | 2.2.0 | 1.3.0 | docs/requirements/index.md | Added the cannon requirements page to the overview | Make the new autonomous cannon mode discoverable from the requirements index |

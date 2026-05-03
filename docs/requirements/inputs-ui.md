@@ -84,6 +84,31 @@ Acceptance criteria:
 
 Needs: impl, utest
 
+#### Les niveaux cannon doivent utiliser l'état d'entrée normalisé
+`req~cannon.normalized-inputs~1`
+
+Status: approved  
+Priority: high  
+Verification: test  
+
+Pendant un niveau cannon, le système doit utiliser l'état d'entrée normalisé existant pour déplacer le canon, tirer la lettre courante et gérer la pause.
+
+Rationale: Le mode cannon doit réutiliser les conventions d'entrée déjà établies au lieu d'introduire un schéma de contrôle séparé selon le périphérique.
+
+Acceptance criteria:
+
+- L'action gauche de l'état normalisé déplace le canon vers la gauche.
+- L'action droite de l'état normalisé déplace le canon vers la droite.
+- L'action attaque de l'état normalisé tire la lettre courante.
+- L'action pause de l'état normalisé conserve le comportement de pause existant.
+- Au clavier, `Flèche gauche` et `Flèche droite` déplacent le canon.
+- Au clavier, `Espace` ou `Entrée` tirent la lettre courante.
+- À la manette, la croix directionnelle ou le stick gauche déplacent le canon.
+- À la manette, le bouton principal tire la lettre courante.
+- À la manette, le bouton pause ou start conserve le comportement de pause existant.
+
+Needs: impl, utest
+
 ## Change history
 
 | Date | Spec version | Game version | Location | Modification | Justification |
@@ -92,3 +117,4 @@ Needs: impl, utest
 | 2026-05-03 | 1.1.0 | 1.1.0 | docs/requirements/inputs-ui.md | Added character selection and cosmetic-only character requirements | Let the player choose a character without changing gameplay rules |
 | 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/inputs-ui.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |
 | 2026-05-03 | 1.4.0 | 1.2.0 | docs/requirements/inputs-ui.md | Normalized character verification fields and separated startup selection from cosmetic gameplay invariants | Apply writing rules while preserving character selection behavior |
+| 2026-05-03 | 1.5.0 | 1.3.0 | docs/requirements/inputs-ui.md | Added cannon input mapping on top of the normalized input state | Reuse the existing control model for the new cannon mode |

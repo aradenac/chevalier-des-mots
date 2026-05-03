@@ -8,7 +8,7 @@ Les statistiques couvrent les scores par niveau accompli et le score global.
 Les statistiques pédagogiques détaillées, comme les mots souvent ratés ou le temps de jeu, restent hors périmètre.
 
 #### Score de niveau de zéro à cinq étoiles
-`req~stats.level-score-five-stars~1`
+`req~stats.level-score-five-stars~2`
 
 Status: approved  
 Priority: high  
@@ -21,29 +21,33 @@ Rationale: Le joueur doit pouvoir mesurer la qualité de sa réussite au-delà d
 Acceptance criteria:
 
 - La note finale d'un niveau est un entier compris entre 0 et 5.
-- Une partie parfaite, sans erreur, donne 5 étoiles.
-- Une partie où le nombre d'erreurs est supérieur ou égal au nombre de coups réussis donne 0 étoile.
+- La note finale maximale d'un niveau est 5 étoiles.
+- La note finale minimale d'un niveau peut être 0 étoile.
 - La note finale est distincte des étoiles de progression utilisées pour terminer le niveau.
 - La note finale est calculée à la fin du niveau.
 
 Needs: impl, utest
 
 #### Définition des erreurs de niveau
-`req~stats.level-error-counting~1`
+`req~stats.level-error-counting~2`
 
 Status: approved  
 Priority: high  
 Verification: test  
 
-Le système doit compter comme erreur le fait de trancher un mot correct ou de laisser tomber un mot erroné attendu comme cible.
+Le système doit compter les erreurs d'un niveau selon le type du niveau joué.
 
-Rationale: La note finale doit pénaliser à la fois les mauvais coups et les cibles manquées.
+Rationale: La note finale doit reposer sur une notion d'erreur cohérente avec la mécanique propre à chaque type de niveau.
 
 Acceptance criteria:
 
-- Trancher un mot correct ajoute une erreur.
-- Laisser tomber un mot erroné attendu comme cible ajoute une erreur.
-- Trancher un mot erroné attendu comme cible ajoute une réussite.
+- Pour un niveau de tranchage, trancher un mot correct ajoute une erreur.
+- Pour un niveau de tranchage, laisser tomber un mot erroné attendu comme cible ajoute une erreur.
+- Pour un niveau de tranchage, trancher un mot erroné attendu comme cible ajoute une réussite.
+- Pour un niveau de dictée, le nombre d'erreurs retenu suit `req~dictation.character-error-distance~1`.
+- Pour un niveau cannon, un tir ne visant aucun trou valide ajoute une erreur.
+- Pour un niveau cannon, un tir visant un trou qui n'attend pas la lettre tirée ajoute une erreur.
+- Pour un niveau cannon, un tir réussi n'ajoute pas d'erreur.
 - Les erreurs sont comptabilisées jusqu'à la fin du niveau.
 - Les erreurs sont utilisées dans le calcul de la note finale.
 
@@ -51,7 +55,7 @@ Needs: impl, utest
 
 #### La formule de score doit dépendre du type de niveau
 
-`req~stats.level-score-formula~2`
+`req~stats.level-score-formula~3`
 
 Status: approved  
 Priority: high  
@@ -59,7 +63,7 @@ Verification: test
 
 Le système doit calculer la note finale d'un niveau avec une formule déterministe sélectionnée selon le type du niveau.
 
-Rationale: Les niveaux de tranchage et les niveaux de dictée ne produisent pas les mêmes mesures d'évaluation.
+Rationale: Les niveaux de tranchage, les niveaux de dictée et les niveaux cannon ne produisent pas les mêmes mesures d'évaluation.
 
 Acceptance criteria:
 
@@ -68,6 +72,7 @@ Acceptance criteria:
 - Pour un niveau de tranchage, la note finale est `max(0, 5 - ceil((5 * errors) / successfulHits))`.
 - Pour un niveau de tranchage, la formule donne `0` si `errors >= successfulHits`.
 - Pour un niveau de dictée, la note finale utilise `req~dictation.score-formula~1`.
+- Pour un niveau cannon, la note finale utilise `req~cannon.score-formula~1`.
 - La formule sélectionnée ne produit jamais une note inférieure à `0` ou supérieure à `5`.
 - La note finale est calculée à la fin du niveau.
 
@@ -245,3 +250,4 @@ Needs: impl, utest
 |---|---|---|---|---|---|
 | 2026-05-03 | 1.9.0 | 1.3.0 | docs/requirements/statistics.md | Added persistent statistics, champions dashboard and completed-level replay requirements without implementation | Specify score persistence and replay behavior before code changes |
 | 2026-05-03 | 2.0.0 | 1.3.0 | docs/requirements/statistics.md | Replaced single score formula with type-based score formula | Support both slicing levels and dictation levels |
+| 2026-05-03 | 2.1.0 | 1.3.0 | docs/requirements/statistics.md | Extended type-based scoring and error counting to cannon levels | Keep the statistics model coherent across slicing, dictation and cannon |

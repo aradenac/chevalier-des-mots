@@ -21,7 +21,7 @@ Needs: impl, utest
 
 #### Chaque entrée de campagne doit représenter un niveau jouable autonome
 
-`req~level.campaign-entry-is-playable-level~1`
+`req~level.campaign-entry-is-playable-level~2`
 
 Status: approved  
 Priority: high  
@@ -39,131 +39,183 @@ Acceptance criteria:
 - Chaque entrée de campagne possède un type de niveau.
 - Un niveau de tranchage possède le type `slicing`.
 - Un niveau de dictée possède le type `dictation`.
+- Un niveau cannon possède le type `cannon`.
 - Le système sélectionne le moteur de jeu à lancer selon le type du niveau courant.
-- Une entrée de campagne ne mélange pas simultanément les mécaniques `slicing` et `dictation`.
+- Une entrée de campagne ne mélange pas simultanément les mécaniques `slicing`, `dictation` et `cannon`.
 - Une entrée de campagne ne sert pas de conteneur à plusieurs sous-niveaux jouables.
 
 Needs: impl, utest
 
 ## Contexte non normatif : vue pédagogique des niveaux
 
-Les 20 niveaux actuels constituent le Monde 1 — Écuyer.
-La campagne étendue introduit ensuite un Monde 2 — Chevalier pour prolonger la progression sans rendre le jeu punitif.
+La campagne étendue prévoit deux mondes de 25 niveaux chacun.
+Le Monde 1 — Écuyer installe les repères orthographiques, les premières catégories grammaticales et les premiers niveaux cannon.
+Le Monde 2 — Chevalier consolide les accords, les temps, les homophones et les niveaux cannon les plus exigeants.
 
 ### Paliers de difficulté
 
-#### Niveaux 1 à 4 : orthographe visible
+#### Niveaux 1 à 9 : repères visuels et premiers trous
 
 Objectif pédagogique:
-Amener l'enfant à repérer des erreurs visibles et familières dans des mots isolés.
+Amener l'enfant à repérer des erreurs visibles et à compléter des mots familiers avec peu de lettres manquantes.
 
 Type de décision demandée à l'enfant:
-Reconnaître si le mot affiché est correctement écrit ou s'il contient une faute simple.
+Reconnaître une erreur orthographique simple, puis viser un trou compatible avec la lettre attendue.
 
 Types de distracteurs:
-Fautes de lettres, lettres en trop, lettres manquantes et accents absents ou incorrects.
+Fautes de lettres, lettres en trop, lettres manquantes, accents absents et trous sur des mots très connus.
 
 Forme du feedback attendu:
-Un feedback immédiat, très explicite et court, qui confirme la correction ou l'erreur sans ambiguïté.
+Un feedback immédiat, très explicite et court, qui confirme la correction ou signale l'erreur de manière non punitive.
 
 Difficulté attendue:
-Faible, avec des contrastes orthographiques nets.
+Faible, avec des contrastes orthographiques nets et des complétions très guidées.
 
-#### Niveaux 5 à 12 : nature des mots
+#### Niveaux 10 à 19 : premières abstractions grammaticales
 
 Objectif pédagogique:
-Faire identifier les catégories grammaticales de base à partir de mots isolés.
+Faire identifier les catégories grammaticales de base et compléter des mots plus structurés.
 
 Type de décision demandée à l'enfant:
-Décider si le mot appartient à la catégorie visée du niveau.
+Décider si le mot appartient à la catégorie visée ou quelle lettre complète correctement le trou proposé.
 
 Types de distracteurs:
-Verbes, adjectifs, adverbes, déterminants, pronoms, prépositions, conjonctions et noms proches de la cible.
+Verbes, adjectifs, adverbes, déterminants, pronoms, prépositions, conjonctions et lettres proches dans des mots simples.
 
 Forme du feedback attendu:
-Un feedback bref qui nomme la catégorie correcte ou signale la catégorie incorrecte.
+Un feedback bref qui nomme la catégorie correcte ou la lettre correcte attendue.
 
 Difficulté attendue:
-Modérée, avec une première abstraction grammaticale mais des indices encore clairs.
+Modérée, avec une première abstraction grammaticale et des complétions plus nombreuses.
 
-#### Niveaux 13 à 17 : formes verbales et temps
+#### Niveaux 20 à 25 : synthèse du Monde 1
 
 Objectif pédagogique:
-Amener l'enfant à distinguer les formes verbales selon l'infinitif, la conjugaison et le temps.
+Réinvestir l'orthographe, les premières catégories grammaticales, la dictée et les premiers niveaux cannon dans un même monde.
 
 Type de décision demandée à l'enfant:
-Décider si la forme verbale correspond au temps ou à la structure recherchés.
+Reconnaître rapidement la nature de la consigne puis appliquer la mécanique propre au type du niveau.
 
 Types de distracteurs:
-Verbes conjugués, infinitifs, temps voisins, formes proches mais incorrectes et erreurs de conjugaison.
+Erreurs visibles, formes verbales proches, groupes de mots courts et phrases brèves à compléter.
 
 Forme du feedback attendu:
-Un feedback qui indique la bonne forme verbale attendue et met en évidence l'écart observé.
+Un feedback synthétique mais précis, qui relie clairement l'action du joueur à la correction attendue.
 
 Difficulté attendue:
-Élevée, avec plus de mémoire de forme et de raisonnement morphologique.
+Élevée pour le Monde 1, avec une première synthèse multi-mécanique.
 
-#### Niveaux 18 à 19 : raisonnement grammatical en phrases
+#### Niveaux 26 à 39 : consolidation grammaticale et morphologique
 
 Objectif pédagogique:
-Faire raisonner sur l'accord et sur les homophones dans une phrase complète.
+Consolider les accords, les groupes verbaux, les pronoms, les temps et les complétions à trous plus exigeantes.
 
 Type de décision demandée à l'enfant:
-Identifier si la phrase contient une erreur grammaticale ou orthographique liée au sens.
+Identifier la structure grammaticale attendue ou compléter précisément plusieurs lettres en contexte.
 
 Types de distracteurs:
-Faux accords sujet-verbe, homophones proches et phrases presque correctes.
+Accords proches, terminaisons verbales voisines, pronoms de nature différente, homophones et lettres concurrentes dans des expressions courtes.
 
 Forme du feedback attendu:
-Un feedback explicatif qui montre la phrase correcte ou l'erreur à corriger.
+Un feedback qui explicite l'accord, la terminaison ou la lettre attendue sans interrompre durablement la progression.
 
 Difficulté attendue:
-Très élevée, avec une lecture plus analytique de la phrase.
+Difficile, avec plus de mémoire de forme et de raisonnement morphologique.
 
-#### Niveau 20 : défi de synthèse
+#### Niveaux 40 à 50 : synthèse du Monde 2
 
 Objectif pédagogique:
-Réinvestir l'ensemble des compétences acquises sur des décisions de nature différente dans une même séquence.
+Réinvestir les homophones, les temps, les accords et les phrases à trous dans les séquences les plus complètes de la campagne.
 
 Type de décision demandée à l'enfant:
-Reconnaître rapidement la nature de l'erreur puis décider s'il faut frapper la cible.
+Choisir rapidement la bonne mécanique mentale selon le niveau, puis exécuter une réponse précise jusqu'à la validation finale.
 
 Types de distracteurs:
-Erreurs d'accord, homophones, conjugaison, orthographe et mots corrects mélangés dans la même session.
+Homophones sensibles, accords fins, verbes à plusieurs temps et phrases comportant plusieurs trous répartis sur plusieurs mots.
 
 Forme du feedback attendu:
-Un feedback synthétique mais suffisamment précis pour relier l'action à la correction attendue.
+Un feedback synthétique mais suffisamment précis pour soutenir la correction sans rendre le niveau punitif.
 
 Difficulté attendue:
-Maximale, avec plusieurs types de décisions possibles au sein d'un même niveau.
+Maximale, avec plusieurs familles de notions croisées dans un même monde.
 
-### Table synthétique des 20 niveaux
+### Table synthétique non normative du Monde 1 — Écuyer
 
-| Niveau | Thème | Objectif pédagogique | Cibles typiques | Distracteurs typiques | Difficulté attendue |
+| Niveau | Type | Thème | Objectif pédagogique | Difficulté attendue |
+| --- | --- | --- | --- | --- |
+| 1 | slicing | Orthographe visible | Repérer une faute simple dans un mot isolé | facile |
+| 2 | slicing | Lettre en trop | Repérer une lettre superflue | facile |
+| 3 | slicing | Lettre manquante | Repérer une lettre absente dans un mot court | facile |
+| 4 | cannon | Premiers trous | Compléter des mots familiers avec peu de lettres manquantes | facile |
+| 5 | slicing | Accents visibles | Repérer un accent absent ou erroné | facile |
+| 6 | dictation | Mots simples | Transcrire un mot simple entendu | facile |
+| 7 | slicing | Noms communs | Identifier les noms communs | facile |
+| 8 | slicing | Verbes simples | Identifier les verbes simples | facile |
+| 9 | cannon | Voyelles manquantes | Replacer des voyelles dans des mots simples | facile |
+| 10 | slicing | Adjectifs | Identifier les adjectifs qualificatifs | moyen |
+| 11 | slicing | Déterminants | Identifier les déterminants courants | moyen |
+| 12 | dictation | Accents et lettres muettes | Transcrire des mots avec accent ou lettre muette | moyen |
+| 13 | slicing | Pronoms personnels | Identifier les pronoms personnels | moyen |
+| 14 | cannon | Syllabes et lettres doubles | Compléter des mots avec plusieurs trous | moyen |
+| 15 | slicing | Adverbes | Identifier les adverbes fréquents | moyen |
+| 16 | slicing | Prépositions | Identifier les prépositions courantes | moyen |
+| 17 | slicing | Conjonctions | Identifier les conjonctions simples | moyen |
+| 18 | dictation | Groupes de mots | Transcrire des groupes de mots courts | moyen |
+| 19 | cannon | Accents simples | Replacer des lettres accentuées dans des mots courts | moyen |
+| 20 | slicing | Infinitif | Distinguer les verbes à l'infinitif | moyen |
+| 21 | slicing | Verbe conjugué et infinitif | Distinguer verbe conjugué et infinitif | moyen |
+| 22 | slicing | Présent | Identifier des formes verbales au présent | difficile |
+| 23 | dictation | Phrase courte guidée | Transcrire une phrase courte simple | difficile |
+| 24 | cannon | Petits groupes de mots | Compléter un groupe nominal court | difficile |
+| 25 | slicing | Boss Écuyer | Réviser plusieurs notions du monde 1 | expert |
+
+### Table synthétique non normative du Monde 2 — Chevalier
+
+| Niveau | Type | Thème | Objectif pédagogique | Difficulté attendue |
+| --- | --- | --- | --- | --- |
+| 26 | slicing | Mots presque corrects | Repérer des mots très proches de la forme attendue | moyen |
+| 27 | slicing | Genre du nom | Identifier le genre grammatical du nom | moyen |
+| 28 | dictation | Phrase avec accords simples | Transcrire une phrase courte avec accords simples | moyen |
+| 29 | cannon | Genre et nombre | Compléter des mots accordés en genre et en nombre | moyen à difficile |
+| 30 | slicing | Nombre du nom | Identifier singulier et pluriel | moyen |
+| 31 | slicing | Accord déterminant-nom | Vérifier l'accord dans un groupe nominal | moyen |
+| 32 | slicing | Accord adjectif-nom | Vérifier l'accord de l'adjectif avec le nom | difficile |
+| 33 | dictation | Phrases courtes variées | Transcrire des phrases courtes plus denses | difficile |
+| 34 | cannon | Terminaisons du présent | Compléter des verbes courts au présent | difficile |
+| 35 | slicing | Pronoms sujets | Identifier les pronoms sujets adaptés à la phrase | difficile |
+| 36 | slicing | Pronoms compléments | Identifier des pronoms compléments simples | difficile |
+| 37 | slicing | Verbes du 1er et 2e groupe | Reconnaître des familles verbales régulières | difficile |
+| 38 | dictation | Ponctuation et groupes verbaux | Transcrire une phrase plus longue avec ponctuation | difficile |
+| 39 | cannon | Temps simples | Compléter des formes verbales au futur ou à l'imparfait | difficile |
+| 40 | slicing | Verbes fréquents du 3e groupe | Reconnaître des verbes irréguliers fréquents | difficile |
+| 41 | slicing | Présent : terminaisons | Identifier les terminaisons du présent | difficile |
+| 42 | slicing | Futur et imparfait | Distinguer des temps voisins | difficile |
+| 43 | dictation | Phrases à structure grammaticale fine | Transcrire une phrase avec plusieurs pièges légers | difficile |
+| 44 | cannon | Homophones guidés | Compléter des phrases avec des mots sensibles | difficile |
+| 45 | slicing | Passé composé | Identifier et distinguer des formes du passé composé | difficile |
+| 46 | slicing | Accord sujet-verbe pluriel | Vérifier l'accord sujet-verbe au pluriel | difficile |
+| 47 | slicing | Homophones grammaticaux | Distinguer des homophones contextuels | difficile |
+| 48 | dictation | Phrase longue avec homophones | Transcrire une phrase plus longue intégrant plusieurs indices | expert |
+| 49 | cannon | Phrases à trous | Compléter plusieurs mots dans une phrase | expert |
+| 50 | slicing | Boss Chevalier | Réviser plusieurs notions du monde 2 | expert |
+
+### Table non normative de placement conseillé des dix niveaux cannon
+
+| Position cible | Type | Thème | Objectif pédagogique | Contenu typique | Difficulté attendue |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Orthographe visible | Repérer une faute simple dans un mot isolé | fautes d'orthographe simples, mots mal écrits | mot correct proche, lettre manquante, lettre en trop | facile |
-| 2 | Orthographe visible | Repérer une lettre superflue | mots avec une lettre en trop | mot correct, forme fautive proche | facile |
-| 3 | Orthographe visible | Repérer une lettre manquante | mots incomplets | mot complet, forme presque correcte | facile |
-| 4 | Orthographe visible | Repérer un accent absent ou erroné | mots sans accent ou avec accent faux | mot correctement accentué, forme voisine | facile |
-| 5 | Nature des mots | Identifier les noms communs | noms d'objets, d'êtres ou de lieux | verbes, adjectifs, adverbes, pronoms | facile |
-| 6 | Nature des mots | Identifier les verbes simples | verbes d'action à l'infinitif | noms, adjectifs, mots de couleur | facile |
-| 7 | Nature des mots | Identifier les adjectifs | adjectifs qualificatifs | noms, verbes, adverbes | facile |
-| 8 | Nature des mots | Identifier les déterminants | articles et déterminants courants | noms, verbes, adjectifs, pronoms | moyen |
-| 9 | Nature des mots | Identifier les pronoms personnels | je, tu, nous, elles | noms, verbes, adjectifs, prépositions | moyen |
-| 10 | Nature des mots | Identifier les adverbes | mots qui modifient un verbe ou une action | adjectifs, noms, verbes, mots proches | moyen |
-| 11 | Nature des mots | Identifier les prépositions | mots de relation spatiale ou logique | déterminants, verbes, noms, adjectifs | moyen |
-| 12 | Nature des mots | Identifier les conjonctions | mots qui relient mots ou phrases | prépositions, adverbes, noms, pronoms | moyen |
-| 13 | Formes verbales | Distinguer l'infinitif | verbes à l'infinitif | formes conjuguées proches | moyen |
-| 14 | Formes verbales | Distinguer verbe conjugué et infinitif | verbes conjugués avec sujet | infinitifs proches | moyen |
-| 15 | Formes verbales et temps | Identifier le présent | verbes au présent | futur, passé composé, formes proches | difficile |
-| 16 | Formes verbales et temps | Identifier le futur | verbes au futur | présent, formes proches | difficile |
-| 17 | Formes verbales et temps | Identifier le passé composé | verbes au passé composé | présent, futur, formes proches | difficile |
-| 18 | Raisonnement grammatical | Corriger un accord sujet-verbe | phrases avec accord incorrect | phrase correcte, accord proche | difficile |
-| 19 | Raisonnement grammatical | Corriger un homophone en contexte | phrases avec homophone erroné | phrase correcte, homophone proche | difficile |
-| 20 | Défi de synthèse | Réinvestir plusieurs compétences à la fois | erreurs d'accord, d'orthographe, de conjugaison ou d'homophone | phrases correctes et erreurs mixtes | expert |
+| 4 | cannon | Premiers trous | Compléter des mots familiers avec peu de lettres manquantes | chat, lune, roi, fée | facile |
+| 9 | cannon | Voyelles manquantes | Replacer des voyelles dans des mots simples | maison, cheval, dragon | facile |
+| 14 | cannon | Syllabes et lettres doubles | Compléter des mots avec plusieurs trous | ballon, couronne, princesse | moyen |
+| 19 | cannon | Accents simples | Replacer des lettres accentuées dans des mots courts | épée, forêt, château | moyen |
+| 24 | cannon | Petits groupes de mots | Compléter un groupe nominal court | petit dragon, grande porte | moyen |
+| 29 | cannon | Genre et nombre | Compléter des mots accordés | une petite maison, les grands arbres | moyen à difficile |
+| 34 | cannon | Terminaisons du présent | Compléter des verbes courts en contexte | je parle, nous chantons | difficile |
+| 39 | cannon | Temps simples | Compléter des formes verbales au futur ou à l’imparfait | il jouera, nous marchions | difficile |
+| 44 | cannon | Homophones guidés | Compléter une phrase avec lettres manquantes dans des mots sensibles | Il est là. / Elle a faim. | difficile |
+| 49 | cannon | Phrases à trous | Compléter plusieurs mots dans une phrase | Le chevalier ouvre la grande porte. | expert |
 
 #### Progression pédagogique des niveaux
-`req~level.pedagogical-progression~1`
+`req~level.pedagogical-progression~2`
 
 Status: approved  
 Priority: high  
@@ -177,9 +229,10 @@ Rationale: L'enfant doit pouvoir construire ses compétences progressivement san
 Acceptance criteria:
 
 - Les premiers niveaux portent sur des erreurs visibles ou familières.
-- Les niveaux intermédiaires portent sur les catégories grammaticales.
-- Les niveaux avancés portent sur les accords dans le groupe nominal, les groupes verbaux, l'imparfait, les autres temps et les homophones plus fins.
+- Les niveaux intermédiaires portent sur les catégories grammaticales, les premières dictées et les premiers niveaux cannon.
+- Les niveaux avancés portent sur les accords dans le groupe nominal, les groupes verbaux, les temps, les homophones et les phrases à trous.
 - La progression se fait par mondes, avec un Monde 1 centré sur les distinctions visibles puis un Monde 2 centré sur la consolidation grammaticale.
+- Les dix niveaux cannon suivent une progression pédagogique allant des mots simples avec peu de trous vers les phrases à trous contenant plusieurs mots.
 - Le dernier niveau combine plusieurs types de décisions.
 - La structure des niveaux reste cohérente avec les métadonnées de `src/data/levels.js`.
 
@@ -187,7 +240,7 @@ Needs: impl, utest
 
 #### La progression doit avancer après un niveau terminé
 
-`req~level.progression-model~2`
+`req~level.progression-model~3`
 
 Status: approved  
 Priority: high  
@@ -195,7 +248,7 @@ Verification: test
 
 Le système doit gérer le niveau courant avec un indice borné et passer au niveau suivant après qu'un niveau est terminé selon les règles de son type.
 
-Rationale: La progression doit couvrir les niveaux de tranchage et les niveaux de dictée sans dépendre uniquement de la notion de victoire.
+Rationale: La progression doit couvrir les niveaux de tranchage, les niveaux de dictée et les niveaux cannon sans dépendre d'une seule mécanique de victoire.
 
 Acceptance criteria:
 
@@ -203,10 +256,12 @@ Acceptance criteria:
 - Un index trop grand est ramené au dernier niveau.
 - Un niveau de tranchage terminé avec victoire sélectionne le niveau suivant.
 - Un niveau de dictée validé sélectionne le niveau suivant quand le joueur choisit de continuer.
+- Un niveau cannon terminé avec tous ses trous complétés sélectionne le niveau suivant.
 - Un niveau final terminé renvoie au premier niveau ou à l'état de fin de campagne défini par l'interface.
 - Le passage au niveau suivant conserve le compte joueur actif.
 - Le passage d'un niveau à l'autre utilise les entrées de campagne, quel que soit leur type.
 - Un niveau de dictée n'est pas sauté, fusionné avec le niveau précédent ou fusionné avec le niveau suivant.
+- Un niveau cannon n'est pas sauté, fusionné avec le niveau précédent ou fusionné avec le niveau suivant.
 - Le type du niveau suivant détermine l'écran et le moteur de jeu lancés.
 
 Needs: impl, utest
@@ -214,7 +269,7 @@ Needs: impl, utest
 ## Campagne étendue
 
 #### La campagne doit progresser par mondes
-`req~level.extended-campaign-worlds~1`
+`req~level.extended-campaign-worlds~2`
 
 Status: approved  
 Priority: high  
@@ -227,16 +282,17 @@ Rationale: Le découpage en mondes permet d'allonger la campagne, de clarifier l
 
 Acceptance criteria:
 
-- Le Monde 1 contient les niveaux 1 à 20.
-- Le Monde 2 contient les niveaux 21 à 40.
+- Le Monde 1 contient les niveaux 1 à 25.
+- Le Monde 2 contient les niveaux 26 à 50.
 - Chaque monde a un titre et une intention pédagogique.
+- Chaque monde contient des niveaux `slicing`, `dictation` et `cannon`.
 - Les boss de monde révisent plusieurs familles de notions.
 - Les mondes sont ordonnés selon leurs plages de niveaux.
 
 Needs: impl, utest
 
 #### Le second monde doit consolider l'orthographe et la grammaire
-`req~level.world-two-grammar-consolidation~1`
+`req~level.world-two-grammar-consolidation~2`
 
 Status: approved  
 Priority: high  
@@ -249,59 +305,33 @@ Rationale: Le second monde doit prolonger la courbe d'apprentissage sans recopie
 
 Acceptance criteria:
 
-- Les niveaux 21 à 40 sont définis par thème.
-- Les niveaux 21 à 40 couvrent orthographe fine, accords, pronoms, groupes verbaux, temps et homophones.
-- Le niveau 40 mélange les notions du monde 2.
-- Les niveaux du monde 2 utilisent des cibles et distracteurs représentatifs sans dupliquer toute la base d'items dans la spec.
+- Les niveaux 26 à 50 sont définis par thème.
+- Les niveaux 26 à 50 couvrent orthographe fine, accords, pronoms, groupes verbaux, temps, homophones et phrases à trous.
+- Le Monde 2 contient des niveaux `slicing`, `dictation` et `cannon`.
+- Le niveau 50 mélange les notions du monde 2.
+- Les niveaux du monde 2 utilisent des cibles, dictées, puzzles à trous et distracteurs représentatifs sans dupliquer toute la base d'items dans la spec.
 
 Needs: impl, utest
 
 #### La campagne complète doit durer plus longtemps
-`req~level.longer-play-session~1`
+`req~level.longer-play-session~2`
 
 Status: approved  
 Priority: medium  
 Verification: inspection  
 
-Le système doit fournir une campagne complète contenant au moins 40 niveaux approuvés ou implémentés.
+Le système doit fournir une campagne complète contenant au moins 50 niveaux approuvés ou implémentés.
 
 Rationale: Le jeu actuel est trop court pour installer suffisamment de répétition et de consolidation.
 
 Acceptance criteria:
 
-- La campagne complète contient au moins 40 niveaux approuvés ou implémentés.
-- Les niveaux ajoutés ne dépassent pas la borne de `fallSpeed` définie par les tests de niveaux.
+- La campagne complète contient au moins 50 niveaux approuvés ou implémentés.
+- Les niveaux ajoutés ne dépassent pas la borne de `fallSpeed` définie par les tests de niveaux lorsqu'ils utilisent une mécanique de chute.
 - Les niveaux ajoutés couvrent plusieurs familles pédagogiques distinctes.
+- La campagne complète comprend dix niveaux `cannon` intercalés dans les deux mondes existants.
 
 Needs: impl
-
-### Contexte non normatif : Monde 2 — Chevalier
-
-Les niveaux 21 à 40 prolongent la campagne avec une consolidation grammaticale et orthographique plus fine.
-Les cibles et distracteurs ci-dessous sont représentatifs et non exhaustifs.
-
-| Niveau | Thème | Objectif pédagogique | Cibles typiques | Distracteurs typiques | Difficulté attendue |
-| --- | --- | --- | --- | --- | --- |
-| 21 | Mots presque corrects | Repérer des mots très proches de la forme attendue | mots avec une lettre manquante, lettre doublée, inversion légère | mot correctement orthographié, autre forme proche mais différente | moyen |
-| 22 | Accents et cédilles | Repérer les erreurs d'accents et de cédilles | mots avec accent manquant, accent déplacé, cédille oubliée | mot correctement accentué, graphie proche sans erreur visible | moyen |
-| 23 | Genre du nom | Identifier le genre grammatical du nom | noms associés à un déterminant ou adjectif de genre attendu | nom du genre opposé, mot de sens proche | moyen |
-| 24 | Nombre du nom | Identifier le singulier et le pluriel | noms au pluriel ou au singulier selon la consigne | forme du nombre opposé, mot proche mais incorrect | moyen |
-| 25 | Accord déterminant-nom | Vérifier l'accord entre déterminant et nom | groupes nominaux avec déterminant correct à choisir | déterminant du mauvais genre ou du mauvais nombre | moyen |
-| 26 | Accord adjectif-nom | Vérifier l'accord de l'adjectif avec le nom | adjectifs accordés au genre et au nombre du nom | adjectif non accordé, forme presque correcte | moyen à difficile |
-| 27 | Pronoms personnels sujets | Identifier les pronoms sujets adaptés à la phrase | je, tu, il, elle, nous, vous, ils, elles | nom sujet, pronom de complément, forme proche | difficile |
-| 28 | Pronoms compléments simples | Repérer les pronoms compléments directs ou indirects simples | me, te, le, la, lui, nous, vous, les | pronom sujet, déterminant, mot proche mais faux | difficile |
-| 29 | Verbes du 1er groupe | Reconnaître les verbes réguliers en -er | verbes réguliers ou formes de base en -er | nom proche, infinitif d'un autre groupe, forme conjuguée | difficile |
-| 30 | Verbes du 2e groupe | Reconnaître les verbes réguliers en -ir | verbes réguliers du type finir | verbe du 1er groupe, verbe du 3e groupe, forme proche | difficile |
-| 31 | Verbes fréquents du 3e groupe | Reconnaître les verbes irréguliers fréquents | être, avoir, aller, faire, dire, voir, prendre, venir | verbe régulier proche, forme conjuguée voisine | difficile |
-| 32 | Présent : terminaisons | Identifier les terminaisons du présent | formes du présent avec terminaisons régulières | futur proche, infinitif, terminaisons voisines | difficile |
-| 33 | Futur : terminaisons | Identifier les terminaisons du futur | formes du futur avec terminaisons régulières | présent voisin, infinitif, forme morphologiquement proche | difficile |
-| 34 | Imparfait | Identifier l'imparfait et ses terminaisons | formes en -ais, -ait, -ions, -iez, -aient | présent proche, futur, passé composé | difficile |
-| 35 | Passé composé avec avoir | Identifier le passé composé formé avec avoir | formes avec auxiliaire avoir et participe passé | présent proche, futur, autre auxiliaire | difficile |
-| 36 | Passé composé avec être | Identifier le passé composé formé avec être | formes avec auxiliaire être et accord du participe passé | présent proche, passé composé avec avoir, forme non accordée | difficile |
-| 37 | Accord sujet-verbe pluriel | Vérifier l'accord sujet-verbe au pluriel | phrases avec sujet pluriel et verbe accordé | accord singulier, forme proche mais incorrecte | difficile |
-| 38 | Homophones grammaticaux 1 | Distinguer a/à, et/est, son/sont | phrases où l'homophone correct change le sens | homophone voisin, forme correcte de l'autre catégorie | difficile |
-| 39 | Homophones grammaticaux 2 | Distinguer ou/où, ce/se, ces/ses | phrases avec homophone contextuel correct | homophone voisin, déterminant ou pronom proche | difficile |
-| 40 | Boss Chevalier | Réviser plusieurs notions du monde 2 dans une séquence mixte | accords, pronoms, conjugaison, temps et homophones | phrases correctes mélangées à plusieurs erreurs proches | expert |
 
 ## Change history
 
@@ -312,3 +342,4 @@ Les cibles et distracteurs ci-dessous sont représentatifs et non exhaustifs.
 | 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/levels.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |
 | 2026-05-03 | 1.4.0 | 1.2.0 | docs/requirements/levels.md | Normalized verification fields, separated progression concerns and marked overview sections as non-normative | Apply writing rules without changing the approved level model |
 | 2026-05-03 | 2.1.0 | 1.3.0 | docs/requirements/levels.md | Added autonomous campaign entry requirement and clarified type-based progression | Prevent dictation from being implemented as an interstitial exercise between levels |
+| 2026-05-03 | 2.2.0 | 1.3.0 | docs/requirements/levels.md | Extended the campaign to 50 levels across two 25-level worlds and integrated cannon as a third autonomous level type | Specify the placement and progression of cannon levels before implementation |

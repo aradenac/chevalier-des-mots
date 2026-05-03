@@ -32,7 +32,7 @@ Needs: impl, utest
 
 #### Le mode debug doit proposer une sélection libre des niveaux
 
-`req~debug.level-selector~1`
+`req~debug.level-selector~2`
 
 Status: approved  
 Priority: high  
@@ -53,6 +53,7 @@ Acceptance criteria:
 - Le menu debug permet de sélectionner un niveau non encore accompli dans la progression normale.
 - Le menu debug permet de sélectionner un niveau de tranchage.
 - Le menu debug permet de sélectionner un niveau de dictée.
+- Le menu debug permet de sélectionner un niveau cannon.
 - Le menu debug ne remplace pas le lancement normal de la campagne.
 
 Needs: impl, utest
@@ -155,7 +156,7 @@ Needs: impl, utest
 
 #### Le mode debug doit revenir au menu debug après un niveau par défaut
 
-`req~debug.return-to-selector~1`
+`req~debug.return-to-selector~2`
 
 Status: approved  
 Priority: high  
@@ -170,6 +171,7 @@ Acceptance criteria:
 
 - Terminer un niveau de tranchage en mode debug revient au menu debug lorsque l'option d'enchaînement debug est désactivée.
 - Terminer un niveau de dictée en mode debug revient au menu debug lorsque l'option d'enchaînement debug est désactivée et que le joueur choisit de continuer.
+- Terminer un niveau cannon en mode debug revient au menu debug lorsque l'option d'enchaînement debug est désactivée.
 - L'option d'enchaînement debug est désactivée par défaut.
 - La fin d'un niveau en mode debug ne revient pas automatiquement au Tableau des champions.
 - Le retour au menu debug conserve la possibilité de sélectionner un autre niveau.
@@ -202,7 +204,7 @@ Needs: impl, utest
 
 #### Le mode debug doit permettre d'enchaîner les niveaux depuis un niveau sélectionné
 
-`req~debug.chain-levels~1`
+`req~debug.chain-levels~2`
 
 Status: approved  
 Priority: medium  
@@ -222,7 +224,7 @@ Acceptance criteria:
 - En contexte debug enchaîné, terminer un niveau affiche l'écran normal de fin de niveau.
 - En contexte debug enchaîné, l'action Continuer depuis l'écran de fin de niveau lance le niveau suivant.
 - L'enchaînement utilise l'ordre des niveaux de la campagne.
-- L'enchaînement respecte le type du niveau suivant, notamment les niveaux de tranchage et les niveaux de dictée.
+- L'enchaînement respecte le type du niveau suivant, notamment les niveaux de tranchage, les niveaux de dictée et les niveaux cannon.
 - L'enchaînement ne nécessite pas de compte joueur actif.
 - L'enchaînement utilise le personnage debug par défaut si aucun personnage n'est sélectionné.
 - L'enchaînement ne modifie pas la progression sauvegardée.
@@ -258,7 +260,7 @@ Needs: impl, utest
 
 #### Le mode debug doit permettre de terminer un niveau avec la note maximale
 
-`req~debug.max-score-completion-shortcut~1`
+`req~debug.max-score-completion-shortcut~2`
 
 Status: approved  
 Priority: medium  
@@ -278,6 +280,7 @@ Acceptance criteria:
 - Le raccourci termine le niveau courant en utilisant le flux normal de fin de niveau.
 - Pour un niveau de tranchage, le raccourci produit la note maximale, actuellement `5 / 5`.
 - Pour un niveau de dictée, le raccourci produit la note maximale, actuellement `5 / 5`.
+- Pour un niveau cannon, le raccourci produit la note maximale, actuellement `5 / 5`.
 - La note maximale ne dépend pas du taux de succès, du nombre d'erreurs ou du détail interne des statistiques du niveau.
 - En mode debug isolé, la complétion maximale mène à l'écran de fin de niveau puis au retour au menu debug lorsque le joueur choisit de continuer.
 - En mode debug enchaîné, la complétion maximale mène à l'écran de fin de niveau puis au niveau suivant lorsque le joueur choisit de continuer.
@@ -295,3 +298,4 @@ Needs: impl, utest
 |---|---|---|---|---|---|
 | 2026-05-03 | 2.1.0 | 1.3.0 | docs/requirements/debug.md | Added debug level selector requirements | Allow testing any level from the normal interface without account, progress update or statistics pollution |
 | 2026-05-03 | 2.2.0 | 1.3.0 | docs/requirements/debug.md | Added optional debug level chaining and max-score completion shortcut requirements | Allow testers to validate post-level transitions and campaign chaining from debug mode without altering player progression or statistics |
+| 2026-05-03 | 2.3.0 | 1.3.0 | docs/requirements/debug.md | Extended debug coverage to cannon levels for selection, isolated completion, chaining and max-score completion | Keep debug behavior aligned with the new autonomous cannon levels |
