@@ -11,11 +11,8 @@ La progression est linéaire et ne couvre pas le rejeu libre des anciens niveaux
 
 ## Traçabilité attendue
 
-Ces exigences décrivent une cible produit approuvée mais non encore implémentée.
-La couverture `impl` et `utest` doit être ajoutée pendant la phase `IMPLEMENTATION`.
-
-Jusqu'à cette phase, `npm run trace` peut échouer parce que ces exigences ont `Needs: impl, utest` sans liens OpenFastTrace correspondants.
-Cet échec ne doit pas être contourné par de faux liens.
+Ces exigences décrivent une cible produit approuvée.
+La couverture `impl` et `utest` est portée par les modules de comptes, de stockage serveur, d'orchestration d'écran de démarrage et par les tests associés.
 
 #### Comptes locaux joueur
 `req~account.local-accounts~1`
@@ -292,3 +289,4 @@ Needs:
 |---|---|---|---|---|---|
 | 2026-05-03 | 1.7.0 | 1.2.0 | docs/requirements/accounts-progress.md | Added local account and saved progression requirements without implementation | Specify local multi-player progression before code changes |
 | 2026-05-03 | 1.8.0 | 1.2.0 | docs/requirements/accounts-progress.md | Replaced browser-side database storage with server-side database storage | Correct the persistence boundary before implementation |
+| 2026-05-03 | 1.8.0 | 1.3.0 | docs/requirements/accounts-progress.md | Updated traceability status after account progression implementation | Keep the requirements page aligned with delivered implementation and tests |

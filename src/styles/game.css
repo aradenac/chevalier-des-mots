@@ -477,6 +477,107 @@ h1 {
   font-size: clamp(18px, 2.6vw, 27px);
   font-weight: 900;
 }
+.accountSection {
+  margin: 14px auto 18px;
+  padding: 14px;
+  border-radius: 22px;
+  background: #f4fbff;
+  border: 3px solid #258dc7;
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,.72);
+  text-align: left;
+}
+.accountSection h2 {
+  margin: 0 0 4px;
+  color: #6849d8;
+  font-size: clamp(22px, 3vw, 32px);
+  text-align: center;
+}
+.accountHint {
+  margin: 0 0 10px;
+  text-align: center;
+  font-weight: 900;
+}
+.accountList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.accountEmpty {
+  padding: 12px;
+  border-radius: 14px;
+  background: #fffdf2;
+  border: 3px dashed #258dc7;
+  text-align: center;
+  font-weight: 900;
+}
+.accountChoice {
+  min-height: 66px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  text-align: left;
+  background: #fffdf2;
+  border: 3px solid #258dc7;
+  box-shadow: 0 4px 0 #258dc7;
+  font-weight: 900;
+}
+.accountChoice.is-selected {
+  background: #fff3c6;
+  border-color: #bd7600;
+  box-shadow: 0 4px 0 #bd7600;
+}
+.accountChoice span {
+  display: block;
+  color: #6849d8;
+  font-size: 13px;
+  margin-top: 3px;
+}
+.accountEditor {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-weight: 900;
+}
+.accountEditor input {
+  min-height: 46px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  border: 3px solid #6849d8;
+  font: inherit;
+  font-weight: 900;
+  color: var(--ink);
+  background: #fffdf2;
+}
+.accountActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.smallBtn {
+  min-height: 44px;
+  padding: 9px 13px;
+  border-radius: 14px;
+  background: var(--gold);
+  border: 3px solid #bd7600;
+  box-shadow: 0 4px 0 #bd7600;
+  font-size: 16px;
+  font-weight: 900;
+}
+.smallBtn:disabled,
+.bigBtn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  translate: none;
+}
+.accountStatus {
+  min-height: 24px;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: #bd3a7c;
+}
 .characterIntro {
   margin-bottom: 12px;
 }

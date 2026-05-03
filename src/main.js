@@ -10,6 +10,9 @@ import { createTouchInput } from "./adapters/touchInput.js";
 import { createGamepadInput } from "./adapters/gamepadInput.js";
 import { createAudioService } from "./adapters/audioService.js";
 import { createNarrationService } from "./adapters/narrationService.js";
+import { createServerAccountStorage } from "./adapters/serverAccountStorage.js";
+import { createAccountSession } from "./adapters/accountSession.js";
+import { createAccountSelectionView } from "./core/accountsProgress.js";
 
 const game = document.getElementById("game");
 const arena = document.getElementById("arena");
@@ -29,6 +32,16 @@ const levelGrid = document.getElementById("levelGrid");
 const startSubtitle = document.getElementById("startSubtitle");
 const characterGrid = document.getElementById("characterGrid");
 const characterStatus = document.getElementById("characterStatus");
+const accountList = document.getElementById("accountList");
+const accountNameInput = document.getElementById("accountNameInput");
+const accountStatus = document.getElementById("accountStatus");
+const createAccountBtn = document.getElementById("createAccountBtn");
+const renameAccountBtn = document.getElementById("renameAccountBtn");
+const resetAccountBtn = document.getElementById("resetAccountBtn");
+const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+const playBtn = document.getElementById("playBtn");
+const easyBtn = document.getElementById("easyBtn");
+const chooseBtn = document.getElementById("chooseBtn");
 
 const initialState = createGameState({ knightX: window.innerWidth / 2 });
 let state = initialState.state;
@@ -51,6 +64,10 @@ const services = {
     onDiagnostic: setNarrationStatus
   })
 };
+const accountSession = createAccountSession({
+  storage: createServerAccountStorage(),
+  levelsLength: LEVELS.length
+});
 
 function getLevel() {
   return getCurrentLevel(LEVELS, currentLevelIndex);
@@ -139,6 +156,127 @@ function updateCharacterPreview() {
     button.classList.toggle("is-selected", button.dataset.characterId === character.id);
     button.setAttribute("aria-pressed", button.dataset.characterId === character.id ? "true" : "false");
   }
+}
+
+function setAccountStatus(text) {
+  if (accountStatus) accountStatus.textContent = text || "";
+}
+
+function hasActiveAccount() {
+  return Boolean(accountSession.getSnapshot().activeAccount);
+}
+
+function updateLinearProgressionControls() {
+  if (chooseBtn) {
+    // [impl->req~progress.linear-progression~1]
+    chooseBtn.hidden = true;
+    chooseBtn.disabled = true;
+  }
+}
+
+function syncLevelWithActiveAccount() {
+  const snapshot = accountSession.getSnapshot();
+  if (!snapshot.activeAccount) return;
+  currentLevelIndex = accountSession.getResumeLevelIndex();
+  updateHud();
+}
+
+function renderAccounts(snapshot = accountSession.getSnapshot()) {
+  if (!accountList) return;
+  accountList.innerHTML = "";
+  const view = createAccountSelectionView(snapshot.accounts, snapshot.activeAccountId, LEVELS.length);
+
+  if (view.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "accountEmpty";
+    empty.textContent = "Aucun compte pour l'instant.";
+    accountList.appendChild(empty);
+  }
+
+  // [impl->req~account.start-selection~1]
+  for (const account of view) {
+    const button = document.createElement("button");
+    button.className = "accountChoice";
+    button.type = "button";
+    button.dataset.accountId = account.id;
+    button.classList.toggle("is-selected", account.active);
+    button.setAttribute("aria-pressed", account.active ? "true" : "false");
+    button.textContent = account.name;
+    const resume = document.createElement("span");
+    resume.textContent = "Reprise : niveau " + account.resumeLevel;
+    button.appendChild(resume);
+    button.addEventListener("click", () => {
+      const nextSnapshot = accountSession.selectAccount(account.id);
+      if (accountNameInput) accountNameInput.value = nextSnapshot.activeAccount?.name || "";
+      syncLevelWithActiveAccount();
+      renderAccounts(nextSnapshot);
+      setAccountStatus("Compte actif : " + account.name);
+    });
+    accountList.appendChild(button);
+  }
+
+  const hasAccount = Boolean(snapshot.activeAccount);
+  playBtn.disabled = !hasAccount;
+  easyBtn.disabled = !hasAccount;
+  renameAccountBtn.disabled = !hasAccount;
+  resetAccountBtn.disabled = !hasAccount;
+  deleteAccountBtn.disabled = !hasAccount;
+  if (snapshot.diagnostic) setAccountStatus(snapshot.diagnostic);
+  if (!hasAccount && !snapshot.diagnostic) setAccountStatus("Choisis ou crée un compte avant de jouer.");
+}
+
+async function createAccountFromInput() {
+  const name = accountNameInput.value;
+  if (!name.trim()) {
+    setAccountStatus("Entre un nom de compte.");
+    return;
+  }
+  // [impl->req~account.creation~1]
+  const snapshot = await accountSession.createAccount(name);
+  syncLevelWithActiveAccount();
+  renderAccounts(snapshot);
+  setAccountStatus("Compte créé : " + snapshot.activeAccount.name);
+}
+
+async function renameActiveAccount() {
+  const name = accountNameInput.value;
+  if (!name.trim()) {
+    setAccountStatus("Entre un nouveau nom.");
+    return;
+  }
+  const snapshot = await accountSession.renameAccount(name);
+  renderAccounts(snapshot);
+  setAccountStatus(snapshot.activeAccount ? "Compte renommé : " + snapshot.activeAccount.name : "");
+}
+
+async function resetActiveAccount() {
+  if (!hasActiveAccount()) return;
+  if (!window.confirm("Réinitialiser la progression de ce compte ?")) return;
+  const snapshot = await accountSession.resetAccount();
+  syncLevelWithActiveAccount();
+  renderAccounts(snapshot);
+  setAccountStatus("Progression réinitialisée.");
+}
+
+async function deleteActiveAccount() {
+  if (!hasActiveAccount()) return;
+  if (!window.confirm("Supprimer ce compte ?")) return;
+  const snapshot = await accountSession.deleteAccount();
+  currentLevelIndex = 0;
+  if (accountNameInput) accountNameInput.value = "";
+  renderAccounts(snapshot);
+  startOverlay.classList.remove("hidden");
+  levelOverlay.classList.add("hidden");
+  selectOverlay.classList.add("hidden");
+  state = "menu";
+  updateHud();
+  setAccountStatus("Compte supprimé. Choisis ou crée un compte.");
+}
+
+async function initAccounts() {
+  const snapshot = await accountSession.load();
+  renderAccounts(snapshot);
+  updateLinearProgressionControls();
 }
 
 function applySelectedCharacter() {
@@ -281,6 +419,9 @@ function finishLevel() {
   state = "level";
   levelOverlay.classList.remove("hidden");
   resetWords();
+  void accountSession.saveCompletedLevel(current.id).then(snapshot => {
+    renderAccounts(snapshot);
+  });
   if (isFinalLevel(currentLevelIndex, LEVELS.length)) {
     document.getElementById("levelTitle").textContent = "Victoire finale !";
     document.getElementById("levelText").textContent = "Le chevalier maîtrise les 40 niveaux des mots.";
@@ -295,6 +436,12 @@ function finishLevel() {
 }
 
 function startGame(easy) {
+  if (!hasActiveAccount()) {
+    // [impl->req~account.start-selection~1]
+    setAccountStatus("Choisis ou crée un compte avant de jouer.");
+    return;
+  }
+  currentLevelIndex = accountSession.getResumeLevelIndex();
   resetWords();
   const nextState = resetGameStateForLevel({
     state,
@@ -455,9 +602,13 @@ document.getElementById("strikeBtnTop").addEventListener("click", strike);
 menuBtn.addEventListener("click", returnToMenu);
 pauseBtn.addEventListener("click", togglePause);
 voiceBtn.addEventListener("click", toggleNarration);
-document.getElementById("playBtn").addEventListener("click", () => startGame(false));
-document.getElementById("easyBtn").addEventListener("click", () => startGame(true));
-document.getElementById("chooseBtn").addEventListener("click", () => {
+playBtn.addEventListener("click", () => startGame(false));
+easyBtn.addEventListener("click", () => startGame(true));
+createAccountBtn.addEventListener("click", () => { void createAccountFromInput(); });
+renameAccountBtn.addEventListener("click", () => { void renameActiveAccount(); });
+resetAccountBtn.addEventListener("click", () => { void resetActiveAccount(); });
+deleteAccountBtn.addEventListener("click", () => { void deleteActiveAccount(); });
+chooseBtn.addEventListener("click", () => {
   startOverlay.classList.add("hidden");
   selectOverlay.classList.remove("hidden");
   state = "select";
@@ -480,6 +631,7 @@ buildLevelGrid();
 buildCharacterGrid();
 applySelectedCharacter();
 updateHud();
+void initAccounts();
 initNarration();
 setMessage(getLevel().instruction);
 knight.style.left = knightX + "px";

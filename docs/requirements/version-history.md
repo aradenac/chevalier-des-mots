@@ -18,6 +18,7 @@ Elle permet de suivre les changements globaux sans disperser l'historique dans l
 | 2026-05-03 | 1.6.0 | 1.2.0 | tools/trace.sh, tools/openfasttrace/README.md, docs/requirements/verification.md, docs/requirements/traceability-audit.md | Added detailed plain and HTML OpenFastTrace reporting | Make traceability reports usable for human audit while keeping OpenFastTrace as the only trace validator |
 | 2026-05-03 | 1.7.0 | 1.2.0 | docs/requirements/accounts-progress.md, docs/requirements/index.md, docs/requirements/traceability-audit.md, mkdocs.yml | Added local account and saved progression requirements without implementation | Specify local browser accounts and linear progress saving before code changes |
 | 2026-05-03 | 1.8.0 | 1.2.0 | docs/requirements/accounts-progress.md, docs/requirements/index.md, docs/requirements/traceability-audit.md | Corrected account progression storage from browser-side database to server-side database with no implementation | Align the persistence boundary with the corrected product decision |
+| 2026-05-03 | 1.8.0 | 1.3.0 | src/core/accountsProgress.js, src/adapters/accountSession.js, src/adapters/serverAccountStorage.js, src/server/accountDatabase.js, src/server/accountApi.js, src/main.js, index.html, src/styles/game.css, vite.config.js, .gitignore, tests/accountsProgress.test.js, tests/accountSession.test.js, tests/serverAccountStorage.test.js | Implemented local player accounts with server-side saved progression | Deliver the approved account and linear progression requirements without changing levels or pedagogy |
 
 ## Change history
 
@@ -36,3 +37,4 @@ Elle permet de suivre les changements globaux sans disperser l'historique dans l
 | 2026-05-03 | 1.6.0 | 1.2.0 | docs/requirements/version-history.md | Recorded detailed OpenFastTrace reporting update | Keep the global history aligned with the audit-reporting wrapper change |
 | 2026-05-03 | 1.7.0 | 1.2.0 | docs/requirements/version-history.md | Recorded local accounts and saved progression specification with no implementation | Keep the global history aligned with the new account and progress requirements |
 | 2026-05-03 | 1.8.0 | 1.2.0 | docs/requirements/version-history.md | Recorded the server-side account storage correction with no implementation | Keep the global history aligned with the corrected persistence boundary |
+| 2026-05-03 | 1.8.0 | 1.3.0 | docs/requirements/version-history.md | Recorded the account progression implementation | Keep the global history aligned with delivered code and test coverage |

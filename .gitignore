@@ -4,3 +4,4 @@ dist/
 site/
 build/
 tools/openfasttrace/openfasttrace.jar
+server-data/

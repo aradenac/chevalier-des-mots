@@ -46,6 +46,22 @@
       <div class="panel">
         <h1>Le Chevalier des Mots</h1>
         <p id="startSubtitle" class="subtitle">Niveau 1 : Les mots mal écrits</p>
+        <section id="accountSection" class="accountSection" aria-label="Comptes locaux">
+          <h2>Compte joueur</h2>
+          <p class="accountHint">Choisis un compte ou crée-en un pour reprendre ta progression.</p>
+          <div id="accountList" class="accountList"></div>
+          <label class="accountEditor">
+            <span>Nom du compte</span>
+            <input id="accountNameInput" type="text" maxlength="32" autocomplete="off" placeholder="Prénom du joueur">
+          </label>
+          <div class="accountActions">
+            <button id="createAccountBtn" class="smallBtn" type="button">Créer</button>
+            <button id="renameAccountBtn" class="smallBtn secondary" type="button">Renommer</button>
+            <button id="resetAccountBtn" class="smallBtn secondary" type="button">Réinitialiser</button>
+            <button id="deleteAccountBtn" class="smallBtn pink" type="button">Supprimer</button>
+          </div>
+          <div id="accountStatus" class="accountStatus" aria-live="polite"></div>
+        </section>
         <p class="subtitle characterIntro">Choisis ton personnage avant de commencer.</p>
         <div id="characterGrid" class="characterGrid" role="group" aria-label="Choix du personnage"></div>
         <div id="characterStatus" class="characterStatus" aria-live="polite"></div>
