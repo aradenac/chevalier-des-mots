@@ -69,6 +69,7 @@ Chaque exigence doit suivre ce gabarit :
 Status: approved
 Priority: high|medium|low
 Verification: test|manual-review|inspection|command
+[Additional verification: manual-review|inspection|command]
 
 Énoncé normatif avec "doit" ou "ne doit pas".
 
@@ -86,6 +87,8 @@ Needs:
 
 ## Cohérence entre Verification et Needs
 
+- `Verification` doit contenir une seule méthode principale.
+- Si une exigence nécessite une preuve secondaire, utiliser `Additional verification` comme champ non normatif.
 - `Verification: test` implique généralement `Needs: impl, utest`.
 - `Verification: command` implique généralement `Needs: impl`.
 - `Verification: manual-review` ou `inspection` implique généralement `Needs: impl`.
@@ -119,3 +122,4 @@ Avant validation, chaque exigence doit respecter cette checklist :
 | Date | Spec version | Game version | Location | Modification | Justification |
 |---|---|---|---|---|---|
 | 2026-05-03 | 1.3.0 | 1.2.0 | docs/requirements/writing-rules.md | Added requirement writing rules | Keep requirement authoring constraints versioned in the repository |
+| 2026-05-03 | 1.4.0 | 1.2.0 | docs/requirements/writing-rules.md | Clarified single primary verification and additional verification usage | Prevent multiple values in the Verification field while allowing secondary evidence |

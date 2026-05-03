@@ -54,7 +54,7 @@ Le jeu doit rester compilable sans régression.
 
 Acceptance criteria:
 - `npm run build` retourne un code de succès.
-- Le bundle est généré correctement.
+- Le répertoire `dist/` est généré.
 
 Needs:
 - impl
@@ -103,3 +103,4 @@ Needs:
 |---|---|---|---|---|---|
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/verification.md | Added verification requirements for traceability, tests, build, docs and verify command | Keep local proof obligations explicit |
 | 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/verification.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |
+| 2026-05-03 | 1.4.0 | 1.2.0 | docs/requirements/verification.md | Replaced vague build acceptance wording with an observable output criterion | Apply writing rules to verification requirements |

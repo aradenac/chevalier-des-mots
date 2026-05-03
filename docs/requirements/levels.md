@@ -15,13 +15,13 @@ La liste des niveaux doit rester éditable sans mélanger contenu pédagogique e
 Acceptance criteria:
 - Les niveaux sont listés dans un module de données dédié.
 - Chaque niveau expose ses métadonnées et ses items.
-- Les tests vérifient la cohérence de la structure.
+- Les tests vérifient la présence des métadonnées obligatoires et des items de chaque niveau.
 
 Needs:
 - impl
 - utest
 
-## Vue pédagogique des niveaux
+## Contexte non normatif : vue pédagogique des niveaux
 
 Les 20 niveaux actuels constituent le Monde 1 — Écuyer.
 La campagne étendue introduit ensuite un Monde 2 — Chevalier pour prolonger la progression sans rendre le jeu punitif.
@@ -138,12 +138,13 @@ Maximale, avec plusieurs types de décisions possibles au sein d'un même niveau
 | 19 | Raisonnement grammatical | Corriger un homophone en contexte | phrases avec homophone erroné | phrase correcte, homophone proche | difficile |
 | 20 | Défi de synthèse | Réinvestir plusieurs compétences à la fois | erreurs d'accord, d'orthographe, de conjugaison ou d'homophone | phrases correctes et erreurs mixtes | expert |
 
-### Progression pédagogique des niveaux
+#### Progression pédagogique des niveaux
 `req~level.pedagogical-progression~1`
 
 Status: approved
 Priority: high
-Verification: inspection, test
+Verification: test
+Additional verification: inspection
 
 Le système doit organiser les niveaux selon une progression allant de distinctions visuelles simples vers des distinctions grammaticales plus abstraites.
 
@@ -157,7 +158,6 @@ Acceptance criteria:
 - La progression se fait par mondes, avec un Monde 1 centré sur les distinctions visibles puis un Monde 2 centré sur la consolidation grammaticale.
 - Le dernier niveau combine plusieurs types de décisions.
 - La structure des niveaux reste cohérente avec les métadonnées de `src/data/levels.js`.
-- L'extension en mondes reste compatible avec la future spécification d'un Monde 3.
 
 Needs:
 - impl
@@ -170,7 +170,7 @@ Status: approved
 Priority: high
 Verification: test
 
-Le système doit gérer la sélection d'un niveau, la détection de victoire et le passage au niveau suivant à partir d'indices bornés.
+Le système doit gérer le niveau courant avec un indice borné et passer au niveau suivant après une victoire.
 
 Rationale:
 La progression du joueur doit rester déterministe et simple à vérifier.
@@ -178,11 +178,8 @@ La progression du joueur doit rester déterministe et simple à vérifier.
 Acceptance criteria:
 - Un index trop petit est ramené au premier niveau.
 - Un index trop grand est ramené au dernier niveau.
-- La victoire finale renvoie au premier niveau.
-- La progression globale reste organisée par mondes.
-- Le Monde 1 regroupe les distinctions visuelles simples et les premières catégories grammaticales.
-- Le Monde 2 concentre les accords, les groupes verbaux, les temps et les homophones plus fins.
-- La progression reste cohérente avec les métadonnées de `src/data/levels.js` et avec la future extension en mondes.
+- Une victoire sur un niveau non final sélectionne le niveau suivant.
+- Une victoire sur le dernier niveau renvoie au premier niveau.
 
 Needs:
 - impl
@@ -195,7 +192,8 @@ Needs:
 
 Status: approved
 Priority: high
-Verification: inspection, test
+Verification: test
+Additional verification: inspection
 
 Le système doit organiser la campagne en mondes progressifs afin d'augmenter la durée de jeu et de structurer l'apprentissage.
 
@@ -207,7 +205,7 @@ Acceptance criteria:
 - Le Monde 2 contient les niveaux 21 à 40.
 - Chaque monde a un titre et une intention pédagogique.
 - Les boss de monde révisent plusieurs familles de notions.
-- La campagne reste jouable sans punition dure.
+- Les mondes sont ordonnés selon leurs plages de niveaux.
 
 Needs:
 - impl
@@ -218,7 +216,8 @@ Needs:
 
 Status: approved
 Priority: high
-Verification: inspection, test
+Verification: test
+Additional verification: inspection
 
 Le système doit définir un second monde de niveaux centré sur la consolidation grammaticale et orthographique.
 
@@ -242,20 +241,20 @@ Status: approved
 Priority: medium
 Verification: inspection
 
-Le système doit augmenter la durée de jeu d'une campagne complète.
+Le système doit fournir une campagne complète contenant au moins 40 niveaux approuvés ou implémentés.
 
 Rationale:
 Le jeu actuel est trop court pour installer suffisamment de répétition et de consolidation.
 
 Acceptance criteria:
-- La campagne complète ne doit plus se limiter aux 20 niveaux initiaux.
-- Les nouveaux niveaux doivent augmenter la durée sans augmenter brutalement la vitesse.
-- L'allongement doit venir principalement de la variété pédagogique, du nombre de niveaux et du nombre d'items.
+- La campagne complète contient au moins 40 niveaux approuvés ou implémentés.
+- Les niveaux ajoutés ne dépassent pas la borne de `fallSpeed` définie par les tests de niveaux.
+- Les niveaux ajoutés couvrent plusieurs familles pédagogiques distinctes.
 
 Needs:
 - impl
 
-### Monde 2 — Chevalier
+### Contexte non normatif : Monde 2 — Chevalier
 
 Les niveaux 21 à 40 prolongent la campagne avec une consolidation grammaticale et orthographique plus fine.
 Les cibles et distracteurs ci-dessous sont représentatifs et non exhaustifs.
@@ -290,3 +289,4 @@ Les cibles et distracteurs ci-dessous sont représentatifs et non exhaustifs.
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/levels.md | Added level structure, pedagogical overview, synthesis table, and progression requirement | Let readers understand progression without duplicating level data |
 | 2026-05-02 | 1.1.0 | 1.0.0 | docs/requirements/levels.md | Added world-based campaign extension for levels 21 to 40 | Extend play duration while keeping the learning progression readable |
 | 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/levels.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |
+| 2026-05-03 | 1.4.0 | 1.2.0 | docs/requirements/levels.md | Normalized verification fields, separated progression concerns and marked overview sections as non-normative | Apply writing rules without changing the approved level model |

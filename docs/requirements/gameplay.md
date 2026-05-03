@@ -7,14 +7,14 @@ Status: approved
 Priority: high
 Verification: test
 
-Le système doit résoudre une frappe en choisissant le mot le plus pertinent dans la zone d'épée, puis considérer la frappe comme réussie uniquement si le mot résolu est une cible.
+Le système doit résoudre une frappe en choisissant, parmi les mots dans la zone d'épée, le mot dont le score de distance à la frappe est minimal, puis considérer la frappe comme réussie uniquement si le mot résolu est une cible.
 
 Rationale:
 La mécanique centrale du jeu repose sur la distinction entre le mot touché et la réussite liée à la propriété `target`.
 
 Acceptance criteria:
 - Un mot non cible peut être résolu par la frappe mais ne compte pas comme réussite.
-- Si plusieurs mots sont dans la zone d'épée, le plus plausible est retenu.
+- Si plusieurs mots sont dans la zone d'épée, le mot avec le score de distance minimal est retenu.
 - Un mot cible résolu compte comme réussite.
 
 Needs:
@@ -48,3 +48,4 @@ Needs:
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/gameplay.md | Added gameplay requirements for target slicing and non-blocking punishment | Preserve a compact, readable gameplay spec |
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/gameplay.md | Restored explicit utest linkage under Needs for target slicing | Keep traceability structurally valid for OpenFastTrace |
 | 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/gameplay.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |
+| 2026-05-03 | 1.4.0 | 1.2.0 | docs/requirements/gameplay.md | Reworded target slicing with measurable distance-score selection | Remove vague wording while preserving the target and distractor rule |

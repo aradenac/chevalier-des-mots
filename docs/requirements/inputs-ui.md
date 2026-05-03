@@ -1,13 +1,15 @@
 # Exigences d'interface et d'entrées
 
-Le démarrage doit laisser choisir un personnage avant la partie. Ce choix ne change pas les règles du jeu, seulement l'apparence et l'arme affichées.
+Contexte non normatif:
+Le démarrage présente un choix de personnage avant la partie. Ce choix concerne l'apparence et l'arme affichées.
 
 #### La sélection du personnage doit être proposée au démarrage
 `req~character.start-selection~1`
 
 Status: approved
 Priority: high
-Verification: test, manual-review
+Verification: test
+Additional verification: manual-review
 
 Le système doit permettre au joueur de choisir son personnage avant le démarrage d'une partie.
 
@@ -16,14 +18,10 @@ Le choix du personnage augmente l'appropriation du jeu par l'enfant sans modifie
 
 Acceptance criteria:
 - L'écran de démarrage propose au moins trois personnages.
-- Les personnages disponibles sont :
-  - le chevalier ;
-  - le pépé à la canne ;
-  - le maître laser ou sage galactique.
+- Les personnages disponibles incluent `Chevalier`, `Pépé` et `Maître laser` ou `Sage galactique`.
 - Le personnage sélectionné est utilisé pendant la partie.
-- Le changement de personnage ne modifie pas la logique de score, de collision ou de progression.
-- Chaque personnage possède une animation ou un effet visuel cohérent avec son arme.
-- Le choix reste simple et compréhensible par un enfant.
+- Chaque option affiche un nom court et une arme associée.
+- Chaque personnage possède une animation ou un effet visuel déclenché lors d'une frappe.
 - Un personnage par défaut est sélectionné si le joueur ne fait aucun choix.
 
 Needs:
@@ -35,7 +33,8 @@ Needs:
 
 Status: approved
 Priority: high
-Verification: test, manual-review
+Verification: test
+Additional verification: manual-review
 
 Le système doit garantir que le choix du personnage est cosmétique et ne modifie pas les règles du jeu.
 
@@ -99,3 +98,4 @@ Needs:
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/inputs-ui.md | Added interface and input requirements | Keep input and visible instruction expectations in one themed page |
 | 2026-05-03 | 1.1.0 | 1.1.0 | docs/requirements/inputs-ui.md | Added character selection and cosmetic-only character requirements | Let the player choose a character without changing gameplay rules |
 | 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/inputs-ui.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |
+| 2026-05-03 | 1.4.0 | 1.2.0 | docs/requirements/inputs-ui.md | Normalized character verification fields and separated startup selection from cosmetic gameplay invariants | Apply writing rules while preserving character selection behavior |
