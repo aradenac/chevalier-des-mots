@@ -36,6 +36,8 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 nav:
   - Accueil: index.md
+  - Référence pédagogique:
+      - Programme CE1: programme/index.md
   - Exigences:
       - Vue d'ensemble: requirements/index.md
       - Format: requirements/format.md
@@ -43,6 +45,7 @@ nav:
       - Audit de traçabilité: requirements/traceability-audit.md
       - Gameplay: requirements/gameplay.md
       - Niveaux: requirements/levels.md
+      - Dictée: requirements/dictation.md
       - Interface et entrées: requirements/inputs-ui.md
       - Comptes locaux et progression: requirements/accounts-progress.md
       - Statistiques: requirements/statistics.md

@@ -20,47 +20,31 @@ Acceptance criteria:
 Needs:
 - impl
 
-#### La narration vocale doit rester optionnelle
-`req~speech.brave-failure-handling~1`
+#### Une voix française doit être disponible pour jouer
+
+`req~speech.french-voice-required~1`
 
 Status: approved
 Priority: high
 Verification: test
+Additional verification: manual-review
 
-Si la synthèse vocale est absente, vide ou échoue avec `synthesis-failed`, le système doit conserver le démarrage, les entrées et la progression de niveau disponibles.
-
-Rationale:
-Le jeu doit rester accessible dans les navigateurs où la voix n'est pas fiable.
-
-Acceptance criteria:
-- L'absence de voix n'empêche pas le démarrage d'une partie.
-- Une erreur de synthèse vocale n'arrête pas la progression en cours.
-- Le diagnostic vocal peut être affiché sans bloquer l'interface.
-
-Needs:
-- impl
-- utest
-
-#### Le service audio ne doit pas bloquer le jeu
-`req~audio.service-failure-non-blocking~1`
-
-Status: approved
-Priority: medium
-Verification: test
-
-Si WebAudio est indisponible ou si le contexte audio ne peut pas être créé, le système doit laisser la partie se lancer et continuer sans audio.
+Au démarrage, le système doit empêcher l'accès au jeu si aucune voix française de synthèse vocale n'est disponible.
 
 Rationale:
-Le son améliore l'expérience mais ne doit jamais empêcher la partie.
+Les niveaux de dictée sont obligatoires et dépendent d'une lecture vocale française.
 
 Acceptance criteria:
-- L'initialisation audio échoue sans lever d'erreur visible.
-- Les effets sonores renvoient un échec silencieux quand l'audio n'est pas disponible.
-- Le jeu reste jouable sans audio.
+  * Le système détecte la disponibilité de l'API de synthèse vocale.
+  * Le système détecte au moins une voix dont la langue commence par `fr` ou dont le nom indique une voix française.
+  * Si aucune voix française n'est disponible, le système affiche un message d'erreur lisible.
+  * Si aucune voix française n'est disponible, le système ne lance pas la progression de jeu.
+  * Si une voix française est disponible, le système peut lancer la progression de jeu.
+  * L'indisponibilité de WebAudio pour les effets sonores ne rend pas cette exigence échouée.
 
 Needs:
-- impl
-- utest
+  * impl
+  * utest
 
 ## Change history
 
@@ -69,3 +53,4 @@ Needs:
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/feedback-audio.md | Added feedback, narration, and audio requirements | Keep feedback and audio behaviors together for review |
 | 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/feedback-audio.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |
 | 2026-05-03 | 1.4.0 | 1.2.0 | docs/requirements/feedback-audio.md | Reworded feedback, speech and audio requirements with observable conditions | Apply writing rules without changing feedback or optional-audio behavior |
+| 2026-05-03 | 2.0.0 | 1.3.0 | docs/requirements/feedback-audio.md | Replaced optional speech fallback with mandatory French voice requirement | Dictation levels require French speech synthesis to be playable |

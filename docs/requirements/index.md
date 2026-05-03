@@ -26,6 +26,7 @@ La page [Audit de traçabilité](traceability-audit.md) donne une matrice manuel
 - [Audit de traçabilité](traceability-audit.md)
 - [Gameplay](gameplay.md)
 - [Niveaux](levels.md)
+- [Dictée](dictation.md)
 - [Interface et entrées](inputs-ui.md)
 - [Comptes locaux et progression](accounts-progress.md)
 - [Statistiques](statistics.md)
@@ -35,6 +36,7 @@ La page [Audit de traçabilité](traceability-audit.md) donne une matrice manuel
 
 La page [Niveaux](levels.md) rassemble les exigences de structure, une vue pédagogique synthétique des mondes, le Monde 1 — Écuyer, le Monde 2 — Chevalier et une table non exhaustive pour faciliter la lecture sans dupliquer `src/data/levels.js`.
 Un Monde 3 — Maître chevalier pourra être spécifié dans une évolution ultérieure.
+La page [Dictée](dictation.md) couvre les niveaux de dictée obligatoires, leur audio, leur saisie, leur notation, leur feedback et leur intégration aux statistiques globales.
 La page [Interface et entrées](inputs-ui.md) couvre aussi le choix du personnage au démarrage en plus des entrées et de la consigne visible.
 La page [Comptes locaux et progression](accounts-progress.md) couvre les comptes sans authentification, le stockage serveur du niveau atteint et la reprise linéaire.
 La page [Statistiques](statistics.md) couvre les scores persistants par niveau, le score global, le Tableau des champions et le rejeu des niveaux accomplis.

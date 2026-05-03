@@ -53,28 +53,31 @@ Needs:
 - impl
 - utest
 
-#### Formule du score de niveau
-`req~stats.level-score-formula~1`
+#### La formule de score doit dépendre du type de niveau
+
+`req~stats.level-score-formula~2`
 
 Status: approved
 Priority: high
 Verification: test
 
-Le système doit calculer la note finale d'un niveau avec une formule déterministe fondée sur le nombre de réussites et le nombre d'erreurs.
+Le système doit calculer la note finale d'un niveau avec une formule déterministe sélectionnée selon le type du niveau.
 
 Rationale:
-Le score doit être prévisible, testable et compréhensible.
+Les niveaux de tranchage et les niveaux de dictée ne produisent pas les mêmes mesures d'évaluation.
 
 Acceptance criteria:
-- Si `successfulHits <= 0`, la note finale est 0.
-- Si `errors == 0`, la note finale est 5.
-- Sinon, la note finale est `max(0, 5 - ceil((5 * errors) / successfulHits))`.
-- La formule donne 0 si `errors >= successfulHits`.
-- La formule ne produit jamais une note inférieure à 0 ou supérieure à 5.
+  * Pour un niveau de tranchage, si `successfulHits <= 0`, la note finale est `0`.
+  * Pour un niveau de tranchage, si `errors == 0`, la note finale est `5`.
+  * Pour un niveau de tranchage, la note finale est `max(0, 5 - ceil((5 * errors) / successfulHits))`.
+  * Pour un niveau de tranchage, la formule donne `0` si `errors >= successfulHits`.
+  * Pour un niveau de dictée, la note finale utilise `req~dictation.score-formula~1`.
+  * La formule sélectionnée ne produit jamais une note inférieure à `0` ou supérieure à `5`.
+  * La note finale est calculée à la fin du niveau.
 
 Needs:
-- impl
-- utest
+  * impl
+  * utest
 
 #### Meilleur score par niveau accompli
 `req~stats.best-level-score~1`
@@ -263,3 +266,4 @@ Needs:
 | Date | Spec version | Game version | Location | Modification | Justification |
 |---|---|---|---|---|---|
 | 2026-05-03 | 1.9.0 | 1.3.0 | docs/requirements/statistics.md | Added persistent statistics, champions dashboard and completed-level replay requirements without implementation | Specify score persistence and replay behavior before code changes |
+| 2026-05-03 | 2.0.0 | 1.3.0 | docs/requirements/statistics.md | Replaced single score formula with type-based score formula | Support both slicing levels and dictation levels |

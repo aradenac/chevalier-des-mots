@@ -163,27 +163,30 @@ Needs:
 - impl
 - utest
 
-#### La progression doit avancer niveau par niveau
-`req~level.progression-model~1`
+#### La progression doit avancer après un niveau terminé
+
+`req~level.progression-model~2`
 
 Status: approved
 Priority: high
 Verification: test
 
-Le système doit gérer le niveau courant avec un indice borné et passer au niveau suivant après une victoire.
+Le système doit gérer le niveau courant avec un indice borné et passer au niveau suivant après qu'un niveau est terminé selon les règles de son type.
 
 Rationale:
-La progression du joueur doit rester déterministe et simple à vérifier.
+La progression doit couvrir les niveaux de tranchage et les niveaux de dictée sans dépendre uniquement de la notion de victoire.
 
 Acceptance criteria:
-- Un index trop petit est ramené au premier niveau.
-- Un index trop grand est ramené au dernier niveau.
-- Une victoire sur un niveau non final sélectionne le niveau suivant.
-- Une victoire sur le dernier niveau renvoie au premier niveau.
+  * Un index trop petit est ramené au premier niveau.
+  * Un index trop grand est ramené au dernier niveau.
+  * Un niveau de tranchage terminé avec victoire sélectionne le niveau suivant.
+  * Un niveau de dictée validé sélectionne le niveau suivant quand le joueur choisit de continuer.
+  * Un niveau final terminé renvoie au premier niveau ou à l'état de fin de campagne défini par l'interface.
+  * Le passage au niveau suivant conserve le compte joueur actif.
 
 Needs:
-- impl
-- utest
+  * impl
+  * utest
 
 ## Campagne étendue
 
