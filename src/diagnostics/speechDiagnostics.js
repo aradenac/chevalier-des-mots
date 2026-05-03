@@ -1,5 +1,5 @@
-// [impl->req~speech.french-voice-required~1]
-export const SPEECH_UNAVAILABLE_MESSAGE = "Voix française indisponible. Impossible de lancer la progression.";
+// [impl->req~speech.french-voice-required~2]
+export const SPEECH_UNAVAILABLE_MESSAGE = "Voix française indisponible. Impossible d'accéder au menu principal ou au menu debug.";
 
 export function getSpeechDiagnostics({ available, enabled, voicesLength = 0, error = "" } = {}) {
   if (!enabled) {

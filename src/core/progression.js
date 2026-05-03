@@ -1,3 +1,4 @@
+// [impl->req~level.campaign-entry-is-playable-level~1]
 // [impl->req~level.progression-model~2]
 import { clamp } from "./gameState.js";
 

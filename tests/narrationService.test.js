@@ -1,4 +1,4 @@
-// [utest->req~speech.french-voice-required~1]
+// [utest->req~speech.french-voice-required~2]
 import { describe, expect, it, vi } from "vitest";
 import { createNarrationService } from "../src/adapters/narrationService.js";
 import { SPEECH_UNAVAILABLE_MESSAGE } from "../src/diagnostics/speechDiagnostics.js";
@@ -12,15 +12,24 @@ function createStorage(initial = {}) {
 }
 
 function createSpeechApi({ voices = [], onSpeak = () => {}, throwOnSpeak = false } = {}) {
+  const listeners = new Map();
   return {
     resume: vi.fn(),
     cancel: vi.fn(),
     getVoices: vi.fn(() => voices),
-    addEventListener: vi.fn(),
+    addEventListener: vi.fn((eventName, callback) => {
+      listeners.set(eventName, callback);
+    }),
     speak: vi.fn((utterance) => {
       onSpeak(utterance);
       if (throwOnSpeak) throw new Error("synthesis-failed");
-    })
+    }),
+    setVoices(nextVoices) {
+      voices = nextVoices;
+    },
+    emit(eventName) {
+      listeners.get(eventName)?.();
+    }
   };
 }
 
@@ -58,6 +67,43 @@ describe("narrationService", () => {
     service.init();
 
     expect(service.getDiagnosticMessage()).toBe(SPEECH_UNAVAILABLE_MESSAGE);
+  });
+
+  it("attend voiceschanged avant de conclure à l'indisponibilité de la voix française", async () => {
+    const speech = createSpeechApi({ voices: [] });
+    const storage = createStorage({ chevalierNarration: "on" });
+    const service = createNarrationService({
+      speechSynthesis: speech,
+      SpeechSynthesisUtterance: FakeUtterance,
+      storage
+    });
+
+    vi.useFakeTimers();
+    service.init();
+    const pending = service.waitForFrenchVoice({ timeoutMs: 200 });
+    speech.setVoices([{ name: "Français", lang: "fr-FR" }]);
+    speech.emit("voiceschanged");
+    await vi.runAllTimersAsync();
+    await expect(pending).resolves.toBe(true);
+    vi.useRealTimers();
+  });
+
+  it("refuse une voix non française pour le lancement des menus", async () => {
+    const speech = createSpeechApi({ voices: [{ name: "English", lang: "en-US" }] });
+    const storage = createStorage({ chevalierNarration: "on" });
+    const service = createNarrationService({
+      speechSynthesis: speech,
+      SpeechSynthesisUtterance: FakeUtterance,
+      storage
+    });
+
+    vi.useFakeTimers();
+    service.init();
+    const pending = service.waitForFrenchVoice({ timeoutMs: 10 });
+    await vi.runAllTimersAsync();
+    await expect(pending).resolves.toBe(false);
+    expect(service.hasFrenchVoice()).toBe(false);
+    vi.useRealTimers();
   });
 
   it("garde le jeu jouable si speak déclenche synthesis-failed", async () => {

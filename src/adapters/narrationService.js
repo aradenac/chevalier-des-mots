@@ -1,12 +1,16 @@
-// [impl->req~speech.french-voice-required~1]
+// [impl->req~speech.french-voice-required~2]
 import { getSpeechDiagnostics, SPEECH_UNAVAILABLE_MESSAGE } from "../diagnostics/speechDiagnostics.js";
+
+function isFrenchVoice(voice) {
+  const lang = (voice?.lang || "").toLowerCase();
+  const name = voice?.name || "";
+  return lang.startsWith("fr") || /french|français|francais/i.test(name);
+}
 
 function pickFrenchVoice(voices) {
   return voices.find(voice => voice.lang === "fr-FR")
     || voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith("fr"))
     || voices.find(voice => /french|français|francais/i.test(voice.name || ""))
-    || voices.find(voice => voice.default)
-    || voices[0]
     || null;
 }
 
@@ -26,6 +30,11 @@ export function createNarrationService({
   let diagnosticMessage = null;
   let voicesLoaded = false;
   let speaking = false;
+  let pendingVoiceDetection = null;
+
+  function hasFrenchVoiceInMemory() {
+    return Boolean(voice && isFrenchVoice(voice));
+  }
 
   function emitDiagnostic(message) {
     diagnosticMessage = message || null;
@@ -80,9 +89,9 @@ export function createNarrationService({
     if (voice) {
       logger.log("[Narration] voix choisie:", voice.name, voice.lang);
     }
-    if (enabled && voices.length === 0) {
+    if (enabled && !hasFrenchVoiceInMemory()) {
       emitDiagnostic(SPEECH_UNAVAILABLE_MESSAGE);
-    } else if (enabled && voices.length > 0) {
+    } else if (enabled) {
       clearDiagnostic();
     }
     onStateChange(getState());
@@ -111,6 +120,59 @@ export function createNarrationService({
     return getState();
   }
 
+  function waitForFrenchVoice({ timeoutMs = 1500 } = {}) {
+    if (!available) {
+      if (enabled) emitDiagnostic(SPEECH_UNAVAILABLE_MESSAGE);
+      return Promise.resolve(false);
+    }
+    loadVoices();
+    if (hasFrenchVoiceInMemory()) {
+      clearDiagnostic();
+      return Promise.resolve(true);
+    }
+    if (pendingVoiceDetection) return pendingVoiceDetection;
+
+    pendingVoiceDetection = new Promise((resolve) => {
+      let settled = false;
+
+      const finish = (hasVoice) => {
+        if (settled) return;
+        settled = true;
+        pendingVoiceDetection = null;
+        if (hasVoice) {
+          clearDiagnostic();
+        } else if (enabled) {
+          emitDiagnostic(SPEECH_UNAVAILABLE_MESSAGE);
+        }
+        resolve(hasVoice);
+      };
+
+      const reevaluate = () => {
+        loadVoices();
+        if (hasFrenchVoiceInMemory()) {
+          finish(true);
+        }
+      };
+
+      if (speechSynthesis.addEventListener) {
+        speechSynthesis.addEventListener("voiceschanged", reevaluate, { once: true });
+      } else {
+        const previousHandler = speechSynthesis.onvoiceschanged;
+        speechSynthesis.onvoiceschanged = (...args) => {
+          previousHandler?.(...args);
+          reevaluate();
+        };
+      }
+
+      setTimeout(() => {
+        reevaluate();
+        finish(hasFrenchVoiceInMemory());
+      }, timeoutMs);
+    });
+
+    return pendingVoiceDetection;
+  }
+
   function setEnabled(nextEnabled) {
     enabled = Boolean(nextEnabled);
     try {
@@ -124,7 +186,7 @@ export function createNarrationService({
       if (available && !voicesLoaded) {
         loadVoices();
       }
-      if (!available || voices.length === 0) {
+      if (!available || !hasFrenchVoiceInMemory()) {
         emitDiagnostic(SPEECH_UNAVAILABLE_MESSAGE);
       }
     }
@@ -148,6 +210,10 @@ export function createNarrationService({
     if (!voicesLoaded) loadVoices();
     const utterance = new SpeechSynthesisUtterance(text);
     const selectedVoice = voice || pickFrenchVoice(voices);
+    if (!selectedVoice || !isFrenchVoice(selectedVoice)) {
+      emitDiagnostic(SPEECH_UNAVAILABLE_MESSAGE);
+      return false;
+    }
     utterance.lang = selectedVoice && selectedVoice.lang ? selectedVoice.lang : "fr-FR";
     utterance.rate = options.rate || 0.95;
     utterance.pitch = options.pitch || 1;
@@ -210,6 +276,7 @@ export function createNarrationService({
   return {
     init,
     loadVoices,
+    waitForFrenchVoice,
     speak,
     setEnabled,
     toggleEnabled,
@@ -226,7 +293,7 @@ export function createNarrationService({
     },
     hasFrenchVoice() {
       if (!voicesLoaded) loadVoices();
-      return Boolean(voice && ((voice.lang || "").toLowerCase().startsWith("fr") || /french|français|francais/i.test(voice.name || "")));
+      return hasFrenchVoiceInMemory();
     },
     isSpeaking() {
       return speaking;

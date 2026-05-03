@@ -1,3 +1,4 @@
+// [utest->req~level.campaign-entry-is-playable-level~1]
 // [utest->req~level.progression-model~2]
 import { describe, expect, it } from "vitest";
 import { LEVELS } from "../src/data/levels.js";
@@ -18,6 +19,15 @@ describe("progression", () => {
     expect(isFinalLevel(LEVELS.length - 1, LEVELS.length)).toBe(true);
     expect(getNextLevelIndex(0, LEVELS.length)).toBe(1);
     expect(getNextLevelIndex(LEVELS.length - 1, LEVELS.length)).toBe(0);
+  });
+
+  it("avance entrée par entrée sans sauter les dictées", () => {
+    const dictationIndex = LEVELS.findIndex(level => level.type === "dictation");
+    expect(dictationIndex).toBeGreaterThan(0);
+    expect(getCurrentLevel(LEVELS, dictationIndex).type).toBe("dictation");
+    expect(getNextLevelIndex(dictationIndex - 1, LEVELS.length)).toBe(dictationIndex);
+    expect(getNextLevelIndex(dictationIndex, LEVELS.length)).toBe(dictationIndex + 1);
+    expect(getCurrentLevel(LEVELS, getNextLevelIndex(dictationIndex, LEVELS.length)).id).toBe(LEVELS[dictationIndex + 1].id);
   });
 
   it("détecte la réussite d'un niveau", () => {

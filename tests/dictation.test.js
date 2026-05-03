@@ -4,7 +4,7 @@
 // [utest->req~dictation.score-formula~1]
 // [utest->req~dictation.data-model~1]
 // [utest->req~dictation.content-progression~1]
-// [utest->req~dictation.main-progression~1]
+// [utest->req~dictation.main-progression~2]
 // [utest->req~dictation.repeat-control~1]
 // [utest->req~dictation.input-display~1]
 // [utest->req~dictation.validation-and-clear-controls~1]
@@ -41,6 +41,16 @@ describe("dictation core", () => {
     const dictationLevels = LEVELS.filter(level => level.type === "dictation");
     expect(dictationLevels.length).toBeGreaterThanOrEqual(10);
     expect(dictationLevels.every(level => level.dictations.length >= 5)).toBe(true);
+    expect(dictationLevels.every(level => typeof level.title === "string" && level.title.length > 0)).toBe(true);
+    expect(dictationLevels.every(level => level.items === undefined)).toBe(true);
+    expect(dictationLevels.every(level => level.id === LEVELS[level.id - 1].id)).toBe(true);
+  });
+
+  it("garde les niveaux de dictée sans pression temporelle ni moteur de tranchage", () => {
+    const dictationLevels = LEVELS.filter(level => level.type === "dictation");
+    expect(dictationLevels.every(level => level.fallSpeed === 0)).toBe(true);
+    expect(dictationLevels.every(level => level.maxActiveWords === 1)).toBe(true);
+    expect(dictationLevels.every(level => level.items === undefined)).toBe(true);
   });
 
   it("calcule un score de niveau dictée via la formule dédiée", () => {

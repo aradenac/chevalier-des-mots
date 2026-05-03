@@ -1,4 +1,5 @@
 // [utest->req~data.levels-separated-from-engine~1]
+// [utest->req~level.campaign-entry-is-playable-level~1]
 // [utest->req~level.pedagogical-progression~1]
 import { describe, expect, it } from "vitest";
 import { LEVELS } from "../src/data/levels.js";
@@ -18,10 +19,11 @@ describe("LEVELS", () => {
     for (const level of LEVELS) {
       expect(level.title.trim()).not.toBe("");
       expect(level.instruction.trim()).not.toBe("");
+      expect(["slicing", "dictation"]).toContain(level.type);
       expect(level.starsToWin).toBeGreaterThan(0);
       expect(level.maxActiveWords).toBeGreaterThanOrEqual(1);
       expect(level.maxActiveWords).toBeLessThanOrEqual(5);
-      expect(level.fallSpeed).toBeGreaterThanOrEqual(20);
+      expect(level.fallSpeed).toBeGreaterThanOrEqual(0);
       expect(level.fallSpeed).toBeLessThanOrEqual(140);
     }
   });
@@ -38,10 +40,25 @@ describe("LEVELS", () => {
     for (const level of LEVELS) {
       if (level.type === "dictation") {
         expect(level.dictations.length).toBeGreaterThanOrEqual(5);
+        expect(level.items).toBeUndefined();
         continue;
       }
       for (const item of level.items) {
         expect(item.text.trim()).not.toBe("");
+      }
+    }
+  });
+
+  it("représente chaque entrée de campagne comme un niveau autonome d'un type unique", () => {
+    for (const level of LEVELS) {
+      expect(level.id).toBeGreaterThan(0);
+      expect(level.title).toBeTruthy();
+      if (level.type === "dictation") {
+        expect(level.dictations.length).toBeGreaterThanOrEqual(5);
+        expect(level.items).toBeUndefined();
+      } else {
+        expect(Array.isArray(level.items)).toBe(true);
+        expect(level.dictations).toBeUndefined();
       }
     }
   });

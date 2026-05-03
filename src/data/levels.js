@@ -5,7 +5,7 @@ const level = (id, title, instruction, shortInstruction, difficulty, starsToWin,
 // [impl->req~level.extended-campaign-worlds~1]
 // [impl->req~level.world-two-grammar-consolidation~1]
 // [impl->req~level.longer-play-session~1]
-// [impl->req~dictation.main-progression~1]
+// [impl->req~dictation.main-progression~2]
 // [impl->req~dictation.data-model~1]
 // [impl->req~dictation.content-progression~1]
 export const DICTATION_LEVEL_BANKS = {
@@ -79,6 +79,19 @@ export const DICTATION_LEVEL_BANKS = {
     { text: "Sous la pluie, la princesse garde le sourire.", variants: [] },
     { text: "Au château, le roi remercie les villageois.", variants: ["Au chateau, le roi remercie les villageois."] }
   ]
+};
+
+const DICTATION_LEVEL_METADATA = {
+  3: { title: "Dictée 1 · Mots simples", instruction: "Écoute puis écris le mot dicté.", shortInstruction: "Écris le mot dicté" },
+  6: { title: "Dictée 2 · Accents", instruction: "Écoute puis écris le mot dicté.", shortInstruction: "Écris le mot dicté" },
+  9: { title: "Dictée 3 · Mots du royaume", instruction: "Écoute puis écris le mot dicté.", shortInstruction: "Écris le mot dicté" },
+  12: { title: "Dictée 4 · Groupes de mots", instruction: "Écoute puis écris le groupe de mots dicté.", shortInstruction: "Écris le groupe dicté" },
+  15: { title: "Dictée 5 · Groupes accentués", instruction: "Écoute puis écris le groupe de mots dicté.", shortInstruction: "Écris le groupe dicté" },
+  18: { title: "Dictée 6 · Phrases courtes", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée" },
+  21: { title: "Dictée 7 · Phrases du jardin", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée" },
+  24: { title: "Dictée 8 · Phrases du château", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée" },
+  27: { title: "Dictée 9 · Phrases longues", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée" },
+  30: { title: "Dictée 10 · Phrases complètes", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée" }
 };
 
 const BASE_LEVELS = [
@@ -491,5 +504,17 @@ const BASE_LEVELS = [
 export const LEVELS = BASE_LEVELS.map((levelData) => {
   const dictations = DICTATION_LEVEL_BANKS[levelData.id];
   if (!dictations) return { ...levelData, type: "slicing" };
-  return { ...levelData, type: "dictation", dictations };
+  const metadata = DICTATION_LEVEL_METADATA[levelData.id];
+  return {
+    id: levelData.id,
+    title: metadata.title,
+    instruction: metadata.instruction,
+    shortInstruction: metadata.shortInstruction,
+    difficulty: levelData.difficulty,
+    starsToWin: 1,
+    maxActiveWords: 1,
+    fallSpeed: 0,
+    type: "dictation",
+    dictations
+  };
 });

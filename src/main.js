@@ -6,6 +6,15 @@ import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLe
 import { chooseNextItem, getMaxActiveWords, getSpawnDelay, getWordSpeedBase } from "./core/wordSpawner.js";
 import { findSwordCollision, isTargetHit } from "./core/collision.js";
 import { pickDictation, scoreDictation } from "./core/dictation.js";
+import { createValidatedDictationState } from "./core/dictationFlow.js";
+import {
+  buildDebugLevelEntries,
+  canAccessDebugMenu,
+  createDebugLaunchContext,
+  getLaunchCharacterId,
+  getPostLevelAction,
+  shouldPersistLevelResult
+} from "./core/debugMode.js";
 import {
   calculateLevelScore,
   createLevelStats,
@@ -35,8 +44,10 @@ const voiceBtn = document.getElementById("voiceBtn");
 const startOverlay = document.getElementById("startOverlay");
 const selectOverlay = document.getElementById("selectOverlay");
 const levelOverlay = document.getElementById("levelOverlay");
+const debugOverlay = document.getElementById("debugOverlay");
 const gamepadStatus = document.getElementById("gamepadStatus");
 const levelGrid = document.getElementById("levelGrid");
+const debugLevelGrid = document.getElementById("debugLevelGrid");
 const startSubtitle = document.getElementById("startSubtitle");
 const characterGrid = document.getElementById("characterGrid");
 const characterStatus = document.getElementById("characterStatus");
@@ -49,6 +60,7 @@ const resetAccountBtn = document.getElementById("resetAccountBtn");
 const deleteAccountBtn = document.getElementById("deleteAccountBtn");
 const playBtn = document.getElementById("playBtn");
 const easyBtn = document.getElementById("easyBtn");
+const debugBtn = document.getElementById("debugBtn");
 const championsBtn = document.getElementById("championsBtn");
 const chooseBtn = document.getElementById("chooseBtn");
 const championsOverlay = document.getElementById("championsOverlay");
@@ -78,8 +90,11 @@ let targetRetryQueue = initialState.targetRetryQueue;
 let selectedCharacterId = DEFAULT_CHARACTER_ID;
 let levelStats = createLevelStats();
 let replayContext = null;
+let launchContext = null;
 let currentDictation = null;
 let dictationAttempts = 0;
+let validatedDictationState = null;
+let frenchVoiceReady = false;
 const narrationStatus = document.getElementById("narrationStatus");
 const services = {
   audio: createAudioService(),
@@ -104,10 +119,15 @@ function setNarrationStatus(text) {
   if (narrationStatus) narrationStatus.textContent = text || "";
 }
 
-function initNarration() {
+async function initNarration() {
   services.narration.init();
   updateNarrationButton();
   setNarrationStatus(services.narration.getDiagnosticMessage());
+  setLaunchControlsEnabled(false);
+  setNarrationStatus("Vérification de la voix française...");
+  frenchVoiceReady = await services.narration.waitForFrenchVoice();
+  setLaunchControlsEnabled(frenchVoiceReady);
+  setNarrationStatus(frenchVoiceReady ? "" : services.narration.getDiagnosticMessage());
 }
 
 function ensureAudio() {
@@ -144,6 +164,19 @@ function updateNarrationButton() {
   voiceBtn.disabled = !services.narration.isAvailable();
   voiceBtn.textContent = services.narration.getButtonLabel();
   voiceBtn.setAttribute("aria-label", services.narration.isEnabled() ? "Désactiver la narration vocale" : "Activer la narration vocale");
+}
+
+function setLaunchControlsEnabled(enabled) {
+  const allow = Boolean(enabled);
+  playBtn.disabled = !allow || !hasActiveAccount();
+  easyBtn.disabled = !allow || !hasActiveAccount();
+  debugBtn.disabled = !allow;
+  championsBtn.disabled = !allow;
+  chooseBtn.disabled = true;
+}
+
+function clearElement(element) {
+  element.replaceChildren();
 }
 
 window.testNarration = function() {
@@ -210,7 +243,7 @@ function syncLevelWithActiveAccount() {
 
 function renderAccounts(snapshot = accountSession.getSnapshot()) {
   if (!accountList) return;
-  accountList.innerHTML = "";
+  clearElement(accountList);
   const view = createAccountSelectionView(snapshot.accounts, snapshot.activeAccountId, LEVELS.length);
 
   if (view.length === 0) {
@@ -243,8 +276,8 @@ function renderAccounts(snapshot = accountSession.getSnapshot()) {
   }
 
   const hasAccount = Boolean(snapshot.activeAccount);
-  playBtn.disabled = !hasAccount;
-  easyBtn.disabled = !hasAccount;
+  playBtn.disabled = !hasAccount || !frenchVoiceReady;
+  easyBtn.disabled = !hasAccount || !frenchVoiceReady;
   renameAccountBtn.disabled = !hasAccount;
   resetAccountBtn.disabled = !hasAccount;
   deleteAccountBtn.disabled = !hasAccount;
@@ -254,8 +287,8 @@ function renderAccounts(snapshot = accountSession.getSnapshot()) {
 
 function renderChampionsDashboard() {
   if (!championsList || !playerStatsDetail) return;
-  championsList.innerHTML = "";
-  playerStatsDetail.innerHTML = "";
+  clearElement(championsList);
+  clearElement(playerStatsDetail);
   // [impl->req~stats.champions-dashboard~1]
   const champions = accountSession.getChampionsDashboard();
   if (champions.length === 0) {
@@ -288,7 +321,7 @@ function renderChampionsDashboard() {
 
 function renderPlayerStatsDetail(accountId) {
   if (!playerStatsDetail) return;
-  playerStatsDetail.innerHTML = "";
+  clearElement(playerStatsDetail);
   // [impl->req~stats.player-detail~1]
   const levels = accountSession.getPlayerStatsDetail(accountId, LEVELS);
   if (levels.length === 0) {
@@ -326,12 +359,32 @@ function openChampionsDashboard() {
   startOverlay.classList.add("hidden");
   selectOverlay.classList.add("hidden");
   levelOverlay.classList.add("hidden");
+  debugOverlay.classList.add("hidden");
   championsOverlay.classList.remove("hidden");
   state = "menu";
 }
 
 function closeChampionsDashboard() {
   championsOverlay.classList.add("hidden");
+  startOverlay.classList.remove("hidden");
+  state = "menu";
+}
+
+function openDebugMenu() {
+  if (!canAccessDebugMenu({ hasFrenchVoice: frenchVoiceReady })) {
+    setNarrationStatus(services.narration.getDiagnosticMessage());
+    return;
+  }
+  startOverlay.classList.add("hidden");
+  selectOverlay.classList.add("hidden");
+  levelOverlay.classList.add("hidden");
+  championsOverlay.classList.add("hidden");
+  debugOverlay.classList.remove("hidden");
+  state = "menu";
+}
+
+function closeDebugMenu() {
+  debugOverlay.classList.add("hidden");
   startOverlay.classList.remove("hidden");
   state = "menu";
 }
@@ -542,16 +595,72 @@ function speakCurrentDictation() {
 }
 
 function renderDictationFeedback(result, inputValue) {
-  const differences = result.differences.map(diff => {
-    const css = diff.type.includes("ajout") ? "diff-added" : diff.type.includes("supprim") ? "diff-removed" : "diff-replaced";
-    return "<li><span class=\"" + css + "\">" + diff.type + "</span> · attendu: \"" + (diff.expected || "∅") + "\" · saisi: \"" + (diff.actual || "∅") + "\"</li>";
-  }).join("");
-  dictationFeedback.innerHTML = "Texte attendu: " + result.text + "\nTexte saisi: " + inputValue
-    + (differences ? "\n<ul>" + differences + "</ul>" : "\nAucune différence.");
+  clearElement(dictationFeedback);
+  const expected = document.createElement("p");
+  expected.textContent = "Texte attendu : " + result.text;
+  const actual = document.createElement("p");
+  actual.textContent = "Texte saisi : " + inputValue;
+  dictationFeedback.appendChild(expected);
+  dictationFeedback.appendChild(actual);
+
+  if (result.differences.length === 0) {
+    const none = document.createElement("p");
+    none.textContent = "Aucune différence.";
+    dictationFeedback.appendChild(none);
+    return;
+  }
+
+  const list = document.createElement("ul");
+  result.differences.forEach((diff) => {
+    const item = document.createElement("li");
+    const type = document.createElement("span");
+    type.className = diff.type.includes("ajout") ? "diff-added" : diff.type.includes("supprim") ? "diff-removed" : "diff-replaced";
+    type.textContent = diff.type;
+    item.appendChild(type);
+    item.appendChild(document.createTextNode(" · attendu: \"" + (diff.expected || "∅") + "\" · saisi: \"" + (diff.actual || "∅") + "\""));
+    list.appendChild(item);
+  });
+  dictationFeedback.appendChild(list);
 }
 
-function validateDictation({ continueAfter = false } = {}) {
+function renderDictationRetryActions() {
+  const actions = document.createElement("div");
+  actions.className = "dictationActions";
+
+  const retryButton = document.createElement("button");
+  retryButton.id = "dictationRetryBtn";
+  retryButton.className = "smallBtn secondary";
+  retryButton.type = "button";
+  retryButton.textContent = "Recommencer";
+  retryButton.addEventListener("click", () => {
+    dictationInput.value = "";
+    dictationFeedback.textContent = "";
+    validatedDictationState = null;
+    currentDictation = pickDictation(getLevel());
+    speakCurrentDictation();
+  });
+
+  const continueButton = document.createElement("button");
+  continueButton.id = "dictationContinueBtn";
+  continueButton.className = "smallBtn";
+  continueButton.type = "button";
+  continueButton.textContent = "Continuer";
+  continueButton.addEventListener("click", () => {
+    if (!validatedDictationState?.canContinue) return;
+    finishLevel();
+  });
+
+  actions.appendChild(retryButton);
+  actions.appendChild(continueButton);
+  dictationFeedback.appendChild(actions);
+}
+
+function validateDictation() {
   if (!currentDictation) return;
+  if (validatedDictationState?.canContinue) {
+    finishLevel();
+    return;
+  }
   // [impl->req~dictation.input-display~1]
   const inputValue = dictationInput.value || "";
   const result = scoreDictation(currentDictation, inputValue);
@@ -564,18 +673,12 @@ function validateDictation({ continueAfter = false } = {}) {
     successfulHits: 0,
     attempts: dictationAttempts
   };
+  validatedDictationState = createValidatedDictationState({ result, inputValue, attempts: dictationAttempts });
   renderDictationFeedback(result, inputValue);
   services.narration.speak(result.text);
-  if (result.score < 5 && !continueAfter) {
+  if (result.score < 5) {
     // [impl->req~dictation.retry-or-continue~1]
-    dictationFeedback.innerHTML += "<div class=\"dictationActions\"><button id=\"dictationRetryBtn\" class=\"smallBtn secondary\" type=\"button\">Recommencer</button><button id=\"dictationContinueBtn\" class=\"smallBtn\" type=\"button\">Continuer</button></div>";
-    document.getElementById("dictationRetryBtn").addEventListener("click", () => {
-      dictationInput.value = "";
-      dictationFeedback.textContent = "";
-      currentDictation = pickDictation(getLevel());
-      speakCurrentDictation();
-    });
-    document.getElementById("dictationContinueBtn").addEventListener("click", () => validateDictation({ continueAfter: true }));
+    renderDictationRetryActions();
     return;
   }
   finishLevel();
@@ -585,21 +688,32 @@ function finishLevel() {
   const current = getLevel();
   state = "level";
   levelOverlay.classList.remove("hidden");
+  debugOverlay.classList.add("hidden");
   resetWords();
-  // [impl->req~stats.level-score-five-stars~1]
-  // [impl->req~stats.best-level-score~1]
-  // [impl->req~stats.global-score~1]
-  // [impl->req~stats.server-database-persistence~1]
-  void accountSession.saveCompletedLevelResult(current.id, levelStats).then(snapshot => {
-    renderAccounts(snapshot);
-    if (replayContext) renderPlayerStatsDetail(replayContext.accountId);
-  });
+  if (shouldPersistLevelResult(launchContext)) {
+    // [impl->req~stats.level-score-five-stars~1]
+    // [impl->req~stats.best-level-score~1]
+    // [impl->req~stats.global-score~1]
+    // [impl->req~stats.server-database-persistence~1]
+    void accountSession.saveCompletedLevelResult(current.id, levelStats).then(snapshot => {
+      renderAccounts(snapshot);
+      if (replayContext) renderPlayerStatsDetail(replayContext.accountId);
+    });
+  }
   const scoreText = " Score : " + calculateLevelScore(levelStats) + " / 5.";
-  if (shouldReturnToStatsAfterReplay(replayContext)) {
+  const postLevelAction = getPostLevelAction({ launchContext, replayContext });
+  if (postLevelAction === "stats" && shouldReturnToStatsAfterReplay(replayContext)) {
     document.getElementById("levelTitle").textContent = "Niveau rejoué !";
     document.getElementById("levelText").textContent = current.title + " terminé." + scoreText;
     document.getElementById("nextBtn").textContent = "Retour au tableau";
     services.narration.speak("Bravo, niveau rejoué.");
+    return;
+  }
+  if (postLevelAction === "debug-menu") {
+    document.getElementById("levelTitle").textContent = "Niveau debug terminé";
+    document.getElementById("levelText").textContent = current.title + " terminé." + scoreText;
+    document.getElementById("nextBtn").textContent = "Retour au menu debug";
+    services.narration.speak("Niveau debug terminé.");
     return;
   }
   if (isFinalLevel(currentLevelIndex, LEVELS.length)) {
@@ -616,11 +730,18 @@ function finishLevel() {
 }
 
 function startGame(easy, options = {}) {
-  if (!hasActiveAccount()) {
+  const requestedLaunchContext = options.launchContext || null;
+  const requiresAccount = requestedLaunchContext?.requiresAccount !== false;
+  if (requiresAccount && !hasActiveAccount()) {
     // [impl->req~account.start-selection~1]
     setAccountStatus("Choisis ou crée un compte avant de jouer.");
     return;
   }
+  if (!frenchVoiceReady) {
+    setNarrationStatus(services.narration.getDiagnosticMessage());
+    return;
+  }
+  launchContext = requestedLaunchContext;
   if (options.replayFromStats) {
     // [impl->req~stats.replay-completed-level~1]
     replayContext = {
@@ -628,12 +749,16 @@ function startGame(easy, options = {}) {
       levelIndex: options.levelIndex
     };
     currentLevelIndex = selectLevelIndex(options.levelIndex, LEVELS.length);
+  } else if (requestedLaunchContext?.source === "debug") {
+    replayContext = null;
+    currentLevelIndex = selectLevelIndex(requestedLaunchContext.levelIndex, LEVELS.length);
   } else {
     replayContext = null;
     currentLevelIndex = accountSession.getResumeLevelIndex();
   }
   resetWords();
   levelStats = createLevelStats();
+  validatedDictationState = null;
   const nextState = resetGameStateForLevel({
     state,
     veryEasy,
@@ -653,6 +778,7 @@ function startGame(easy, options = {}) {
   activeWords = nextState.activeWords;
   spawnTimer = nextState.spawnTimer;
   targetRetryQueue = nextState.targetRetryQueue;
+  selectedCharacterId = getLaunchCharacterId({ launchContext, selectedCharacterId });
   applySelectedCharacter();
   // [impl->req~ui.visible-instruction~1]
   updateHud();
@@ -660,6 +786,7 @@ function startGame(easy, options = {}) {
   selectOverlay.classList.add("hidden");
   levelOverlay.classList.add("hidden");
   championsOverlay.classList.add("hidden");
+  debugOverlay.classList.add("hidden");
   pauseBtn.classList.remove("paused");
   pauseBtn.textContent = "⏸";
   setMessage(getLevel().instruction);
@@ -682,7 +809,8 @@ function startGame(easy, options = {}) {
 }
 
 function continueLevel() {
-  if (replayContext) {
+  const postLevelAction = getPostLevelAction({ launchContext, replayContext });
+  if (postLevelAction === "stats") {
     // [impl->req~stats.replay-return-flow~1]
     // [impl->req~stats.replay-does-not-regress-progression~1]
     levelOverlay.classList.add("hidden");
@@ -690,16 +818,26 @@ function continueLevel() {
     renderChampionsDashboard();
     renderPlayerStatsDetail(replayContext.accountId);
     replayContext = null;
+    launchContext = null;
     state = "menu";
     return;
   }
+  if (postLevelAction === "debug-menu") {
+    levelOverlay.classList.add("hidden");
+    openDebugMenu();
+    validatedDictationState = null;
+    return;
+  }
   currentLevelIndex = getNextLevelIndex(currentLevelIndex, LEVELS.length);
+  launchContext = null;
   startGame(veryEasy);
 }
 
 function returnToMenu() {
   resetWords();
   replayContext = null;
+  launchContext = null;
+  validatedDictationState = null;
   stars = 0;
   state = "menu";
   updateHud();
@@ -707,6 +845,7 @@ function returnToMenu() {
   pauseBtn.textContent = "⏸";
   levelOverlay.classList.add("hidden");
   championsOverlay.classList.add("hidden");
+  debugOverlay.classList.add("hidden");
   selectOverlay.classList.add("hidden");
   startOverlay.classList.remove("hidden");
   setMessage(getLevel().instruction);
@@ -804,13 +943,16 @@ function tick(time) {
 }
 
 function buildLevelGrid() {
-  levelGrid.innerHTML = "";
+  clearElement(levelGrid);
   // [impl->req~data.levels-separated-from-engine~1]
   LEVELS.forEach((levelData, index) => {
     const button = document.createElement("button");
     button.className = "levelChoice";
     button.type = "button";
-    button.innerHTML = "<span>Niveau " + levelData.id + " · " + levelData.difficulty + "</span>" + levelData.title;
+    const meta = document.createElement("span");
+    meta.textContent = "Niveau " + levelData.id + " · " + levelData.difficulty;
+    button.appendChild(meta);
+    button.appendChild(document.createTextNode(levelData.title));
     button.addEventListener("click", () => chooseLevel(index));
     levelGrid.appendChild(button);
   });
@@ -818,7 +960,7 @@ function buildLevelGrid() {
 
 function buildCharacterGrid() {
   if (!characterGrid) return;
-  characterGrid.innerHTML = "";
+  clearElement(characterGrid);
   // [impl->req~character.start-selection~1]
   getCharacters().forEach(character => {
     const button = document.createElement("button");
@@ -826,11 +968,42 @@ function buildCharacterGrid() {
     button.type = "button";
     button.dataset.characterId = character.id;
     button.setAttribute("aria-pressed", character.id === selectedCharacterId ? "true" : "false");
-    button.innerHTML = "<span class=\"characterChoice__label\">" + character.label + "</span><span class=\"characterChoice__weapon\">Arme : " + character.weaponLabel + "</span>";
+    const label = document.createElement("span");
+    label.className = "characterChoice__label";
+    label.textContent = character.label;
+    const weapon = document.createElement("span");
+    weapon.className = "characterChoice__weapon";
+    weapon.textContent = "Arme : " + character.weaponLabel;
+    button.appendChild(label);
+    button.appendChild(weapon);
     button.addEventListener("click", () => chooseCharacter(character.id));
     characterGrid.appendChild(button);
   });
   updateCharacterPreview();
+}
+
+function launchDebugLevel(levelIndex) {
+  startGame(false, {
+    launchContext: createDebugLaunchContext({
+      levelIndex,
+      selectedCharacterId
+    })
+  });
+}
+
+function buildDebugLevelGrid() {
+  clearElement(debugLevelGrid);
+  buildDebugLevelEntries(LEVELS).forEach((level) => {
+    const button = document.createElement("button");
+    button.className = "levelChoice";
+    button.type = "button";
+    const meta = document.createElement("span");
+    meta.textContent = "Niveau " + level.levelNumber + " · " + level.type;
+    button.appendChild(meta);
+    button.appendChild(document.createTextNode(level.title));
+    button.addEventListener("click", () => launchDebugLevel(level.index));
+    debugLevelGrid.appendChild(button);
+  });
 }
 
 touchInput.bindHold(document.getElementById("leftTouch"), "left");
@@ -842,8 +1015,10 @@ pauseBtn.addEventListener("click", togglePause);
 voiceBtn.addEventListener("click", toggleNarration);
 playBtn.addEventListener("click", () => startGame(false));
 easyBtn.addEventListener("click", () => startGame(true));
+debugBtn.addEventListener("click", openDebugMenu);
 championsBtn.addEventListener("click", openChampionsDashboard);
 championsBackBtn.addEventListener("click", closeChampionsDashboard);
+document.getElementById("debugBackBtn").addEventListener("click", closeDebugMenu);
 createAccountBtn.addEventListener("click", () => { void createAccountFromInput(); });
 renameAccountBtn.addEventListener("click", () => { void renameActiveAccount(); });
 resetAccountBtn.addEventListener("click", () => { void resetActiveAccount(); });
@@ -868,17 +1043,12 @@ document.getElementById("padBtn").addEventListener("click", () => {
 window.addEventListener("resize", () => { knightX = clamp(knightX, 52, window.innerWidth - 52); });
 
 buildLevelGrid();
+buildDebugLevelGrid();
 buildCharacterGrid();
 applySelectedCharacter();
 updateHud();
 void initAccounts();
-initNarration();
-// [impl->req~speech.french-voice-required~1]
-if (!services.narration.hasFrenchVoice()) {
-  playBtn.disabled = true;
-  easyBtn.disabled = true;
-  setNarrationStatus("Voix française requise pour jouer.");
-}
+void initNarration();
 setMessage(getLevel().instruction);
 knight.style.left = knightX + "px";
 requestAnimationFrame(tick);

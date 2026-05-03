@@ -77,6 +77,7 @@
         <div class="menuBtns">
           <button id="playBtn" class="bigBtn" type="button">Jouer</button>
           <button id="easyBtn" class="bigBtn secondary" type="button">Mode très facile</button>
+          <button id="debugBtn" class="bigBtn secondary" type="button">Mode debug</button>
           <button id="championsBtn" class="bigBtn secondary" type="button">Tableau des champions</button>
           <button id="voiceBtn" class="bigBtn secondary" type="button">Activer la voix</button>
           <button id="chooseBtn" class="bigBtn secondary" type="button">Choisir un niveau</button>
@@ -93,6 +94,15 @@
         <p class="subtitle">Sélectionne une mission pour le chevalier.</p>
         <div id="levelGrid"></div>
         <button id="backBtn" class="bigBtn pink" type="button">Retour</button>
+      </div>
+    </div>
+
+    <div id="debugOverlay" class="overlay hidden">
+      <div class="panel">
+        <h1>Menu debug</h1>
+        <p class="subtitle">Teste n'importe quel niveau sans compte ni sauvegarde.</p>
+        <div id="debugLevelGrid"></div>
+        <button id="debugBackBtn" class="bigBtn pink" type="button">Quitter le mode debug</button>
       </div>
     </div>
 
