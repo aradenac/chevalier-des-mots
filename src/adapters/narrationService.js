@@ -20,6 +20,7 @@ export function createNarrationService({
   storage = typeof localStorage !== "undefined" ? localStorage : null,
   onDiagnostic = () => {},
   onStateChange = () => {},
+  onSpeakStateChange = () => {},
   logger = console
 } = {}) {
   const available = Boolean(speechSynthesis && SpeechSynthesisUtterance);
@@ -221,10 +222,12 @@ export function createNarrationService({
     utterance.onstart = () => {
       speaking = true;
       logger.log("[Narration] start");
+      onSpeakStateChange({ speaking: true, text });
     };
     utterance.onend = () => {
       speaking = false;
       logger.log("[Narration] end");
+      onSpeakStateChange({ speaking: false, text });
     };
     utterance.onerror = (event) => {
       const error = event && event.error ? event.error : "unknown";
@@ -237,6 +240,7 @@ export function createNarrationService({
       });
       if (diag.message) emitDiagnostic(diag.message);
       speaking = false;
+      onSpeakStateChange({ speaking: false, text, error });
     };
     logger.log("[Narration] speak:", text);
     try {

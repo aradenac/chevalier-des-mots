@@ -36,10 +36,12 @@ import {
   recordSuccessfulHit,
   shouldReturnToStatsAfterReplay
 } from "./core/statistics.js";
+import { resolveMusicContext } from "./core/musicContext.js";
 import { createKeyboardInput } from "./adapters/keyboardInput.js";
 import { createTouchInput } from "./adapters/touchInput.js";
 import { createGamepadInput } from "./adapters/gamepadInput.js";
 import { createAudioService } from "./adapters/audioService.js";
+import { createMusicService } from "./adapters/musicService.js";
 import { createNarrationService } from "./adapters/narrationService.js";
 import { createServerAccountStorage } from "./adapters/serverAccountStorage.js";
 import { createAccountSession } from "./adapters/accountSession.js";
@@ -55,6 +57,8 @@ const instruction = document.getElementById("instruction");
 const menuBtn = document.getElementById("menuBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const voiceBtn = document.getElementById("voiceBtn");
+const musicToggleBtn = document.getElementById("musicToggleBtn");
+const musicVolume = document.getElementById("musicVolume");
 const startOverlay = document.getElementById("startOverlay");
 const selectOverlay = document.getElementById("selectOverlay");
 const levelOverlay = document.getElementById("levelOverlay");
@@ -122,8 +126,13 @@ let frenchVoiceReady = false;
 const narrationStatus = document.getElementById("narrationStatus");
 const services = {
   audio: createAudioService(),
+  music: createMusicService(),
   narration: createNarrationService({
-    onDiagnostic: setNarrationStatus
+    onDiagnostic: setNarrationStatus,
+    onSpeakStateChange: ({ speaking }) => {
+      // [impl->req~music.dictation-ducking~1]
+      services.music.setDucked(Boolean(speaking) && isDictationLevel() && state === "playing");
+    }
   })
 };
 const accountSession = createAccountSession({
@@ -146,6 +155,9 @@ function setNarrationStatus(text) {
 }
 
 async function initNarration() {
+  services.music.init();
+  updateMusicControls();
+  syncMusicContext();
   services.narration.init();
   updateNarrationButton();
   setNarrationStatus(services.narration.getDiagnosticMessage());
@@ -158,6 +170,8 @@ async function initNarration() {
 
 function ensureAudio() {
   services.audio.ensureReady();
+  services.music.ensureReady();
+  syncMusicContext();
 }
 
 function playSweetSound() {
@@ -190,6 +204,33 @@ function updateNarrationButton() {
   voiceBtn.disabled = !services.narration.isAvailable();
   voiceBtn.textContent = services.narration.getButtonLabel();
   voiceBtn.setAttribute("aria-label", services.narration.isEnabled() ? "Désactiver la narration vocale" : "Activer la narration vocale");
+}
+
+function updateMusicControls() {
+  // [impl->req~music.user-volume-control~1]
+  if (musicToggleBtn) {
+    musicToggleBtn.textContent = services.music.isEnabled() ? "Couper musique" : "Activer musique";
+    musicToggleBtn.setAttribute("aria-label", services.music.isEnabled() ? "Couper la musique" : "Activer la musique");
+  }
+  if (musicVolume) {
+    musicVolume.value = String(Math.round(services.music.getVolume() * 100));
+    musicVolume.disabled = !services.music.isEnabled();
+  }
+}
+
+function syncMusicContext() {
+  // [impl->req~music.context-track-selection~1]
+  // [impl->req~debug.context-music~1]
+  const levelType = state === "playing" || state === "paused" ? getLevel()?.type : null;
+  const trackKey = resolveMusicContext({ state, levelType });
+  services.music.setDucked(Boolean(state === "playing" && isDictationLevel() && services.narration.isSpeaking()));
+  if (!services.music.isEnabled()) {
+    services.music.stop();
+    updateMusicControls();
+    return;
+  }
+  services.music.playContext(trackKey);
+  updateMusicControls();
 }
 
 function setLaunchControlsEnabled(enabled) {
@@ -397,12 +438,14 @@ function openChampionsDashboard() {
   debugOverlay.classList.add("hidden");
   championsOverlay.classList.remove("hidden");
   state = "menu";
+  syncMusicContext();
 }
 
 function closeChampionsDashboard() {
   championsOverlay.classList.add("hidden");
   startOverlay.classList.remove("hidden");
   state = "menu";
+  syncMusicContext();
 }
 
 function openDebugMenu() {
@@ -416,12 +459,14 @@ function openDebugMenu() {
   championsOverlay.classList.add("hidden");
   debugOverlay.classList.remove("hidden");
   state = "menu";
+  syncMusicContext();
 }
 
 function closeDebugMenu() {
   debugOverlay.classList.add("hidden");
   startOverlay.classList.remove("hidden");
   state = "menu";
+  syncMusicContext();
 }
 
 async function createAccountFromInput() {
@@ -863,6 +908,7 @@ function validateDictation() {
 function finishLevel() {
   const current = getLevel();
   state = "level";
+  syncMusicContext();
   levelOverlay.classList.remove("hidden");
   debugOverlay.classList.add("hidden");
   resetWords();
@@ -1002,6 +1048,7 @@ function startGame(easy, options = {}) {
   pauseBtn.classList.remove("paused");
   pauseBtn.textContent = "⏸";
   updateAttackButtons();
+  syncMusicContext();
   setMessage(getLevel().instruction);
   services.narration.speak(getLevel().instruction);
   ensureAudio();
@@ -1058,6 +1105,7 @@ function continueLevel() {
     replayContext = null;
     launchContext = null;
     state = "menu";
+    syncMusicContext();
     return;
   }
   if (postLevelAction === "debug-menu") {
@@ -1073,13 +1121,14 @@ function continueLevel() {
       levelsLength: LEVELS.length
     });
     if (debugContinueAction === "debug-sequence-end") {
-      launchContext = createDebugSequenceEndContext(launchContext);
-      document.getElementById("levelTitle").textContent = "Fin de séquence debug";
+    launchContext = createDebugSequenceEndContext(launchContext);
+    document.getElementById("levelTitle").textContent = "Fin de séquence debug";
       document.getElementById("levelText").textContent = "Tous les niveaux debug de la campagne ont été testés.";
       document.getElementById("nextBtn").textContent = "Retour au menu debug";
-      services.narration.speak("Fin de séquence debug.");
-      return;
-    }
+    services.narration.speak("Fin de séquence debug.");
+    syncMusicContext();
+    return;
+  }
     launchContext = createNextDebugLaunchContext(launchContext, currentLevelIndex + 1);
     startGame(veryEasy, { launchContext });
     return;
@@ -1100,6 +1149,7 @@ function returnToMenu() {
   state = "menu";
   updateHud();
   updateAttackButtons();
+  syncMusicContext();
   pauseBtn.classList.remove("paused");
   pauseBtn.textContent = "⏸";
   levelOverlay.classList.add("hidden");
@@ -1131,12 +1181,14 @@ function togglePause() {
       return;
     }
     state = "paused";
+    syncMusicContext();
     pauseBtn.classList.add("paused");
     pauseBtn.textContent = "▶";
     setMessage("Pause");
     services.narration.speak("Pause");
   } else if (state === "paused") {
     state = "playing";
+    syncMusicContext();
     pauseBtn.classList.remove("paused");
     pauseBtn.textContent = "⏸";
     setMessage(getLevel().instruction);
@@ -1271,6 +1323,16 @@ strikeBtnTop.addEventListener("click", strike);
 menuBtn.addEventListener("click", returnToMenu);
 pauseBtn.addEventListener("click", togglePause);
 voiceBtn.addEventListener("click", toggleNarration);
+musicToggleBtn?.addEventListener("click", () => {
+  ensureAudio();
+  services.music.setEnabled(!services.music.isEnabled());
+  syncMusicContext();
+});
+musicVolume?.addEventListener("input", (event) => {
+  ensureAudio();
+  services.music.setVolume(Number(event.target.value) / 100);
+  syncMusicContext();
+});
 playBtn.addEventListener("click", () => startGame(false));
 easyBtn.addEventListener("click", () => startGame(true));
 debugBtn.addEventListener("click", openDebugMenu);
@@ -1285,11 +1347,13 @@ chooseBtn.addEventListener("click", () => {
   startOverlay.classList.add("hidden");
   selectOverlay.classList.remove("hidden");
   state = "select";
+  syncMusicContext();
 });
 document.getElementById("backBtn").addEventListener("click", () => {
   selectOverlay.classList.add("hidden");
   startOverlay.classList.remove("hidden");
   state = "menu";
+  syncMusicContext();
 });
 document.getElementById("nextBtn").addEventListener("click", continueLevel);
 document.getElementById("padBtn").addEventListener("click", () => {
