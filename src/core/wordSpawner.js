@@ -1,4 +1,10 @@
-export function chooseNextItem({ level, retryQueue, wordIndex, veryEasy, random = Math.random }) {
+// [impl->req~dictation.data-model~1]
+// [impl->req~dictation.no-time-pressure~1]
+export function hasSpawnableItems(level) {
+  return Array.isArray(level?.items) && level.items.length > 0;
+}
+
+export function chooseNextItem({ level, retryQueue = [], wordIndex = 0, veryEasy, random = Math.random }) {
   if (retryQueue.length && random() < 0.7) {
     return {
       item: retryQueue[0],
@@ -7,9 +13,18 @@ export function chooseNextItem({ level, retryQueue, wordIndex, veryEasy, random 
     };
   }
 
-  const targetItems = level.items.filter(item => item.target);
-  const safeItems = level.items.filter(item => !item.target);
-  let pool = level.items;
+  if (!hasSpawnableItems(level)) {
+    return {
+      item: null,
+      retryQueue,
+      wordIndex
+    };
+  }
+
+  const items = level.items;
+  const targetItems = items.filter(item => item.target);
+  const safeItems = items.filter(item => !item.target);
+  let pool = items;
   if (veryEasy && targetItems.length && safeItems.length) {
     pool = random() < 0.76 ? targetItems : safeItems;
   }
@@ -22,13 +37,16 @@ export function chooseNextItem({ level, retryQueue, wordIndex, veryEasy, random 
 }
 
 export function getMaxActiveWords(level, veryEasy) {
-  return veryEasy ? Math.max(2, level.maxActiveWords - 1) : level.maxActiveWords;
+  const maxActiveWords = Number.isFinite(level?.maxActiveWords) ? level.maxActiveWords : 0;
+  return veryEasy ? Math.max(2, maxActiveWords - 1) : maxActiveWords;
 }
 
 export function getWordSpeedBase(level, veryEasy) {
-  return veryEasy ? Math.max(34, level.fallSpeed - 14) : level.fallSpeed;
+  const fallSpeed = Number.isFinite(level?.fallSpeed) ? level.fallSpeed : 0;
+  return veryEasy ? Math.max(34, fallSpeed - 14) : fallSpeed;
 }
 
 export function getSpawnDelay(level, veryEasy) {
-  return veryEasy ? 2.05 : Math.max(1.1, 1.75 - level.id * 0.025);
+  const levelId = Number.isFinite(level?.id) ? level.id : 0;
+  return veryEasy ? 2.05 : Math.max(1.1, 1.75 - levelId * 0.025);
 }

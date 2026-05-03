@@ -3,7 +3,8 @@ import { getWorldForLevel } from "./data/worlds.js";
 import { DEFAULT_CHARACTER_ID, getCharacterById, getCharacters } from "./data/characters.js";
 import { clamp, createGameState, resetGameStateForLevel } from "./core/gameState.js";
 import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLevelIndex } from "./core/progression.js";
-import { chooseNextItem, getMaxActiveWords, getSpawnDelay, getWordSpeedBase } from "./core/wordSpawner.js";
+import { chooseNextItem, getWordSpeedBase } from "./core/wordSpawner.js";
+import { advancePlayingLevelFrame, shouldRunSlicingLoop } from "./core/gameLoop.js";
 import { findSwordCollision, isTargetHit } from "./core/collision.js";
 import { pickDictation, scoreDictation } from "./core/dictation.js";
 import { createValidatedDictationState } from "./core/dictationFlow.js";
@@ -516,6 +517,9 @@ function chooseLevel(index) {
 
 function nextWordData() {
   const current = getLevel();
+  if (!shouldRunSlicingLoop(current)) {
+    return null;
+  }
   const result = chooseNextItem({
     level: current,
     retryQueue: targetRetryQueue,
@@ -530,6 +534,9 @@ function nextWordData() {
 function spawnWord() {
   const current = getLevel();
   const data = nextWordData();
+  if (!data) {
+    return false;
+  }
   const el = document.createElement("div");
   el.className = "word";
   el.textContent = data.text;
@@ -544,6 +551,7 @@ function spawnWord() {
     speed: speedBase + Math.random() * (veryEasy ? 12 : 24),
     bouncing: 0
   });
+  return true;
 }
 
 function bounceWord(word) {
@@ -970,45 +978,37 @@ function tick(time) {
   const keyboardState = keyboardInput.read();
   const touchState = touchInput.read();
   const gamepadState = updateGamepadStatus();
+  const current = state === "playing" ? getLevel() : null;
+  const canRunSlicingActions = shouldRunSlicingLoop(current);
   moveLeft = keyboardState.left || touchState.left || gamepadState.left;
   moveRight = keyboardState.right || touchState.right || gamepadState.right;
-  if (keyboardState.strikePressed || touchState.strikePressed || gamepadState.strikePressed) strike();
+  if (canRunSlicingActions && (keyboardState.strikePressed || touchState.strikePressed || gamepadState.strikePressed)) strike();
   if (keyboardState.pausePressed || touchState.pausePressed || gamepadState.pausePressed) togglePause();
 
   if (state === "playing") {
-    const current = getLevel();
-    // [impl->req~level.longer-play-session~1]
-    const speed = 280 + Math.min(current.id, 20) * 6;
-    if (moveLeft) knightX -= speed * dt;
-    if (moveRight) knightX += speed * dt;
-    knightX = clamp(knightX, 52, window.innerWidth - 52);
+    const nextFrame = advancePlayingLevelFrame({
+      level: current,
+      dt,
+      moveLeft,
+      moveRight,
+      knightX,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+      spawnTimer,
+      activeWords,
+      veryEasy,
+      clamp,
+      spawnWord,
+      onTargetMissed: (wordData) => {
+        // [impl->req~stats.level-error-counting~1]
+        levelStats = recordLevelError(levelStats);
+        targetRetryQueue.push(wordData);
+      }
+    });
+    knightX = nextFrame.knightX;
+    spawnTimer = nextFrame.spawnTimer;
+    activeWords = nextFrame.activeWords;
     knight.style.left = knightX + "px";
-
-    spawnTimer -= dt;
-    const limit = getMaxActiveWords(current, veryEasy);
-    if (spawnTimer <= 0 && activeWords.length < limit) {
-      spawnWord();
-      spawnTimer = getSpawnDelay(current, veryEasy);
-    }
-
-    const ground = window.innerHeight - 78;
-    for (const word of [...activeWords]) {
-      word.y += word.speed * dt;
-      if (word.bouncing > 0) {
-        word.bouncing -= dt;
-        word.speed += 420 * dt;
-      }
-      word.el.style.transform = "translate(-50%, -50%) translate(" + word.x + "px, " + word.y + "px)";
-      if (word.y > ground) {
-        word.el.remove();
-        activeWords = activeWords.filter(w => w !== word);
-        if (word.data.target) {
-          // [impl->req~stats.level-error-counting~1]
-          levelStats = recordLevelError(levelStats);
-          targetRetryQueue.push(word.data);
-        }
-      }
-    }
   }
 
   requestAnimationFrame(tick);

@@ -57,4 +57,16 @@ describe("game state", () => {
     expect(getMaxActiveWords(sampleLevel, false)).toBe(4);
     expect(getMaxActiveWords(sampleLevel, true)).toBe(3);
   });
+
+  it("retourne un item nul pour un niveau sans items au lieu de planter", () => {
+    const next = chooseNextItem({
+      level: { type: "dictation" },
+      retryQueue: [],
+      wordIndex: 0,
+      veryEasy: false
+    });
+
+    expect(next.item).toBeNull();
+    expect(next.wordIndex).toBe(0);
+  });
 });
