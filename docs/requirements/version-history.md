@@ -14,6 +14,7 @@ Elle permet de suivre les changements globaux sans disperser l'historique dans l
 | 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/ | Approved all existing requirements and normalized page structure with no code changes | All listed requirements represent accepted product targets; page history must remain at the end |
 | 2026-05-03 | 1.3.0 | 1.2.0 | docs/requirements/writing-rules.md, docs/requirements/index.md, mkdocs.yml, AGENTS.md | Added versioned writing rules for requirements and agent workflow references | Avoid repeating authoring constraints in prompts while keeping spec changes governed by repository rules |
 | 2026-05-03 | 1.4.0 | 1.2.0 | docs/requirements/ | Audited and normalized requirements against writing rules with no code changes | Apply the versioned requirement writing rules while preserving product meaning |
+| 2026-05-03 | 1.5.0 | 1.2.0 | docs/requirements/traceability-audit.md, docs/requirements/index.md, mkdocs.yml | Added bidirectional traceability audit matrix with no code changes | Make static trace links and execution evidence auditable in both directions |
 
 ## Change history
 
@@ -28,3 +29,4 @@ Elle permet de suivre les changements globaux sans disperser l'historique dans l
 | 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/version-history.md | Recorded approved status normalization with no code changes | Keep the global history aligned with the accepted product target status |
 | 2026-05-03 | 1.3.0 | 1.2.0 | docs/requirements/version-history.md | Recorded the requirement writing rules update with no code changes | Keep the global history aligned with the new spec authoring process |
 | 2026-05-03 | 1.4.0 | 1.2.0 | docs/requirements/version-history.md | Recorded the requirement writing-rules audit with no code changes | Keep the global history aligned with the normalized requirements |
+| 2026-05-03 | 1.5.0 | 1.2.0 | docs/requirements/version-history.md | Recorded the bidirectional traceability audit matrix with no code changes | Keep the global history aligned with the traceability audit aid |
