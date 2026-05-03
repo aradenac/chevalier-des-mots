@@ -801,11 +801,17 @@ function startGame(easy, options = {}) {
     setDictationVisible(true);
     // [impl->req~dictation.start-audio~1]
     speakCurrentDictation();
-    dictationInput.focus();
+    focusDictationPrompt();
   } else {
     setDictationVisible(false);
     spawnWord();
   }
+}
+
+function focusDictationPrompt() {
+  requestAnimationFrame(() => {
+    dictationInput.focus();
+  });
 }
 
 function continueLevel() {
@@ -1059,6 +1065,7 @@ dictationRepeatBtn.addEventListener("click", speakCurrentDictation);
 dictationValidateBtn.addEventListener("click", () => validateDictation());
 dictationClearBtn.addEventListener("click", () => {
   dictationInput.value = "";
+  focusDictationPrompt();
 });
 dictationInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !event.shiftKey) {

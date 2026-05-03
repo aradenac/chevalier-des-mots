@@ -65,6 +65,21 @@ describe("input normalisé", () => {
     expect(second.strikePressed).toBe(false);
   });
 
+  it("laisse les champs éditables gérer espace et entrée", () => {
+    const target = createEventTarget();
+    const input = createKeyboardInput({ target });
+    const preventDefault = vi.fn();
+
+    target.emit("keydown", {
+      code: "Space",
+      preventDefault,
+      target: { tagName: "textarea" }
+    });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(input.read().strikePressed).toBe(false);
+  });
+
   it("lit le tactile dans l'état normalisé", () => {
     const input = createTouchInput({ onActivate: vi.fn() });
     const left = createTouchButton();

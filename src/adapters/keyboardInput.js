@@ -7,6 +7,13 @@ const EMPTY_INPUT_STATE = {
   connected: true
 };
 
+function isEditableTarget(target) {
+  if (!target || typeof target !== "object") return false;
+  if (target.isContentEditable) return true;
+  const tagName = typeof target.tagName === "string" ? target.tagName.toUpperCase() : "";
+  return tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT";
+}
+
 export function createKeyboardInput({ target = window } = {}) {
   let left = false;
   let right = false;
@@ -25,6 +32,9 @@ export function createKeyboardInput({ target = window } = {}) {
   }
 
   target.addEventListener("keydown", (event) => {
+    if (isEditableTarget(event.target)) {
+      return;
+    }
     if (["ArrowLeft", "ArrowRight", "Space", "Enter"].includes(event.code)) {
       event.preventDefault();
     }
