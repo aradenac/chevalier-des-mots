@@ -10,9 +10,15 @@ import { createValidatedDictationState } from "./core/dictationFlow.js";
 import {
   buildDebugLevelEntries,
   canAccessDebugMenu,
+  createDebugMaxScoreStats,
   createDebugLaunchContext,
+  createDebugSequenceEndContext,
+  createNextDebugLaunchContext,
+  getDebugChainContinueAction,
   getLaunchCharacterId,
   getPostLevelAction,
+  matchesDebugMaxScoreShortcut,
+  normalizeDebugShortcutConfig,
   shouldPersistLevelResult
 } from "./core/debugMode.js";
 import {
@@ -48,6 +54,7 @@ const debugOverlay = document.getElementById("debugOverlay");
 const gamepadStatus = document.getElementById("gamepadStatus");
 const levelGrid = document.getElementById("levelGrid");
 const debugLevelGrid = document.getElementById("debugLevelGrid");
+const debugChainToggle = document.getElementById("debugChainToggle");
 const startSubtitle = document.getElementById("startSubtitle");
 const characterGrid = document.getElementById("characterGrid");
 const characterStatus = document.getElementById("characterStatus");
@@ -106,6 +113,8 @@ const accountSession = createAccountSession({
   storage: createServerAccountStorage(),
   levelsLength: LEVELS.length
 });
+const runtimeConfig = window.CHEVALIER_CONFIG || {};
+const debugMaxScoreShortcut = normalizeDebugShortcutConfig(runtimeConfig.debug?.maxScoreShortcut);
 
 function getLevel() {
   return getCurrentLevel(LEVELS, currentLevelIndex);
@@ -204,6 +213,10 @@ function updateHud() {
   instruction.textContent = current.shortInstruction;
   starsEl.textContent = "⭐ " + stars + " / " + current.starsToWin;
   startSubtitle.textContent = world.title + " : Niveau " + current.id + " — " + current.title;
+}
+
+function isDebugLevelRunning() {
+  return state === "playing" && launchContext?.source === "debug";
 }
 
 function updateCharacterPreview() {
@@ -716,6 +729,18 @@ function finishLevel() {
     services.narration.speak("Niveau debug terminé.");
     return;
   }
+  if (postLevelAction === "debug-chain") {
+    document.getElementById("levelTitle").textContent = "Bravo !";
+    if (currentLevelIndex >= LEVELS.length - 1) {
+      document.getElementById("levelText").textContent = current.title + " terminé." + scoreText;
+    } else {
+      const world = getWorldForLevel(current.id);
+      document.getElementById("levelText").textContent = world.title + " terminé." + scoreText + " Prochaine mission : " + LEVELS[currentLevelIndex + 1].title + " !";
+    }
+    document.getElementById("nextBtn").textContent = "Continuer";
+    services.narration.speak("Bravo, niveau terminé.");
+    return;
+  }
   if (isFinalLevel(currentLevelIndex, LEVELS.length)) {
     document.getElementById("levelTitle").textContent = "Victoire finale !";
     document.getElementById("levelText").textContent = "Le chevalier maîtrise les 40 niveaux des mots." + scoreText;
@@ -727,6 +752,22 @@ function finishLevel() {
     document.getElementById("nextBtn").textContent = "Continuer";
   }
   services.narration.speak("Bravo, niveau terminé.");
+}
+
+function completeDebugLevelWithMaxScore() {
+  if (!isDebugLevelRunning()) {
+    return false;
+  }
+  levelStats = createDebugMaxScoreStats(getLevel().type);
+  if (isDictationLevel()) {
+    validatedDictationState = null;
+    currentDictation = null;
+  } else {
+    stars = getLevel().starsToWin;
+    updateHud();
+  }
+  finishLevel();
+  return true;
 }
 
 function startGame(easy, options = {}) {
@@ -815,6 +856,13 @@ function focusDictationPrompt() {
 }
 
 function continueLevel() {
+  if (launchContext?.source === "debug" && launchContext.pendingSequenceEnd) {
+    levelOverlay.classList.add("hidden");
+    validatedDictationState = null;
+    launchContext = null;
+    openDebugMenu();
+    return;
+  }
   const postLevelAction = getPostLevelAction({ launchContext, replayContext });
   if (postLevelAction === "stats") {
     // [impl->req~stats.replay-return-flow~1]
@@ -832,6 +880,24 @@ function continueLevel() {
     levelOverlay.classList.add("hidden");
     openDebugMenu();
     validatedDictationState = null;
+    return;
+  }
+  if (postLevelAction === "debug-chain") {
+    const debugContinueAction = getDebugChainContinueAction({
+      launchContext,
+      currentLevelIndex,
+      levelsLength: LEVELS.length
+    });
+    if (debugContinueAction === "debug-sequence-end") {
+      launchContext = createDebugSequenceEndContext(launchContext);
+      document.getElementById("levelTitle").textContent = "Fin de séquence debug";
+      document.getElementById("levelText").textContent = "Tous les niveaux debug de la campagne ont été testés.";
+      document.getElementById("nextBtn").textContent = "Retour au menu debug";
+      services.narration.speak("Fin de séquence debug.");
+      return;
+    }
+    launchContext = createNextDebugLaunchContext(launchContext, currentLevelIndex + 1);
+    startGame(veryEasy, { launchContext });
     return;
   }
   currentLevelIndex = getNextLevelIndex(currentLevelIndex, LEVELS.length);
@@ -992,7 +1058,9 @@ function launchDebugLevel(levelIndex) {
   startGame(false, {
     launchContext: createDebugLaunchContext({
       levelIndex,
-      selectedCharacterId
+      selectedCharacterId,
+      chainLevels: Boolean(debugChainToggle?.checked),
+      maxScoreShortcut: debugMaxScoreShortcut
     })
   });
 }
@@ -1072,4 +1140,17 @@ dictationInput.addEventListener("keydown", (event) => {
     event.preventDefault();
     validateDictation();
   }
+});
+
+window.addEventListener("keydown", (event) => {
+  if (!isDebugLevelRunning()) {
+    return;
+  }
+  if (!matchesDebugMaxScoreShortcut(event, launchContext?.maxScoreShortcut || debugMaxScoreShortcut)) {
+    return;
+  }
+  if (event.target === dictationInput) {
+    event.preventDefault();
+  }
+  completeDebugLevelWithMaxScore();
 });
