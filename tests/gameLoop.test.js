@@ -1,5 +1,6 @@
 // [utest->req~dictation.no-time-pressure~1]
 // [utest->req~dictation.main-progression~2]
+// [utest->req~cannon.free-horizontal-aim~1]
 import { describe, expect, it, vi } from "vitest";
 import { advancePlayingLevelFrame } from "../src/core/gameLoop.js";
 import { LEVELS } from "../src/data/levels.js";
@@ -51,12 +52,73 @@ describe("game loop", () => {
     expect(word.y).toBe(0);
   });
 
-  it("reprend le spawn normal lors du passage d'une dictée terminée au niveau de tranchage suivant", () => {
-    const dictationIndex = LEVELS.findIndex((level, index) => level.type === "dictation" && LEVELS[index + 1]?.type === "slicing");
+  it("déplace librement un niveau cannon sur l'axe horizontal dans les bornes de jeu", () => {
+    const cannonLevel = LEVELS.find(level => level.type === "cannon");
+    const spawnWord = vi.fn();
+    const onTargetMissed = vi.fn();
+
+    const moveLeftFrame = advancePlayingLevelFrame({
+      level: cannonLevel,
+      dt: 0.5,
+      moveLeft: true,
+      moveRight: false,
+      knightX: 200,
+      windowWidth: 1024,
+      windowHeight: 768,
+      spawnTimer: 0,
+      activeWords: [],
+      veryEasy: false,
+      clamp,
+      spawnWord,
+      onTargetMissed
+    });
+
+    const moveRightFrame = advancePlayingLevelFrame({
+      level: cannonLevel,
+      dt: 0.5,
+      moveLeft: false,
+      moveRight: true,
+      knightX: 200,
+      windowWidth: 1024,
+      windowHeight: 768,
+      spawnTimer: 0,
+      activeWords: [],
+      veryEasy: false,
+      clamp,
+      spawnWord,
+      onTargetMissed
+    });
+
+    const clampedFrame = advancePlayingLevelFrame({
+      level: cannonLevel,
+      dt: 2,
+      moveLeft: true,
+      moveRight: false,
+      knightX: 60,
+      windowWidth: 300,
+      windowHeight: 768,
+      spawnTimer: 0,
+      activeWords: [],
+      veryEasy: false,
+      clamp,
+      spawnWord,
+      onTargetMissed
+    });
+
+    expect(moveLeftFrame.knightX).toBeLessThan(200);
+    expect(moveRightFrame.knightX).toBeGreaterThan(200);
+    expect(clampedFrame.knightX).toBeGreaterThanOrEqual(52);
+    expect(spawnWord).not.toHaveBeenCalled();
+  });
+
+  it("reprend le spawn normal après une dictée dès qu'un niveau de tranchage revient", () => {
+    const dictationIndex = LEVELS.findIndex(level => level.type === "dictation");
+    const slicingIndex = LEVELS.findIndex((level, index) => index > dictationIndex && level.type === "slicing");
     expect(dictationIndex).toBeGreaterThanOrEqual(0);
+    expect(slicingIndex).toBeGreaterThan(dictationIndex);
 
     const dictationLevel = LEVELS[dictationIndex];
-    const slicingLevel = LEVELS[dictationIndex + 1];
+    const slicingLevel = LEVELS[slicingIndex];
     const spawnWord = vi.fn();
     const onTargetMissed = vi.fn();
 

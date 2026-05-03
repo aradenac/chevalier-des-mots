@@ -2,99 +2,16 @@ const item = (text, target, feedbackOk, feedbackKo, correction, category) => ({ 
 const level = (id, title, instruction, shortInstruction, difficulty, starsToWin, maxActiveWords, fallSpeed, items) => ({ id, title, instruction, shortInstruction, difficulty, starsToWin, maxActiveWords, fallSpeed, items });
 
 // [impl->req~data.levels-separated-from-engine~1]
-// [impl->req~level.extended-campaign-worlds~1]
-// [impl->req~level.world-two-grammar-consolidation~1]
-// [impl->req~level.longer-play-session~1]
+// [impl->req~level.extended-campaign-worlds~2]
+// [impl->req~level.world-two-grammar-consolidation~2]
+// [impl->req~level.longer-play-session~2]
 // [impl->req~dictation.main-progression~2]
 // [impl->req~dictation.data-model~1]
 // [impl->req~dictation.content-progression~1]
-export const DICTATION_LEVEL_BANKS = {
-  3: [
-    { text: "chat", variants: ["Chat"] },
-    { text: "maison", variants: [] },
-    { text: "dragon", variants: [] },
-    { text: "forêt", variants: [] },
-    { text: "cheval", variants: [] }
-  ],
-  6: [
-    { text: "gâteau", variants: ["gateau"] },
-    { text: "école", variants: ["ecole"] },
-    { text: "fenêtre", variants: ["fenetre"] },
-    { text: "éléphant", variants: ["elephant"] },
-    { text: "forêt", variants: ["foret"] }
-  ],
-  9: [
-    { text: "magicien", variants: [] },
-    { text: "couronne", variants: [] },
-    { text: "bouclier", variants: [] },
-    { text: "rivière", variants: ["riviere"] },
-    { text: "épée", variants: ["epee"] }
-  ],
-  12: [
-    { text: "château doré", variants: [] },
-    { text: "petit dragon", variants: [] },
-    { text: "forêt magique", variants: [] },
-    { text: "roi content", variants: [] },
-    { text: "gros nuage", variants: [] }
-  ],
-  15: [
-    { text: "épée brillante", variants: ["epee brillante"] },
-    { text: "cheval rapide", variants: [] },
-    { text: "petite maison", variants: [] },
-    { text: "fée gentille", variants: ["fee gentille"] },
-    { text: "garçon courageux", variants: ["garcon courageux"] }
-  ],
-  18: [
-    { text: "Le chevalier avance.", variants: [] },
-    { text: "La princesse rit.", variants: [] },
-    { text: "Le dragon dort.", variants: [] },
-    { text: "Le roi arrive.", variants: [] },
-    { text: "La porte s'ouvre.", variants: [] }
-  ],
-  21: [
-    { text: "Le jardin est calme.", variants: [] },
-    { text: "Le vent souffle fort.", variants: [] },
-    { text: "La pluie tombe vite.", variants: [] },
-    { text: "Le chat saute haut.", variants: [] },
-    { text: "La lune brille ce soir.", variants: [] }
-  ],
-  24: [
-    { text: "Le cheval mange du foin.", variants: [] },
-    { text: "La maîtresse lit une histoire.", variants: ["La maitresse lit une histoire."] },
-    { text: "Le garçon ferme la porte.", variants: ["Le garcon ferme la porte."] },
-    { text: "Nous marchons dans la forêt.", variants: ["Nous marchons dans la foret."] },
-    { text: "Le château est ancien.", variants: ["Le chateau est ancien."] }
-  ],
-  27: [
-    { text: "Le petit cheval blanc court vite.", variants: [] },
-    { text: "La grande rivière traverse le village.", variants: ["La grande riviere traverse le village."] },
-    { text: "Le brave chevalier protège son ami.", variants: [] },
-    { text: "La fée apporte une potion magique.", variants: ["La fee apporte une potion magique."] },
-    { text: "Le dragon rouge souffle doucement.", variants: [] }
-  ],
-  30: [
-    { text: "Ce matin, le chevalier prépare son bouclier.", variants: [] },
-    { text: "Dans la cour, les enfants chantent ensemble.", variants: [] },
-    { text: "Le vieux magicien raconte une histoire drôle.", variants: [] },
-    { text: "Sous la pluie, la princesse garde le sourire.", variants: [] },
-    { text: "Au château, le roi remercie les villageois.", variants: ["Au chateau, le roi remercie les villageois."] }
-  ]
-};
-
-const DICTATION_LEVEL_METADATA = {
-  3: { title: "Dictée 1 · Mots simples", instruction: "Écoute puis écris le mot dicté.", shortInstruction: "Écris le mot dicté" },
-  6: { title: "Dictée 2 · Accents", instruction: "Écoute puis écris le mot dicté.", shortInstruction: "Écris le mot dicté" },
-  9: { title: "Dictée 3 · Mots du royaume", instruction: "Écoute puis écris le mot dicté.", shortInstruction: "Écris le mot dicté" },
-  12: { title: "Dictée 4 · Groupes de mots", instruction: "Écoute puis écris le groupe de mots dicté.", shortInstruction: "Écris le groupe dicté" },
-  15: { title: "Dictée 5 · Groupes accentués", instruction: "Écoute puis écris le groupe de mots dicté.", shortInstruction: "Écris le groupe dicté" },
-  18: { title: "Dictée 6 · Phrases courtes", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée" },
-  21: { title: "Dictée 7 · Phrases du jardin", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée" },
-  24: { title: "Dictée 8 · Phrases du château", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée" },
-  27: { title: "Dictée 9 · Phrases longues", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée" },
-  30: { title: "Dictée 10 · Phrases complètes", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée" }
-};
-
-const BASE_LEVELS = [
+// [impl->req~cannon.main-progression~1]
+// [impl->req~cannon.data-model~1]
+// [impl->req~cannon.content-progression~1]
+const SLICING_LEVEL_LIBRARY = [
   level(1, "Les mots mal écrits", "Tranche les mots qui ne sont pas bien orthographiés.", "Tranche les mots mal écrits", "facile", 5, 3, 42, [
     item("chatt", true, "Bien joué ! On écrit : chat", "Oups, ce mot était une cible.", "chat", "orthographe"),
     item("chat", false, "Ce mot était déjà correct.", "Oups, celui-ci était déjà correct", undefined, "orthographe"),
@@ -245,46 +162,6 @@ const BASE_LEVELS = [
     item("elles jouent", true, "Oui ! C'est du présent.", "Elles jouent était au présent.", undefined, "présent"),
     item("elles ont joué", false, "Elles ont joué est au passé composé.", "Oups, elles ont joué est au passé composé", undefined, "passé composé")
   ]),
-  level(16, "Les verbes au futur", "Tranche les verbes conjugués au futur.", "Tranche le futur", "difficile", 7, 5, 72, [
-    item("je marcherai", true, "Oui ! C'est du futur.", "Je marcherai était au futur.", undefined, "futur"),
-    item("je marche", false, "Je marche est au présent.", "Oups, je marche est au présent", undefined, "présent"),
-    item("tu finiras", true, "Oui ! C'est du futur.", "Tu finiras était au futur.", undefined, "futur"),
-    item("tu finis", false, "Tu finis est au présent.", "Oups, tu finis est au présent", undefined, "présent"),
-    item("nous irons", true, "Oui ! C'est du futur.", "Nous irons était au futur.", undefined, "futur"),
-    item("nous allons", false, "Nous allons est au présent.", "Oups, nous allons est au présent", undefined, "présent"),
-    item("elles auront", true, "Oui ! C'est du futur.", "Elles auront était au futur.", undefined, "futur"),
-    item("elles ont", false, "Elles ont est au présent.", "Oups, elles ont est au présent", undefined, "présent")
-  ]),
-  level(17, "Les verbes au passé composé", "Tranche les verbes au passé composé avec avoir ou être.", "Tranche le passé composé", "difficile", 7, 5, 74, [
-    item("j'ai chanté", true, "Oui ! C'est du passé composé.", "J'ai chanté était au passé composé.", undefined, "passé composé"),
-    item("je chante", false, "Je chante est au présent.", "Oups, je chante est au présent", undefined, "présent"),
-    item("tu es parti", true, "Oui ! C'est du passé composé.", "Tu es parti était au passé composé.", undefined, "passé composé"),
-    item("tu partiras", false, "Tu partiras est au futur.", "Oups, tu partiras est au futur", undefined, "futur"),
-    item("nous avons vu", true, "Oui ! C'est du passé composé.", "Nous avons vu était au passé composé.", undefined, "passé composé"),
-    item("nous voyons", false, "Nous voyons est au présent.", "Oups, nous voyons est au présent", undefined, "présent"),
-    item("elles sont venues", true, "Oui ! C'est du passé composé.", "Elles sont venues était au passé composé.", undefined, "passé composé"),
-    item("elles viendront", false, "Elles viendront est au futur.", "Oups, elles viendront est au futur", undefined, "futur")
-  ]),
-  level(18, "Les accords sujet-verbe", "Tranche les phrases où le sujet et le verbe ne sont pas accordés.", "Tranche les mauvais accords", "difficile", 7, 5, 76, [
-    item("Les enfants joue", true, "Bien vu ! On écrit : Les enfants jouent", "L'accord était faux.", "Les enfants jouent", "accord faux"),
-    item("Les enfants jouent", false, "Cette phrase est bien accordée.", "Oups, l'accord était déjà correct", undefined, "accord correct"),
-    item("Le chat dorment", true, "Bien vu ! On écrit : Le chat dort", "L'accord était faux.", "Le chat dort", "accord faux"),
-    item("Le chat dort", false, "Cette phrase est bien accordée.", "Oups, l'accord était déjà correct", undefined, "accord correct"),
-    item("Nous mange", true, "Bien vu ! On écrit : Nous mangeons", "L'accord était faux.", "Nous mangeons", "accord faux"),
-    item("Nous mangeons", false, "Cette phrase est bien accordée.", "Oups, l'accord était déjà correct", undefined, "accord correct"),
-    item("Tu regardent", true, "Bien vu ! On écrit : Tu regardes", "L'accord était faux.", "Tu regardes", "accord faux"),
-    item("Tu regardes", false, "Cette phrase est bien accordée.", "Oups, l'accord était déjà correct", undefined, "accord correct")
-  ]),
-  level(19, "Les homophones", "Tranche les phrases où l'homophone n'est pas le bon.", "Tranche les homophones faux", "difficile", 8, 5, 78, [
-    item("Il a un chien", false, "Cette phrase utilise le bon a.", "Oups, cette phrase était correcte", undefined, "homophone correct"),
-    item("Il à un chien", true, "Oui ! On écrit : Il a un chien", "L'homophone était faux.", "Il a un chien", "homophone faux"),
-    item("Je vais à Paris", false, "Cette phrase utilise le bon à.", "Oups, cette phrase était correcte", undefined, "homophone correct"),
-    item("Je vais a Paris", true, "Oui ! On écrit : Je vais à Paris", "L'homophone était faux.", "Je vais à Paris", "homophone faux"),
-    item("Son vélo est rouge", false, "Cette phrase utilise le bon son.", "Oups, cette phrase était correcte", undefined, "homophone correct"),
-    item("Sont vélo est rouge", true, "Oui ! On écrit : Son vélo est rouge", "L'homophone était faux.", "Son vélo est rouge", "homophone faux"),
-    item("Ils sont contents", false, "Cette phrase utilise le bon sont.", "Oups, cette phrase était correcte", undefined, "homophone correct"),
-    item("Ils son contents", true, "Oui ! On écrit : Ils sont contents", "L'homophone était faux.", "Ils sont contents", "homophone faux")
-  ]),
   level(20, "Le défi du chevalier", "Tranche toutes les erreurs : orthographe, nature des mots, conjugaison et accords.", "Tranche toutes les erreurs", "expert", 10, 5, 82, [
     item("Le cheval courent vite", true, "Bravo ! On écrit : Le cheval court vite", "Il y avait une erreur d'accord.", "Le cheval court vite", "accord"),
     item("Le cheval court vite", false, "Phrase correcte, rien à trancher.", "Oups, cette phrase était correcte", undefined, "phrase correcte"),
@@ -306,16 +183,6 @@ const BASE_LEVELS = [
     item("apprendre", false, "Apprendre est bien écrit.", "Oups, apprendre était correct", undefined, "mot correct"),
     item("recolte", true, "Oui ! On écrit : récolte", "Ce mot était presque correct mais faux.", "récolte", "orthographe fine"),
     item("récolte", false, "Récolte est bien écrit.", "Oups, récolte était correct", undefined, "mot correct")
-  ]),
-  level(22, "Les accents et les cédilles", "Tranche les mots où un accent ou une cédille manque.", "Tranche les accents et cédilles", "moyen", 6, 5, 85, [
-    item("garcon", true, "Oui ! On écrit : garçon", "Il manquait un accent ou une cédille.", "garçon", "accent"),
-    item("garçon", false, "Garçon est bien écrit.", "Oups, garçon était correct", undefined, "accent correct"),
-    item("francais", true, "Oui ! On écrit : français", "Il manquait un accent ou une cédille.", "français", "accent"),
-    item("français", false, "Français est bien écrit.", "Oups, français était correct", undefined, "accent correct"),
-    item("eleve", true, "Oui ! On écrit : élève", "Il manquait un accent ou une cédille.", "élève", "accent"),
-    item("élève", false, "Élève est bien écrit.", "Oups, élève était correct", undefined, "accent correct"),
-    item("facade", true, "Oui ! On écrit : façade", "Il manquait un accent ou une cédille.", "façade", "accent"),
-    item("façade", false, "Façade est bien écrit.", "Oups, façade était correct", undefined, "accent correct")
   ]),
   level(23, "Le genre du nom", "Tranche les groupes nominaux au mauvais genre.", "Tranche le genre du nom", "moyen", 6, 5, 86, [
     item("la lion", true, "Oui ! On écrit : le lion", "Le genre était incorrect.", "le lion", "genre"),
@@ -417,16 +284,6 @@ const BASE_LEVELS = [
     item("vous chante", true, "Oui ! On écrit : vous chantez", "La terminaison du présent était incorrecte.", "vous chantez", "présent"),
     item("vous chantez", false, "Vous chantez est au présent.", "Oups, vous chantez était correct", undefined, "présent correct")
   ]),
-  level(33, "Le futur : terminaisons", "Tranche les verbes qui sont correctement conjugués au futur.", "Tranche le futur", "difficile", 8, 5, 96, [
-    item("je parlerai", false, "Je parlerai est au futur.", "Oups, je parlerai était correct", undefined, "futur correct"),
-    item("je parleras", true, "Oui ! On écrit : je parlerai", "La terminaison du futur était incorrecte.", "je parlerai", "futur"),
-    item("tu finiras", false, "Tu finiras est au futur.", "Oups, tu finiras était correct", undefined, "futur correct"),
-    item("tu finira", true, "Oui ! On écrit : tu finiras", "La terminaison du futur était incorrecte.", "tu finiras", "futur"),
-    item("nous irons", false, "Nous irons est au futur.", "Oups, nous irons était correct", undefined, "futur correct"),
-    item("nous iront", true, "Oui ! On écrit : nous irons", "La terminaison du futur était incorrecte.", "nous irons", "futur"),
-    item("vous ferez", false, "Vous ferez est au futur.", "Oups, vous ferez était correct", undefined, "futur correct"),
-    item("vous ferai", true, "Oui ! On écrit : vous ferez", "La terminaison du futur était incorrecte.", "vous ferez", "futur")
-  ]),
   level(34, "L'imparfait", "Tranche les verbes correctement conjugués à l'imparfait.", "Tranche l'imparfait", "difficile", 8, 5, 97, [
     item("je parlait", true, "Oui ! On écrit : je parlais", "L'imparfait était mal formé.", "je parlais", "imparfait"),
     item("je parlais", false, "Je parlais est à l'imparfait.", "Oups, je parlais était correct", undefined, "imparfait correct"),
@@ -446,16 +303,6 @@ const BASE_LEVELS = [
     item("ils finissent", false, "Ils finissent est au présent.", "Oups, ils finissent n'était pas au passé composé", undefined, "présent"),
     item("vous avez vu", true, "Oui ! C'est du passé composé avec avoir.", "Vous avez vu était correct.", undefined, "passé composé"),
     item("vous verrez", false, "Vous verrez est au futur.", "Oups, vous verrez n'était pas au passé composé", undefined, "futur")
-  ]),
-  level(36, "Le passé composé avec être", "Tranche les verbes correctement conjugués au passé composé avec être.", "Tranche le passé composé avec être", "difficile", 8, 5, 99, [
-    item("il est allé", true, "Oui ! C'est du passé composé avec être.", "Il est allé était correct.", undefined, "passé composé"),
-    item("il va aller", false, "Il va aller est au futur proche.", "Oups, il va aller n'était pas au passé composé", undefined, "futur proche"),
-    item("elle est venue", true, "Oui ! C'est du passé composé avec être.", "Elle est venue était correcte.", undefined, "passé composé"),
-    item("elle vient", false, "Elle vient est au présent.", "Oups, elle vient n'était pas au passé composé", undefined, "présent"),
-    item("nous sommes partis", true, "Oui ! C'est du passé composé avec être.", "Nous sommes partis était correct.", undefined, "passé composé"),
-    item("nous partons", false, "Nous partons est au présent.", "Oups, nous partons n'était pas au passé composé", undefined, "présent"),
-    item("elles sont arrivées", true, "Oui ! C'est du passé composé avec être.", "Elles sont arrivées était correct.", undefined, "passé composé"),
-    item("elles arriveront", false, "Elles arriveront est au futur.", "Oups, elles arriveront n'était pas au passé composé", undefined, "futur")
   ]),
   level(37, "L'accord sujet-verbe au pluriel", "Tranche les phrases où le sujet pluriel et le verbe ne sont pas accordés.", "Tranche l'accord au pluriel", "difficile", 9, 5, 100, [
     item("Les chats dorment", false, "Les chats dorment est bien accordé.", "Oups, la phrase était correcte", undefined, "accord correct"),
@@ -477,16 +324,6 @@ const BASE_LEVELS = [
     item("Sont frère est grand", true, "Oui ! On écrit : Son frère est grand", "L'homophone était faux.", "Son frère est grand", "homophone"),
     item("Son frère est grand", false, "Son frère est grand est correct.", "Oups, la phrase était correcte", undefined, "homophone correct")
   ]),
-  level(39, "Les homophones grammaticaux 2", "Tranche les phrases où ou/où, ce/se ou ces/ses sont mal choisis.", "Tranche les homophones 2", "difficile", 9, 5, 102, [
-    item("Je ne sais ou aller", true, "Oui ! On écrit : Je ne sais où aller", "L'homophone était faux.", "Je ne sais où aller", "homophone"),
-    item("Je ne sais où aller", false, "Je ne sais où aller est correct.", "Oups, la phrase était correcte", undefined, "homophone correct"),
-    item("Se chat dort", true, "Oui ! On écrit : Ce chat dort", "L'homophone était faux.", "Ce chat dort", "homophone"),
-    item("Ce chat dort", false, "Ce chat dort est correct.", "Oups, la phrase était correcte", undefined, "homophone correct"),
-    item("Ses fleurs sentent bon", true, "Oui ! On écrit : Ces fleurs sentent bon", "L'homophone était faux.", "Ces fleurs sentent bon", "homophone"),
-    item("Ces fleurs sentent bon", false, "Ces fleurs sentent bon est correct.", "Oups, la phrase était correcte", undefined, "homophone correct"),
-    item("La maison ou je dors", true, "Oui ! On écrit : La maison où je dors", "L'homophone était faux.", "La maison où je dors", "homophone"),
-    item("La maison où je dors", false, "La maison où je dors est correct.", "Oups, la phrase était correcte", undefined, "homophone correct")
-  ]),
   level(40, "Le boss chevalier", "Tranche les phrases qui mélangent plusieurs notions du monde 2.", "Tranche le boss chevalier", "expert", 10, 5, 104, [
     item("Les enfants a fini", true, "Oui ! On écrit : Les enfants ont fini", "Cette phrase mélangeait plusieurs notions.", "Les enfants ont fini", "boss"),
     item("Les enfants ont fini", false, "Les enfants ont fini est correct.", "Oups, la phrase était correcte", undefined, "boss correct"),
@@ -501,20 +338,246 @@ const BASE_LEVELS = [
   ])
 ];
 
-export const LEVELS = BASE_LEVELS.map((levelData) => {
-  const dictations = DICTATION_LEVEL_BANKS[levelData.id];
-  if (!dictations) return { ...levelData, type: "slicing" };
-  const metadata = DICTATION_LEVEL_METADATA[levelData.id];
+const SLICING_BY_SOURCE_ID = new Map(SLICING_LEVEL_LIBRARY.map((entry) => [entry.id, entry]));
+
+const DICTATION_LEVEL_POSITIONS = [3, 8, 13, 18, 23, 28, 33, 38, 43, 48];
+
+export const DICTATION_LEVEL_BANKS = {
+  3: [
+    { text: "chat", variants: ["Chat"] },
+    { text: "maison", variants: [] },
+    { text: "dragon", variants: [] },
+    { text: "forêt", variants: [] },
+    { text: "cheval", variants: [] }
+  ],
+  8: [
+    { text: "gâteau", variants: ["gateau"] },
+    { text: "école", variants: ["ecole"] },
+    { text: "fenêtre", variants: ["fenetre"] },
+    { text: "éléphant", variants: ["elephant"] },
+    { text: "forêt", variants: ["foret"] }
+  ],
+  13: [
+    { text: "magicien", variants: [] },
+    { text: "couronne", variants: [] },
+    { text: "bouclier", variants: [] },
+    { text: "rivière", variants: ["riviere"] },
+    { text: "épée", variants: ["epee"] }
+  ],
+  18: [
+    { text: "château doré", variants: [] },
+    { text: "petit dragon", variants: [] },
+    { text: "forêt magique", variants: [] },
+    { text: "roi content", variants: [] },
+    { text: "gros nuage", variants: [] }
+  ],
+  23: [
+    { text: "épée brillante", variants: ["epee brillante"] },
+    { text: "cheval rapide", variants: [] },
+    { text: "petite maison", variants: [] },
+    { text: "fée gentille", variants: ["fee gentille"] },
+    { text: "garçon courageux", variants: ["garcon courageux"] }
+  ],
+  28: [
+    { text: "Le chevalier avance.", variants: [] },
+    { text: "La princesse rit.", variants: [] },
+    { text: "Le dragon dort.", variants: [] },
+    { text: "Le roi arrive.", variants: [] },
+    { text: "La porte s'ouvre.", variants: [] }
+  ],
+  33: [
+    { text: "Le jardin est calme.", variants: [] },
+    { text: "Le vent souffle fort.", variants: [] },
+    { text: "La pluie tombe vite.", variants: [] },
+    { text: "Le chat saute haut.", variants: [] },
+    { text: "La lune brille ce soir.", variants: [] }
+  ],
+  38: [
+    { text: "Le cheval mange du foin.", variants: [] },
+    { text: "La maîtresse lit une histoire.", variants: ["La maitresse lit une histoire."] },
+    { text: "Le garçon ferme la porte.", variants: ["Le garcon ferme la porte."] },
+    { text: "Nous marchons dans la forêt.", variants: ["Nous marchons dans la foret."] },
+    { text: "Le château est ancien.", variants: ["Le chateau est ancien."] }
+  ],
+  43: [
+    { text: "Le petit cheval blanc court vite.", variants: [] },
+    { text: "La grande rivière traverse le village.", variants: ["La grande riviere traverse le village."] },
+    { text: "Le brave chevalier protège son ami.", variants: [] },
+    { text: "La fée apporte une potion magique.", variants: ["La fee apporte une potion magique."] },
+    { text: "Le dragon rouge souffle doucement.", variants: [] }
+  ],
+  48: [
+    { text: "Ce matin, le chevalier prépare son bouclier.", variants: [] },
+    { text: "Dans la cour, les enfants chantent ensemble.", variants: [] },
+    { text: "Le vieux magicien raconte une histoire drôle.", variants: [] },
+    { text: "Sous la pluie, la princesse garde le sourire.", variants: [] },
+    { text: "Au château, le roi remercie les villageois.", variants: ["Au chateau, le roi remercie les villageois."] }
+  ]
+};
+
+const DICTATION_LEVEL_METADATA = {
+  3: { title: "Dictée 1 · Mots simples", instruction: "Écoute puis écris le mot dicté.", shortInstruction: "Écris le mot dicté", difficulty: "facile" },
+  8: { title: "Dictée 2 · Accents", instruction: "Écoute puis écris le mot dicté.", shortInstruction: "Écris le mot dicté", difficulty: "facile" },
+  13: { title: "Dictée 3 · Mots du royaume", instruction: "Écoute puis écris le mot dicté.", shortInstruction: "Écris le mot dicté", difficulty: "moyen" },
+  18: { title: "Dictée 4 · Groupes de mots", instruction: "Écoute puis écris le groupe de mots dicté.", shortInstruction: "Écris le groupe dicté", difficulty: "moyen" },
+  23: { title: "Dictée 5 · Groupes accentués", instruction: "Écoute puis écris le groupe de mots dicté.", shortInstruction: "Écris le groupe dicté", difficulty: "difficile" },
+  28: { title: "Dictée 6 · Phrases courtes", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée", difficulty: "moyen" },
+  33: { title: "Dictée 7 · Phrases du jardin", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée", difficulty: "difficile" },
+  38: { title: "Dictée 8 · Phrases du château", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée", difficulty: "difficile" },
+  43: { title: "Dictée 9 · Phrases longues", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée", difficulty: "difficile" },
+  48: { title: "Dictée 10 · Phrases complètes", instruction: "Écoute puis écris la phrase dictée.", shortInstruction: "Écris la phrase dictée", difficulty: "expert" }
+};
+
+const CANNON_LEVEL_POSITIONS = [4, 9, 14, 19, 24, 29, 34, 39, 44, 49];
+
+export const CANNON_LEVEL_BANKS = {
+  4: [
+    { template: "l_n_", holes: ["u", "e"] }
+  ],
+  9: [
+    { template: "m_is_n", holes: ["a", "o"] }
+  ],
+  14: [
+    { template: "b_l_on", holes: ["a", "l"] }
+  ],
+  19: [
+    { template: "ch_te_u", holes: ["â", "a"] }
+  ],
+  24: [
+    { template: "p_tit dr_g_n", holes: ["e", "a", "o"] }
+  ],
+  29: [
+    { template: "les gr_nds _rbres", holes: ["a", "a"] }
+  ],
+  34: [
+    { template: "nous ch_nt_ns", holes: ["a", "o", "o"] }
+  ],
+  39: [
+    { template: "il j_u_r_", holes: ["o", "e", "a"] }
+  ],
+  44: [
+    { template: "Ell_ _ f_im.", holes: ["e", "a", "a"] }
+  ],
+  49: [
+    { template: "Le ch_valier ouvr_ la gr_nde porte.", holes: ["e", "e", "a"] }
+  ]
+};
+
+const CANNON_LEVEL_METADATA = {
+  4: { title: "Cannon 1 · Premiers trous", instruction: "Déplace le canon et tire la bonne lettre dans le bon trou.", shortInstruction: "Complète le mot à trous", difficulty: "facile" },
+  9: { title: "Cannon 2 · Voyelles manquantes", instruction: "Vise le bon trou et replace les voyelles manquantes.", shortInstruction: "Replace les voyelles", difficulty: "facile" },
+  14: { title: "Cannon 3 · Lettres doubles", instruction: "Complète le mot en plaçant les bonnes lettres dans chaque trou.", shortInstruction: "Complète le mot", difficulty: "moyen" },
+  19: { title: "Cannon 4 · Accents simples", instruction: "Tire la bonne lettre accentuée dans le trou visé.", shortInstruction: "Replace les accents", difficulty: "moyen" },
+  24: { title: "Cannon 5 · Groupe de mots", instruction: "Complète le petit groupe de mots avec les bonnes lettres.", shortInstruction: "Complète le groupe", difficulty: "moyen" },
+  29: { title: "Cannon 6 · Genre et nombre", instruction: "Complète correctement le groupe accordé.", shortInstruction: "Accorde le groupe", difficulty: "difficile" },
+  34: { title: "Cannon 7 · Présent", instruction: "Complète la terminaison correcte du verbe au présent.", shortInstruction: "Complète le verbe", difficulty: "difficile" },
+  39: { title: "Cannon 8 · Temps simples", instruction: "Complète la bonne forme verbale en contexte.", shortInstruction: "Complète le temps", difficulty: "difficile" },
+  44: { title: "Cannon 9 · Homophones guidés", instruction: "Place la bonne lettre pour retrouver le mot correct.", shortInstruction: "Complète la phrase", difficulty: "difficile" },
+  49: { title: "Cannon 10 · Phrase à trous", instruction: "Complète tous les trous de la phrase en visant juste.", shortInstruction: "Complète la phrase", difficulty: "expert" }
+};
+
+const CAMPAIGN_LAYOUT = [
+  { type: "slicing", sourceId: 1 },
+  { type: "slicing", sourceId: 2 },
+  { type: "dictation" },
+  { type: "cannon" },
+  { type: "slicing", sourceId: 4 },
+  { type: "slicing", sourceId: 5 },
+  { type: "slicing", sourceId: 6 },
+  { type: "dictation" },
+  { type: "cannon" },
+  { type: "slicing", sourceId: 7 },
+  { type: "slicing", sourceId: 8 },
+  { type: "slicing", sourceId: 9 },
+  { type: "dictation" },
+  { type: "cannon" },
+  { type: "slicing", sourceId: 10 },
+  { type: "slicing", sourceId: 11 },
+  { type: "slicing", sourceId: 12 },
+  { type: "dictation" },
+  { type: "cannon" },
+  { type: "slicing", sourceId: 13 },
+  { type: "slicing", sourceId: 14 },
+  { type: "slicing", sourceId: 15 },
+  { type: "dictation" },
+  { type: "cannon" },
+  { type: "slicing", sourceId: 20 },
+  { type: "slicing", sourceId: 21 },
+  { type: "slicing", sourceId: 23 },
+  { type: "dictation" },
+  { type: "cannon" },
+  { type: "slicing", sourceId: 24 },
+  { type: "slicing", sourceId: 25 },
+  { type: "slicing", sourceId: 26 },
+  { type: "dictation" },
+  { type: "cannon" },
+  { type: "slicing", sourceId: 27 },
+  { type: "slicing", sourceId: 28 },
+  { type: "slicing", sourceId: 29 },
+  { type: "dictation" },
+  { type: "cannon" },
+  { type: "slicing", sourceId: 30 },
+  { type: "slicing", sourceId: 31 },
+  { type: "slicing", sourceId: 32 },
+  { type: "dictation" },
+  { type: "cannon" },
+  { type: "slicing", sourceId: 34 },
+  { type: "slicing", sourceId: 35 },
+  { type: "slicing", sourceId: 37 },
+  { type: "dictation" },
+  { type: "cannon" },
+  { type: "slicing", sourceId: 40 }
+];
+
+function createSlicingLevel(targetId, sourceId) {
+  const source = SLICING_BY_SOURCE_ID.get(sourceId);
   return {
-    id: levelData.id,
+    ...source,
+    id: targetId,
+    type: "slicing"
+  };
+}
+
+function createDictationLevel(targetId) {
+  const metadata = DICTATION_LEVEL_METADATA[targetId];
+  return {
+    id: targetId,
     title: metadata.title,
     instruction: metadata.instruction,
     shortInstruction: metadata.shortInstruction,
-    difficulty: levelData.difficulty,
+    difficulty: metadata.difficulty,
     starsToWin: 1,
     maxActiveWords: 1,
     fallSpeed: 0,
     type: "dictation",
-    dictations
+    dictations: DICTATION_LEVEL_BANKS[targetId]
   };
+}
+
+function createCannonLevel(targetId) {
+  const metadata = CANNON_LEVEL_METADATA[targetId];
+  return {
+    id: targetId,
+    title: metadata.title,
+    instruction: metadata.instruction,
+    shortInstruction: metadata.shortInstruction,
+    difficulty: metadata.difficulty,
+    starsToWin: 1,
+    maxActiveWords: 1,
+    fallSpeed: 0,
+    type: "cannon",
+    cannonPuzzles: CANNON_LEVEL_BANKS[targetId]
+  };
+}
+
+// [impl->req~level.campaign-entry-is-playable-level~2]
+export const LEVELS = CAMPAIGN_LAYOUT.map((entry, index) => {
+  const id = index + 1;
+  if (entry.type === "dictation") {
+    return createDictationLevel(id);
+  }
+  if (entry.type === "cannon") {
+    return createCannonLevel(id);
+  }
+  return createSlicingLevel(id, entry.sourceId);
 });

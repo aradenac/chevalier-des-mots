@@ -6,6 +6,13 @@ import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLe
 import { chooseNextItem, getWordSpeedBase } from "./core/wordSpawner.js";
 import { advancePlayingLevelFrame, shouldRunSlicingLoop } from "./core/gameLoop.js";
 import { findSwordCollision, isTargetHit } from "./core/collision.js";
+import {
+  createCannonState,
+  getCannonDisplayTokens,
+  getCurrentCannonLetter,
+  isCannonLevelComplete,
+  resolveCannonShot
+} from "./core/cannon.js";
 import { pickDictation, scoreDictation } from "./core/dictation.js";
 import { createValidatedDictationState } from "./core/dictationFlow.js";
 import {
@@ -81,6 +88,14 @@ const dictationRepeatBtn = document.getElementById("dictationRepeatBtn");
 const dictationValidateBtn = document.getElementById("dictationValidateBtn");
 const dictationClearBtn = document.getElementById("dictationClearBtn");
 const dictationFeedback = document.getElementById("dictationFeedback");
+const cannonPanel = document.getElementById("cannonPanel");
+const cannonPrompt = document.getElementById("cannonPrompt");
+const cannonShotLayer = document.getElementById("cannonShotLayer");
+const cannonRig = document.getElementById("cannonRig");
+const cannonTrajectory = document.getElementById("cannonTrajectory");
+const cannonCurrentLetter = document.getElementById("cannonCurrentLetter");
+const strikeBtnTop = document.getElementById("strikeBtnTop");
+const touchStrikeBtn = document.getElementById("touchStrike");
 
 const initialState = createGameState({ knightX: window.innerWidth / 2 });
 let state = initialState.state;
@@ -102,6 +117,7 @@ let launchContext = null;
 let currentDictation = null;
 let dictationAttempts = 0;
 let validatedDictationState = null;
+let currentCannonState = null;
 let frenchVoiceReady = false;
 const narrationStatus = document.getElementById("narrationStatus");
 const services = {
@@ -206,6 +222,10 @@ function isDictationLevel(level = getLevel()) {
   return level?.type === "dictation";
 }
 
+function isCannonLevel(level = getLevel()) {
+  return level?.type === "cannon";
+}
+
 function updateHud() {
   const current = getLevel();
   const world = getWorldForLevel(current.id);
@@ -213,6 +233,7 @@ function updateHud() {
   // [impl->req~ui.visible-instruction~1]
   instruction.textContent = current.shortInstruction;
   starsEl.textContent = "⭐ " + stars + " / " + current.starsToWin;
+  starsEl.classList.toggle("hidden", isCannonLevel(current));
   startSubtitle.textContent = world.title + " : Niveau " + current.id + " — " + current.title;
 }
 
@@ -565,6 +586,50 @@ function strike() {
   if (state !== "playing") return;
   if (isDictationLevel()) return;
   ensureAudio();
+  if (isCannonLevel()) {
+    const holeLayouts = getCannonHoleLayouts();
+    const axisX = cannonCurrentLetter.getBoundingClientRect().left + cannonCurrentLetter.getBoundingClientRect().width / 2;
+    const previousLetter = getCurrentCannonLetter(currentCannonState);
+    const { state: nextState, outcome } = resolveCannonShot({
+      state: currentCannonState,
+      axisX,
+      holeLayouts
+    });
+    currentCannonState = nextState;
+    if (outcome.type === "idle") {
+      return;
+    }
+    const holeElement = outcome.holeIndex !== undefined
+      ? cannonPrompt.querySelector('[data-hole-index="' + outcome.holeIndex + '"]')
+      : null;
+    const targetRect = holeElement?.getBoundingClientRect() || null;
+    if (outcome.type === "success") {
+      levelStats = {
+        levelType: "cannon",
+        successfulHits: Math.max(0, Number(levelStats?.successfulHits) || 0) + 1,
+        errors: Math.max(0, Number(levelStats?.errors) || 0)
+      };
+      setMessage("Bien joué ! La lettre est placée.");
+      services.narration.speak("Bien joué.");
+      playSweetSound();
+      animateCannonShot({ letter: previousLetter, targetRect, success: true });
+      renderCannonState();
+      if (isCannonLevelComplete(currentCannonState)) {
+        finishLevel();
+      }
+      return;
+    }
+    levelStats = {
+      levelType: "cannon",
+      successfulHits: Math.max(0, Number(levelStats?.successfulHits) || 0),
+      errors: Math.max(0, Number(levelStats?.errors) || 0) + 1
+    };
+    setMessage(outcome.type === "miss-wrong-letter" ? "Cette lettre ne va pas dans ce trou." : "Aucun trou visé.");
+    services.narration.speak("Essaie encore.");
+    animateCannonShot({ letter: previousLetter, targetRect, success: false });
+    renderCannonState();
+    return;
+  }
   playSwordSound();
   const character = getSelectedCharacter();
   knight.classList.remove("striking");
@@ -582,7 +647,7 @@ function strike() {
 
   const rect = hit.el.getBoundingClientRect();
   if (isTargetHit(hit)) {
-    // [impl->req~stats.level-error-counting~1]
+    // [impl->req~stats.level-error-counting~2]
     levelStats = recordSuccessfulHit(levelStats);
     stars++;
     updateHud();
@@ -595,7 +660,7 @@ function strike() {
     activeWords = activeWords.filter(w => w !== hit);
     if (hasWonLevel(stars, getLevel())) finishLevel();
   } else {
-    // [impl->req~stats.level-error-counting~1]
+    // [impl->req~stats.level-error-counting~2]
     levelStats = recordLevelError(levelStats);
     bounceWord(hit);
     // [impl->req~game.no-blocking-punishment~1]
@@ -608,6 +673,96 @@ function setDictationVisible(visible) {
   // [impl->req~dictation.shared-game-screen~1]
   dictationPanel.classList.toggle("hidden", !visible);
   arena.classList.toggle("hidden", visible);
+}
+
+// [impl->req~cannon.holed-text-display~1]
+// [impl->req~cannon.vertical-trajectory-indicator~1]
+// [impl->req~cannon.selected-character-operates-cannon~1]
+// [impl->req~cannon.no-live-score~1]
+function setCannonVisible(visible) {
+  // [impl->req~cannon.shared-game-screen~1]
+  const enabled = Boolean(visible);
+  cannonPanel.classList.toggle("hidden", !enabled);
+  cannonRig.classList.toggle("hidden", !enabled);
+  game.classList.toggle("is-cannon-mode", enabled);
+  if (!enabled) {
+    if (cannonPrompt) clearElement(cannonPrompt);
+    if (cannonCurrentLetter) cannonCurrentLetter.textContent = "";
+  }
+}
+
+function updateAttackButtons() {
+  const label = isCannonLevel() ? "Tirer" : "Frapper";
+  const icon = isCannonLevel() ? "⬆" : "⚔";
+  if (strikeBtnTop) {
+    strikeBtnTop.textContent = icon;
+    strikeBtnTop.setAttribute("aria-label", label);
+    strikeBtnTop.title = label;
+  }
+  if (touchStrikeBtn) {
+    touchStrikeBtn.textContent = icon;
+    touchStrikeBtn.setAttribute("aria-label", label);
+    touchStrikeBtn.title = label;
+  }
+}
+
+function getCannonHoleLayouts() {
+  if (!currentCannonState || !cannonPrompt) return [];
+  return currentCannonState.holes.map((hole) => {
+    const element = cannonPrompt.querySelector('[data-hole-index="' + hole.index + '"]');
+    if (!element) return null;
+    const rect = element.getBoundingClientRect();
+    return {
+      index: hole.index,
+      centerX: rect.left + rect.width / 2,
+      width: rect.width
+    };
+  }).filter(Boolean);
+}
+
+function animateCannonShot({ letter, targetRect = null, success = false } = {}) {
+  if (!letter || !cannonShotLayer || !cannonCurrentLetter) return;
+  const startRect = cannonCurrentLetter.getBoundingClientRect();
+  const shot = document.createElement("div");
+  shot.className = "cannonShot " + (success ? "is-hit" : "is-miss");
+  shot.textContent = letter;
+  shot.style.left = startRect.left + startRect.width / 2 + "px";
+  shot.style.top = startRect.top + startRect.height / 2 + "px";
+  const targetX = targetRect ? targetRect.left + targetRect.width / 2 : startRect.left + startRect.width / 2;
+  const targetY = targetRect ? targetRect.top + targetRect.height / 2 : startRect.top - Math.min(window.innerHeight * 0.35, 240);
+  shot.style.setProperty("--dx", (targetX - (startRect.left + startRect.width / 2)) + "px");
+  shot.style.setProperty("--dy", (targetY - (startRect.top + startRect.height / 2)) + "px");
+  shot.style.setProperty("--dx-bounce", (targetX - (startRect.left + startRect.width / 2) - 24) + "px");
+  shot.style.setProperty("--dy-bounce", (targetY - (startRect.top + startRect.height / 2) + 14) + "px");
+  shot.style.setProperty("--dx-drop", (targetX - (startRect.left + startRect.width / 2) + 18) + "px");
+  shot.style.setProperty("--dy-drop", (window.innerHeight - (startRect.top + startRect.height / 2) - 36) + "px");
+  game.appendChild(shot);
+  setTimeout(() => shot.remove(), success ? 420 : 840);
+}
+
+function renderCannonState() {
+  if (!currentCannonState || !cannonPrompt) return;
+  clearElement(cannonPrompt);
+  const content = document.createElement("div");
+  content.className = "cannonPrompt__text";
+  for (const token of getCannonDisplayTokens(currentCannonState)) {
+    if (token.type === "text") {
+      content.appendChild(document.createTextNode(token.value));
+      continue;
+    }
+    const hole = document.createElement("span");
+    hole.className = "cannonHole";
+    hole.dataset.holeIndex = String(token.holeIndex);
+    hole.textContent = token.value || " ";
+    if (token.filled) {
+      hole.classList.add("is-filled");
+    }
+    content.appendChild(hole);
+  }
+  cannonPrompt.appendChild(content);
+  cannonCurrentLetter.textContent = getCurrentCannonLetter(currentCannonState) || "·";
+  cannonRig.style.left = knightX + "px";
+  cannonTrajectory.style.left = "104px";
 }
 
 function speakCurrentDictation() {
@@ -711,8 +866,12 @@ function finishLevel() {
   levelOverlay.classList.remove("hidden");
   debugOverlay.classList.add("hidden");
   resetWords();
+  currentDictation = null;
+  currentCannonState = null;
+  setDictationVisible(false);
+  setCannonVisible(false);
   if (shouldPersistLevelResult(launchContext)) {
-    // [impl->req~stats.level-score-five-stars~1]
+    // [impl->req~stats.level-score-five-stars~2]
     // [impl->req~stats.best-level-score~1]
     // [impl->req~stats.global-score~1]
     // [impl->req~stats.server-database-persistence~1]
@@ -751,7 +910,7 @@ function finishLevel() {
   }
   if (isFinalLevel(currentLevelIndex, LEVELS.length)) {
     document.getElementById("levelTitle").textContent = "Victoire finale !";
-    document.getElementById("levelText").textContent = "Le chevalier maîtrise les 40 niveaux des mots." + scoreText;
+    document.getElementById("levelText").textContent = "Le chevalier maîtrise les " + LEVELS.length + " niveaux des mots." + scoreText;
     document.getElementById("nextBtn").textContent = "Rejouer";
   } else {
     document.getElementById("levelTitle").textContent = "Bravo !";
@@ -770,6 +929,8 @@ function completeDebugLevelWithMaxScore() {
   if (isDictationLevel()) {
     validatedDictationState = null;
     currentDictation = null;
+  } else if (isCannonLevel()) {
+    currentCannonState = null;
   } else {
     stars = getLevel().starsToWin;
     updateHud();
@@ -808,6 +969,8 @@ function startGame(easy, options = {}) {
   resetWords();
   levelStats = createLevelStats();
   validatedDictationState = null;
+  currentDictation = null;
+  currentCannonState = null;
   const nextState = resetGameStateForLevel({
     state,
     veryEasy,
@@ -838,6 +1001,7 @@ function startGame(easy, options = {}) {
   debugOverlay.classList.add("hidden");
   pauseBtn.classList.remove("paused");
   pauseBtn.textContent = "⏸";
+  updateAttackButtons();
   setMessage(getLevel().instruction);
   services.narration.speak(getLevel().instruction);
   ensureAudio();
@@ -851,7 +1015,19 @@ function startGame(easy, options = {}) {
     // [impl->req~dictation.start-audio~1]
     speakCurrentDictation();
     focusDictationPrompt();
+    setCannonVisible(false);
+  } else if (isCannonLevel()) {
+    setDictationVisible(false);
+    setCannonVisible(true);
+    currentCannonState = createCannonState(getLevel());
+    levelStats = {
+      levelType: "cannon",
+      successfulHits: 0,
+      errors: 0
+    };
+    renderCannonState();
   } else {
+    setCannonVisible(false);
     setDictationVisible(false);
     spawnWord();
   }
@@ -918,9 +1094,12 @@ function returnToMenu() {
   replayContext = null;
   launchContext = null;
   validatedDictationState = null;
+  currentDictation = null;
+  currentCannonState = null;
   stars = 0;
   state = "menu";
   updateHud();
+  updateAttackButtons();
   pauseBtn.classList.remove("paused");
   pauseBtn.textContent = "⏸";
   levelOverlay.classList.add("hidden");
@@ -930,6 +1109,7 @@ function returnToMenu() {
   startOverlay.classList.remove("hidden");
   setMessage(getLevel().instruction);
   setDictationVisible(false);
+  setCannonVisible(false);
 }
 
 function replayCompletedLevel(accountId, levelNumber) {
@@ -982,7 +1162,8 @@ function tick(time) {
   const canRunSlicingActions = shouldRunSlicingLoop(current);
   moveLeft = keyboardState.left || touchState.left || gamepadState.left;
   moveRight = keyboardState.right || touchState.right || gamepadState.right;
-  if (canRunSlicingActions && (keyboardState.strikePressed || touchState.strikePressed || gamepadState.strikePressed)) strike();
+  // [impl->req~cannon.normalized-inputs~1]
+  if (current && !isDictationLevel(current) && (keyboardState.strikePressed || touchState.strikePressed || gamepadState.strikePressed)) strike();
   if (keyboardState.pausePressed || touchState.pausePressed || gamepadState.pausePressed) togglePause();
 
   if (state === "playing") {
@@ -1000,7 +1181,7 @@ function tick(time) {
       clamp,
       spawnWord,
       onTargetMissed: (wordData) => {
-        // [impl->req~stats.level-error-counting~1]
+        // [impl->req~stats.level-error-counting~2]
         levelStats = recordLevelError(levelStats);
         targetRetryQueue.push(wordData);
       }
@@ -1009,6 +1190,9 @@ function tick(time) {
     spawnTimer = nextFrame.spawnTimer;
     activeWords = nextFrame.activeWords;
     knight.style.left = knightX + "px";
+    if (isCannonLevel(current)) {
+      renderCannonState();
+    }
   }
 
   requestAnimationFrame(tick);
@@ -1082,8 +1266,8 @@ function buildDebugLevelGrid() {
 
 touchInput.bindHold(document.getElementById("leftTouch"), "left");
 touchInput.bindHold(document.getElementById("rightTouch"), "right");
-touchInput.bindStrike(document.getElementById("touchStrike"));
-document.getElementById("strikeBtnTop").addEventListener("click", strike);
+touchInput.bindStrike(touchStrikeBtn);
+strikeBtnTop.addEventListener("click", strike);
 menuBtn.addEventListener("click", returnToMenu);
 pauseBtn.addEventListener("click", togglePause);
 voiceBtn.addEventListener("click", toggleNarration);
@@ -1114,13 +1298,20 @@ document.getElementById("padBtn").addEventListener("click", () => {
   gamepadStatus.textContent = padState.connected ? "Manette détectée" : "Appuie sur un bouton de la manette";
 });
 
-window.addEventListener("resize", () => { knightX = clamp(knightX, 52, window.innerWidth - 52); });
+window.addEventListener("resize", () => {
+  knightX = clamp(knightX, 52, window.innerWidth - 52);
+  knight.style.left = knightX + "px";
+  if (isCannonLevel()) {
+    renderCannonState();
+  }
+});
 
 buildLevelGrid();
 buildDebugLevelGrid();
 buildCharacterGrid();
 applySelectedCharacter();
 updateHud();
+updateAttackButtons();
 void initAccounts();
 void initNarration();
 setMessage(getLevel().instruction);

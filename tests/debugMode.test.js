@@ -1,14 +1,16 @@
 // [utest->req~debug.menu-access~1]
-// [utest->req~debug.level-selector~1]
+// [utest->req~debug.level-selector~2]
 // [utest->req~debug.no-account-required~1]
 // [utest->req~debug.default-character~1]
 // [utest->req~debug.no-progression-update~1]
 // [utest->req~debug.no-statistics-update~1]
-// [utest->req~debug.return-to-selector~1]
+// [utest->req~debug.return-to-selector~2]
 // [utest->req~debug.level-prerequisites~1]
-// [utest->req~debug.chain-levels~1]
+// [utest->req~debug.chain-levels~2]
 // [utest->req~debug.chain-end~1]
-// [utest->req~debug.max-score-completion-shortcut~1]
+// [utest->req~debug.max-score-completion-shortcut~2]
+// [utest->req~cannon.main-progression~1]
+// [utest->req~cannon.score-formula~1]
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { LEVELS } from "../src/data/levels.js";
@@ -46,6 +48,7 @@ describe("debug mode", () => {
     });
     expect(entries.some(level => level.type === "dictation")).toBe(true);
     expect(entries.some(level => level.type === "slicing")).toBe(true);
+    expect(entries.some(level => level.type === "cannon")).toBe(true);
   });
 
   it("crée un contexte debug sans compte ni persistance", () => {
@@ -129,9 +132,10 @@ describe("debug mode", () => {
     })).toBe(true);
   });
 
-  it("produit toujours la note maximale en complétion debug pour le tranchage et la dictée", () => {
+  it("produit toujours la note maximale en complétion debug pour le tranchage, la dictée et le cannon", () => {
     expect(calculateLevelScore(createDebugMaxScoreStats("slicing"))).toBe(5);
     expect(calculateLevelScore(createDebugMaxScoreStats("dictation"))).toBe(5);
+    expect(calculateLevelScore(createDebugMaxScoreStats("cannon"))).toBe(5);
   });
 
   it("applique le prérequis de voix française au menu debug", () => {

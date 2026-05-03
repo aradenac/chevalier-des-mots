@@ -1,14 +1,14 @@
 // [impl->req~debug.menu-access~1]
-// [impl->req~debug.level-selector~1]
+// [impl->req~debug.level-selector~2]
 // [impl->req~debug.no-account-required~1]
 // [impl->req~debug.default-character~1]
 // [impl->req~debug.no-progression-update~1]
 // [impl->req~debug.no-statistics-update~1]
-// [impl->req~debug.return-to-selector~1]
+// [impl->req~debug.return-to-selector~2]
 // [impl->req~debug.level-prerequisites~1]
-// [impl->req~debug.chain-levels~1]
+// [impl->req~debug.chain-levels~2]
 // [impl->req~debug.chain-end~1]
-// [impl->req~debug.max-score-completion-shortcut~1]
+// [impl->req~debug.max-score-completion-shortcut~2]
 import { DEFAULT_CHARACTER_ID } from "../data/characters.js";
 
 export const DEFAULT_DEBUG_MAX_SCORE_SHORTCUT = Object.freeze({
@@ -121,6 +121,13 @@ export function createDebugMaxScoreStats(levelType) {
       successfulHits: 0,
       errors: 0,
       attempts: 1
+    };
+  }
+  if (levelType === "cannon") {
+    return {
+      levelType: "cannon",
+      successfulHits: 0,
+      errors: 0
     };
   }
   return {

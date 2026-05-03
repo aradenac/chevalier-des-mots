@@ -1,8 +1,12 @@
-// [impl->req~stats.level-score-five-stars~1]
-// [impl->req~stats.level-score-formula~2]
+// [impl->req~stats.level-score-five-stars~2]
+// [impl->req~stats.level-score-formula~3]
+// [impl->req~cannon.score-formula~1]
 export function calculateLevelScore({ successfulHits = 0, errors = 0, levelType = "slicing", dictationScore = null } = {}) {
   if (levelType === "dictation") {
     return Math.max(0, Math.min(5, Number.isInteger(dictationScore) ? dictationScore : 0));
+  }
+  if (levelType === "cannon") {
+    return Math.max(0, Math.min(5, 5 - (Math.max(0, Number(errors) || 0))));
   }
   const hits = Math.max(0, Number(successfulHits) || 0);
   const misses = Math.max(0, Number(errors) || 0);
@@ -18,7 +22,7 @@ export function createLevelStats() {
   };
 }
 
-// [impl->req~stats.level-error-counting~1]
+// [impl->req~stats.level-error-counting~2]
 export function recordSuccessfulHit(stats) {
   return {
     successfulHits: Math.max(0, Number(stats?.successfulHits) || 0) + 1,
@@ -26,7 +30,7 @@ export function recordSuccessfulHit(stats) {
   };
 }
 
-// [impl->req~stats.level-error-counting~1]
+// [impl->req~stats.level-error-counting~2]
 export function recordLevelError(stats) {
   return {
     successfulHits: Math.max(0, Number(stats?.successfulHits) || 0),
@@ -57,6 +61,17 @@ export function createDictationScoreEntry({ levelNumber, dictationScore = 0, err
   };
 }
 
+export function createCannonScoreEntry({ levelNumber, errors = 0 } = {}) {
+  const normalizedLevel = Math.max(1, Number(levelNumber) || 1);
+  const normalizedErrors = Math.max(0, Number(errors) || 0);
+  return {
+    levelNumber: normalizedLevel,
+    bestScore: calculateLevelScore({ levelType: "cannon", errors: normalizedErrors }),
+    successfulHits: 0,
+    errors: normalizedErrors
+  };
+}
+
 function cloneLevelScores(levelScores = {}) {
   return Object.fromEntries(
     Object.entries(levelScores || {}).map(([levelNumber, score]) => [levelNumber, { ...score }])
@@ -74,7 +89,9 @@ export function normalizeAccountStats(account) {
 export function recordBestLevelScore(account, levelResult) {
   const entry = levelResult?.levelType === "dictation"
     ? createDictationScoreEntry(levelResult)
-    : createLevelScoreEntry(levelResult);
+    : levelResult?.levelType === "cannon"
+      ? createCannonScoreEntry(levelResult)
+      : createLevelScoreEntry(levelResult);
   const key = String(entry.levelNumber);
   const levelScores = cloneLevelScores(account.levelScores);
   const previous = levelScores[key];

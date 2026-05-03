@@ -1,19 +1,19 @@
-// [impl->req~level.extended-campaign-worlds~1]
-// [impl->req~level.world-two-grammar-consolidation~1]
+// [impl->req~level.extended-campaign-worlds~2]
+// [impl->req~level.world-two-grammar-consolidation~2]
 export const CAMPAIGN_WORLDS = [
   {
     id: 1,
     title: "Monde 1 — Écuyer",
     startLevelId: 1,
-    endLevelId: 20,
-    intention: "Distinctions visibles, nature des mots et premières formes verbales."
+    endLevelId: 25,
+    intention: "Distinctions visibles, premières catégories grammaticales, dictées guidées et premiers trous."
   },
   {
     id: 2,
     title: "Monde 2 — Chevalier",
-    startLevelId: 21,
-    endLevelId: 40,
-    intention: "Consolidation orthographique et grammaticale avec accords, temps et homophones."
+    startLevelId: 26,
+    endLevelId: 50,
+    intention: "Consolidation orthographique et grammaticale avec accords, temps, homophones et phrases à trous."
   }
 ];
 

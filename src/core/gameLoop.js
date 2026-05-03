@@ -21,6 +21,7 @@ export function advancePlayingLevelFrame({
   spawnWord,
   onTargetMissed
 }) {
+  // [impl->req~cannon.free-horizontal-aim~1]
   const speed = 280 + Math.min(level.id, 20) * 6;
   let nextKnightX = knightX;
   if (moveLeft) nextKnightX -= speed * dt;

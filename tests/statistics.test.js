@@ -1,6 +1,6 @@
-// [utest->req~stats.level-score-five-stars~1]
-// [utest->req~stats.level-score-formula~2]
-// [utest->req~stats.level-error-counting~1]
+// [utest->req~stats.level-score-five-stars~2]
+// [utest->req~stats.level-score-formula~3]
+// [utest->req~stats.level-error-counting~2]
 // [utest->req~stats.best-level-score~1]
 // [utest->req~stats.global-score~1]
 // [utest->req~stats.champions-dashboard~1]
@@ -8,6 +8,7 @@
 // [utest->req~stats.replay-completed-level~1]
 // [utest->req~stats.replay-does-not-regress-progression~1]
 // [utest->req~stats.replay-return-flow~1]
+// [utest->req~cannon.score-formula~1]
 import { describe, expect, it } from "vitest";
 import {
   calculateLevelScore,
@@ -40,6 +41,12 @@ describe("statistics model", () => {
 
     expect(stats).toEqual({ successfulHits: 1, errors: 2 });
     expect(calculateLevelScore(stats)).toBe(0);
+  });
+
+  it("calcule le score cannon à partir des seules erreurs", () => {
+    expect(calculateLevelScore({ levelType: "cannon", successfulHits: 0, errors: 0 })).toBe(5);
+    expect(calculateLevelScore({ levelType: "cannon", successfulHits: 99, errors: 2 })).toBe(3);
+    expect(calculateLevelScore({ levelType: "cannon", errors: 9 })).toBe(0);
   });
 
   it("conserve le meilleur score par niveau sans remplacer par un score inférieur", () => {
@@ -108,6 +115,29 @@ describe("statistics model", () => {
 
     expect(saved[0].highestCompletedLevel).toBe(5);
     expect(saved[0].levelScores["2"].bestScore).toBe(5);
+  });
+
+  it("intègre les niveaux cannon aux statistiques persistées", () => {
+    const accounts = [{
+      id: "a",
+      name: "Alice",
+      highestCompletedLevel: 10,
+      levelScores: {}
+    }];
+
+    const saved = saveCompletedLevelResult(accounts, "a", 29, {
+      levelType: "cannon",
+      successfulHits: 3,
+      errors: 2
+    });
+
+    expect(saved[0].highestCompletedLevel).toBe(29);
+    expect(saved[0].levelScores["29"]).toEqual({
+      levelNumber: 29,
+      bestScore: 3,
+      successfulHits: 0,
+      errors: 2
+    });
   });
 
   it("signale le retour vers les statistiques après un niveau rejoué", () => {

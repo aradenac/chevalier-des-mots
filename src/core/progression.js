@@ -1,5 +1,5 @@
-// [impl->req~level.campaign-entry-is-playable-level~1]
-// [impl->req~level.progression-model~2]
+// [impl->req~level.campaign-entry-is-playable-level~2]
+// [impl->req~level.progression-model~3]
 import { clamp } from "./gameState.js";
 
 export function selectLevelIndex(index, levelsLength) {

@@ -1,4 +1,5 @@
 // [utest->req~input.normalized-state~1]
+// [utest->req~cannon.normalized-inputs~1]
 import { describe, expect, it, vi } from "vitest";
 import { createGamepadInput, readGamepadState } from "../src/adapters/gamepadInput.js";
 import { createKeyboardInput } from "../src/adapters/keyboardInput.js";
@@ -63,6 +64,15 @@ describe("input normalisé", () => {
       connected: true
     });
     expect(second.strikePressed).toBe(false);
+  });
+
+  it("déclenche aussi l'action attaque sur la touche Entrée", () => {
+    const target = createEventTarget();
+    const input = createKeyboardInput({ target });
+
+    target.emit("keydown", { code: "Enter", preventDefault: vi.fn() });
+
+    expect(input.read().strikePressed).toBe(true);
   });
 
   it("laisse les champs éditables gérer espace et entrée", () => {
