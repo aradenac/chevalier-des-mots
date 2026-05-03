@@ -1,4 +1,4 @@
-// [utest->req~speech.brave-failure-handling~1]
+// [utest->req~speech.french-voice-required~1]
 import { describe, expect, it, vi } from "vitest";
 import { createNarrationService } from "../src/adapters/narrationService.js";
 import { SPEECH_UNAVAILABLE_MESSAGE } from "../src/diagnostics/speechDiagnostics.js";

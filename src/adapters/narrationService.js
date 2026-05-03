@@ -1,4 +1,4 @@
-// [impl->req~speech.brave-failure-handling~1]
+// [impl->req~speech.french-voice-required~1]
 import { getSpeechDiagnostics, SPEECH_UNAVAILABLE_MESSAGE } from "../diagnostics/speechDiagnostics.js";
 
 function pickFrenchVoice(voices) {
@@ -25,6 +25,7 @@ export function createNarrationService({
   let voice = null;
   let diagnosticMessage = null;
   let voicesLoaded = false;
+  let speaking = false;
 
   function emitDiagnostic(message) {
     diagnosticMessage = message || null;
@@ -151,8 +152,14 @@ export function createNarrationService({
     utterance.rate = options.rate || 0.95;
     utterance.pitch = options.pitch || 1;
     if (selectedVoice) utterance.voice = selectedVoice;
-    utterance.onstart = () => logger.log("[Narration] start");
-    utterance.onend = () => logger.log("[Narration] end");
+    utterance.onstart = () => {
+      speaking = true;
+      logger.log("[Narration] start");
+    };
+    utterance.onend = () => {
+      speaking = false;
+      logger.log("[Narration] end");
+    };
     utterance.onerror = (event) => {
       const error = event && event.error ? event.error : "unknown";
       logger.warn("[Narration] error:", error);
@@ -163,6 +170,7 @@ export function createNarrationService({
         error
       });
       if (diag.message) emitDiagnostic(diag.message);
+      speaking = false;
     };
     logger.log("[Narration] speak:", text);
     try {
@@ -215,6 +223,13 @@ export function createNarrationService({
     },
     isUnlocked() {
       return unlocked;
+    },
+    hasFrenchVoice() {
+      if (!voicesLoaded) loadVoices();
+      return Boolean(voice && ((voice.lang || "").toLowerCase().startsWith("fr") || /french|français|francais/i.test(voice.name || "")));
+    },
+    isSpeaking() {
+      return speaking;
     }
   };
 }

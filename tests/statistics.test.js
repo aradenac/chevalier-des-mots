@@ -1,5 +1,5 @@
 // [utest->req~stats.level-score-five-stars~1]
-// [utest->req~stats.level-score-formula~1]
+// [utest->req~stats.level-score-formula~2]
 // [utest->req~stats.level-error-counting~1]
 // [utest->req~stats.best-level-score~1]
 // [utest->req~stats.global-score~1]

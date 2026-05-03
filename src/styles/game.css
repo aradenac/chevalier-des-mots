@@ -104,6 +104,36 @@ button {
   inset: 148px 0 0 0;
   z-index: 4;
 }
+.dictationPanel {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  transform: translate(-50%, -50%);
+  width: min(760px, 92vw);
+  z-index: 9;
+  background: rgba(255, 247, 214, .95);
+  border: 3px solid #6849d8;
+  border-radius: 8px;
+  padding: 12px;
+}
+.dictationPanel textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 22px;
+  padding: 10px;
+}
+.dictationActions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+.dictationFeedback {
+  margin-top: 10px;
+  white-space: pre-wrap;
+}
+.diff-added { color: #0c8a2a; }
+.diff-removed { color: #b02323; }
+.diff-replaced { color: #6b3dc4; }
 .word {
   position: absolute;
   min-width: 86px;

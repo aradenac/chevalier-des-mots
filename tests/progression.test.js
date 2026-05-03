@@ -1,4 +1,4 @@
-// [utest->req~level.progression-model~1]
+// [utest->req~level.progression-model~2]
 import { describe, expect, it } from "vitest";
 import { LEVELS } from "../src/data/levels.js";
 import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLevelIndex } from "../src/core/progression.js";

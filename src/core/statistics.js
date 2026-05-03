@@ -1,6 +1,9 @@
 // [impl->req~stats.level-score-five-stars~1]
-// [impl->req~stats.level-score-formula~1]
-export function calculateLevelScore({ successfulHits = 0, errors = 0 } = {}) {
+// [impl->req~stats.level-score-formula~2]
+export function calculateLevelScore({ successfulHits = 0, errors = 0, levelType = "slicing", dictationScore = null } = {}) {
+  if (levelType === "dictation") {
+    return Math.max(0, Math.min(5, Number.isInteger(dictationScore) ? dictationScore : 0));
+  }
   const hits = Math.max(0, Number(successfulHits) || 0);
   const misses = Math.max(0, Number(errors) || 0);
   if (hits <= 0) return 0;
@@ -37,9 +40,20 @@ export function createLevelScoreEntry({ levelNumber, successfulHits = 0, errors 
   const normalizedErrors = Math.max(0, Number(errors) || 0);
   return {
     levelNumber: normalizedLevel,
-    bestScore: calculateLevelScore({ successfulHits: normalizedHits, errors: normalizedErrors }),
+    bestScore: calculateLevelScore({ successfulHits: normalizedHits, errors: normalizedErrors, levelType: "slicing" }),
     successfulHits: normalizedHits,
     errors: normalizedErrors
+  };
+}
+
+export function createDictationScoreEntry({ levelNumber, dictationScore = 0, errors = 0, attempts = 1 } = {}) {
+  const normalizedLevel = Math.max(1, Number(levelNumber) || 1);
+  return {
+    levelNumber: normalizedLevel,
+    bestScore: calculateLevelScore({ levelType: "dictation", dictationScore }),
+    successfulHits: 0,
+    errors: Math.max(0, Number(errors) || 0),
+    attempts: Math.max(1, Number(attempts) || 1)
   };
 }
 
@@ -58,7 +72,9 @@ export function normalizeAccountStats(account) {
 
 // [impl->req~stats.best-level-score~1]
 export function recordBestLevelScore(account, levelResult) {
-  const entry = createLevelScoreEntry(levelResult);
+  const entry = levelResult?.levelType === "dictation"
+    ? createDictationScoreEntry(levelResult)
+    : createLevelScoreEntry(levelResult);
   const key = String(entry.levelNumber);
   const levelScores = cloneLevelScores(account.levelScores);
   const previous = levelScores[key];

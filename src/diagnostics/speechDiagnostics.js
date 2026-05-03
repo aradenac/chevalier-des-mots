@@ -1,5 +1,5 @@
-// [impl->req~speech.brave-failure-handling~1]
-export const SPEECH_UNAVAILABLE_MESSAGE = "Voix indisponible dans ce navigateur. Le jeu reste jouable.";
+// [impl->req~speech.french-voice-required~1]
+export const SPEECH_UNAVAILABLE_MESSAGE = "Voix française indisponible. Impossible de lancer la progression.";
 
 export function getSpeechDiagnostics({ available, enabled, voicesLength = 0, error = "" } = {}) {
   if (!enabled) {

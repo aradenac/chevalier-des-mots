@@ -28,6 +28,7 @@ describe("LEVELS", () => {
 
   it("contient des cibles et des non-cibles dans chaque niveau", () => {
     for (const level of LEVELS) {
+      if (level.type === "dictation") continue;
       expect(level.items.some(item => item.target === true)).toBe(true);
       expect(level.items.some(item => item.target === false)).toBe(true);
     }
@@ -35,10 +36,32 @@ describe("LEVELS", () => {
 
   it("définit un texte non vide pour chaque item", () => {
     for (const level of LEVELS) {
+      if (level.type === "dictation") {
+        expect(level.dictations.length).toBeGreaterThanOrEqual(5);
+        continue;
+      }
       for (const item of level.items) {
         expect(item.text.trim()).not.toBe("");
       }
     }
+  });
+
+  it("insère des niveaux dictée obligatoires dans la progression", () => {
+    const dictationLevels = LEVELS.filter(level => level.type === "dictation");
+    expect(dictationLevels.length).toBeGreaterThanOrEqual(10);
+    let maxGap = 0;
+    let gap = 0;
+    let seenFirst = false;
+    for (const level of LEVELS) {
+      if (level.type === "dictation") {
+        seenFirst = true;
+        maxGap = Math.max(maxGap, gap);
+        gap = 0;
+      } else if (seenFirst) {
+        gap += 1;
+      }
+    }
+    expect(maxGap).toBeLessThanOrEqual(5);
   });
 
   it("suit une progression pédagogique globale simple", () => {

@@ -86,8 +86,11 @@ export function saveCompletedLevelResult(accounts, accountId, completedLevel, le
     if (account.id !== accountId) return normalizeAccountStats(account);
     return recordBestLevelScore(account, {
       levelNumber: completedLevel,
+      levelType: levelStats?.levelType,
+      dictationScore: levelStats?.dictationScore,
       successfulHits: levelStats?.successfulHits,
-      errors: levelStats?.errors
+      errors: levelStats?.errors,
+      attempts: levelStats?.attempts
     });
   });
 }

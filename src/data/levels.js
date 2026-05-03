@@ -5,7 +5,83 @@ const level = (id, title, instruction, shortInstruction, difficulty, starsToWin,
 // [impl->req~level.extended-campaign-worlds~1]
 // [impl->req~level.world-two-grammar-consolidation~1]
 // [impl->req~level.longer-play-session~1]
-export const LEVELS = [
+// [impl->req~dictation.main-progression~1]
+// [impl->req~dictation.data-model~1]
+// [impl->req~dictation.content-progression~1]
+export const DICTATION_LEVEL_BANKS = {
+  3: [
+    { text: "chat", variants: ["Chat"] },
+    { text: "maison", variants: [] },
+    { text: "dragon", variants: [] },
+    { text: "forêt", variants: [] },
+    { text: "cheval", variants: [] }
+  ],
+  6: [
+    { text: "gâteau", variants: ["gateau"] },
+    { text: "école", variants: ["ecole"] },
+    { text: "fenêtre", variants: ["fenetre"] },
+    { text: "éléphant", variants: ["elephant"] },
+    { text: "forêt", variants: ["foret"] }
+  ],
+  9: [
+    { text: "magicien", variants: [] },
+    { text: "couronne", variants: [] },
+    { text: "bouclier", variants: [] },
+    { text: "rivière", variants: ["riviere"] },
+    { text: "épée", variants: ["epee"] }
+  ],
+  12: [
+    { text: "château doré", variants: [] },
+    { text: "petit dragon", variants: [] },
+    { text: "forêt magique", variants: [] },
+    { text: "roi content", variants: [] },
+    { text: "gros nuage", variants: [] }
+  ],
+  15: [
+    { text: "épée brillante", variants: ["epee brillante"] },
+    { text: "cheval rapide", variants: [] },
+    { text: "petite maison", variants: [] },
+    { text: "fée gentille", variants: ["fee gentille"] },
+    { text: "garçon courageux", variants: ["garcon courageux"] }
+  ],
+  18: [
+    { text: "Le chevalier avance.", variants: [] },
+    { text: "La princesse rit.", variants: [] },
+    { text: "Le dragon dort.", variants: [] },
+    { text: "Le roi arrive.", variants: [] },
+    { text: "La porte s'ouvre.", variants: [] }
+  ],
+  21: [
+    { text: "Le jardin est calme.", variants: [] },
+    { text: "Le vent souffle fort.", variants: [] },
+    { text: "La pluie tombe vite.", variants: [] },
+    { text: "Le chat saute haut.", variants: [] },
+    { text: "La lune brille ce soir.", variants: [] }
+  ],
+  24: [
+    { text: "Le cheval mange du foin.", variants: [] },
+    { text: "La maîtresse lit une histoire.", variants: ["La maitresse lit une histoire."] },
+    { text: "Le garçon ferme la porte.", variants: ["Le garcon ferme la porte."] },
+    { text: "Nous marchons dans la forêt.", variants: ["Nous marchons dans la foret."] },
+    { text: "Le château est ancien.", variants: ["Le chateau est ancien."] }
+  ],
+  27: [
+    { text: "Le petit cheval blanc court vite.", variants: [] },
+    { text: "La grande rivière traverse le village.", variants: ["La grande riviere traverse le village."] },
+    { text: "Le brave chevalier protège son ami.", variants: [] },
+    { text: "La fée apporte une potion magique.", variants: ["La fee apporte une potion magique."] },
+    { text: "Le dragon rouge souffle doucement.", variants: [] }
+  ],
+  30: [
+    { text: "Ce matin, le chevalier prépare son bouclier.", variants: [] },
+    { text: "Dans la cour, les enfants chantent ensemble.", variants: [] },
+    { text: "Le vieux magicien raconte une histoire drôle.", variants: [] },
+    { text: "Sous la pluie, la princesse garde le sourire.", variants: [] },
+    { text: "Au château, le roi remercie les villageois.", variants: ["Au chateau, le roi remercie les villageois."] }
+  ]
+};
+
+const BASE_LEVELS = [
   level(1, "Les mots mal écrits", "Tranche les mots qui ne sont pas bien orthographiés.", "Tranche les mots mal écrits", "facile", 5, 3, 42, [
     item("chatt", true, "Bien joué ! On écrit : chat", "Oups, ce mot était une cible.", "chat", "orthographe"),
     item("chat", false, "Ce mot était déjà correct.", "Oups, celui-ci était déjà correct", undefined, "orthographe"),
@@ -411,3 +487,9 @@ export const LEVELS = [
     item("Je vais à l'école", false, "Je vais à l'école est correct.", "Oups, la phrase était correcte", undefined, "boss correct")
   ])
 ];
+
+export const LEVELS = BASE_LEVELS.map((levelData) => {
+  const dictations = DICTATION_LEVEL_BANKS[levelData.id];
+  if (!dictations) return { ...levelData, type: "slicing" };
+  return { ...levelData, type: "dictation", dictations };
+});

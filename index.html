@@ -21,6 +21,15 @@
     </div>
 
     <section id="arena"></section>
+    <section id="dictationPanel" class="dictationPanel hidden" aria-label="Zone de dictée">
+      <textarea id="dictationInput" rows="3" placeholder="Écris ce que tu entends..."></textarea>
+      <div class="dictationActions">
+        <button id="dictationRepeatBtn" class="smallBtn secondary" type="button">Répéter</button>
+        <button id="dictationValidateBtn" class="smallBtn" type="button">Valider</button>
+        <button id="dictationClearBtn" class="smallBtn pink" type="button">Effacer</button>
+      </div>
+      <div id="dictationFeedback" class="dictationFeedback" aria-live="polite"></div>
+    </section>
 
     <div id="knight" class="character character-knight" aria-hidden="true">
       <div class="plume"></div>

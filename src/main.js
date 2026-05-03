@@ -5,6 +5,7 @@ import { clamp, createGameState, resetGameStateForLevel } from "./core/gameState
 import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLevelIndex } from "./core/progression.js";
 import { chooseNextItem, getMaxActiveWords, getSpawnDelay, getWordSpeedBase } from "./core/wordSpawner.js";
 import { findSwordCollision, isTargetHit } from "./core/collision.js";
+import { pickDictation, scoreDictation } from "./core/dictation.js";
 import {
   calculateLevelScore,
   createLevelStats,
@@ -54,6 +55,12 @@ const championsOverlay = document.getElementById("championsOverlay");
 const championsList = document.getElementById("championsList");
 const playerStatsDetail = document.getElementById("playerStatsDetail");
 const championsBackBtn = document.getElementById("championsBackBtn");
+const dictationPanel = document.getElementById("dictationPanel");
+const dictationInput = document.getElementById("dictationInput");
+const dictationRepeatBtn = document.getElementById("dictationRepeatBtn");
+const dictationValidateBtn = document.getElementById("dictationValidateBtn");
+const dictationClearBtn = document.getElementById("dictationClearBtn");
+const dictationFeedback = document.getElementById("dictationFeedback");
 
 const initialState = createGameState({ knightX: window.innerWidth / 2 });
 let state = initialState.state;
@@ -71,6 +78,8 @@ let targetRetryQueue = initialState.targetRetryQueue;
 let selectedCharacterId = DEFAULT_CHARACTER_ID;
 let levelStats = createLevelStats();
 let replayContext = null;
+let currentDictation = null;
+let dictationAttempts = 0;
 const narrationStatus = document.getElementById("narrationStatus");
 const services = {
   audio: createAudioService(),
@@ -148,6 +157,10 @@ function shortFeedback(text) {
 
 function setMessage(text) {
   message.textContent = text;
+}
+
+function isDictationLevel(level = getLevel()) {
+  return level?.type === "dictation";
 }
 
 function updateHud() {
@@ -476,6 +489,7 @@ function bounceWord(word) {
 
 function strike() {
   if (state !== "playing") return;
+  if (isDictationLevel()) return;
   ensureAudio();
   playSwordSound();
   const character = getSelectedCharacter();
@@ -514,6 +528,57 @@ function strike() {
     setMessage(hit.data.feedbackKo);
     services.narration.speak(shortFeedback(hit.data.feedbackKo));
   }
+}
+
+function setDictationVisible(visible) {
+  // [impl->req~dictation.shared-game-screen~1]
+  dictationPanel.classList.toggle("hidden", !visible);
+  arena.classList.toggle("hidden", visible);
+}
+
+function speakCurrentDictation() {
+  if (!currentDictation || services.narration.isSpeaking()) return;
+  services.narration.speak(currentDictation.text);
+}
+
+function renderDictationFeedback(result, inputValue) {
+  const differences = result.differences.map(diff => {
+    const css = diff.type.includes("ajout") ? "diff-added" : diff.type.includes("supprim") ? "diff-removed" : "diff-replaced";
+    return "<li><span class=\"" + css + "\">" + diff.type + "</span> · attendu: \"" + (diff.expected || "∅") + "\" · saisi: \"" + (diff.actual || "∅") + "\"</li>";
+  }).join("");
+  dictationFeedback.innerHTML = "Texte attendu: " + result.text + "\nTexte saisi: " + inputValue
+    + (differences ? "\n<ul>" + differences + "</ul>" : "\nAucune différence.");
+}
+
+function validateDictation({ continueAfter = false } = {}) {
+  if (!currentDictation) return;
+  // [impl->req~dictation.input-display~1]
+  const inputValue = dictationInput.value || "";
+  const result = scoreDictation(currentDictation, inputValue);
+  dictationAttempts += 1;
+  // [impl->req~dictation.statistics~1]
+  levelStats = {
+    levelType: "dictation",
+    dictationScore: result.score,
+    errors: result.distance,
+    successfulHits: 0,
+    attempts: dictationAttempts
+  };
+  renderDictationFeedback(result, inputValue);
+  services.narration.speak(result.text);
+  if (result.score < 5 && !continueAfter) {
+    // [impl->req~dictation.retry-or-continue~1]
+    dictationFeedback.innerHTML += "<div class=\"dictationActions\"><button id=\"dictationRetryBtn\" class=\"smallBtn secondary\" type=\"button\">Recommencer</button><button id=\"dictationContinueBtn\" class=\"smallBtn\" type=\"button\">Continuer</button></div>";
+    document.getElementById("dictationRetryBtn").addEventListener("click", () => {
+      dictationInput.value = "";
+      dictationFeedback.textContent = "";
+      currentDictation = pickDictation(getLevel());
+      speakCurrentDictation();
+    });
+    document.getElementById("dictationContinueBtn").addEventListener("click", () => validateDictation({ continueAfter: true }));
+    return;
+  }
+  finishLevel();
 }
 
 function finishLevel() {
@@ -598,10 +663,22 @@ function startGame(easy, options = {}) {
   pauseBtn.classList.remove("paused");
   pauseBtn.textContent = "⏸";
   setMessage(getLevel().instruction);
-  unlockNarration();
   services.narration.speak(getLevel().instruction);
   ensureAudio();
-  spawnWord();
+  if (isDictationLevel()) {
+    // [impl->req~dictation.random-selection~1]
+    currentDictation = pickDictation(getLevel());
+    dictationAttempts = 0;
+    dictationInput.value = "";
+    dictationFeedback.textContent = "";
+    setDictationVisible(true);
+    // [impl->req~dictation.start-audio~1]
+    speakCurrentDictation();
+    dictationInput.focus();
+  } else {
+    setDictationVisible(false);
+    spawnWord();
+  }
 }
 
 function continueLevel() {
@@ -633,6 +710,7 @@ function returnToMenu() {
   selectOverlay.classList.add("hidden");
   startOverlay.classList.remove("hidden");
   setMessage(getLevel().instruction);
+  setDictationVisible(false);
 }
 
 function replayCompletedLevel(accountId, levelNumber) {
@@ -648,6 +726,11 @@ function replayCompletedLevel(accountId, levelNumber) {
 
 function togglePause() {
   if (state === "playing") {
+    if (isDictationLevel()) {
+      // [impl->req~dictation.no-time-pressure~1]
+      requestAnimationFrame(tick);
+      return;
+    }
     state = "paused";
     pauseBtn.classList.add("paused");
     pauseBtn.textContent = "▶";
@@ -790,6 +873,26 @@ applySelectedCharacter();
 updateHud();
 void initAccounts();
 initNarration();
+// [impl->req~speech.french-voice-required~1]
+if (!services.narration.hasFrenchVoice()) {
+  playBtn.disabled = true;
+  easyBtn.disabled = true;
+  setNarrationStatus("Voix française requise pour jouer.");
+}
 setMessage(getLevel().instruction);
 knight.style.left = knightX + "px";
 requestAnimationFrame(tick);
+
+// [impl->req~dictation.repeat-control~1]
+dictationRepeatBtn.addEventListener("click", speakCurrentDictation);
+// [impl->req~dictation.validation-and-clear-controls~1]
+dictationValidateBtn.addEventListener("click", () => validateDictation());
+dictationClearBtn.addEventListener("click", () => {
+  dictationInput.value = "";
+});
+dictationInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    validateDictation();
+  }
+});

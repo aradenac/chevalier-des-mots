@@ -1,5 +1,4 @@
 // [impl->req~tech.core-adapters-separation~1]
-// [impl->req~audio.service-failure-non-blocking~1]
 function createOscillatorSound(context, now, frequencies, { type, gainLevel, attack = 0.02, release = 0.22, spread = 0.06 }) {
   frequencies.forEach((frequency, index) => {
     const osc = context.createOscillator();

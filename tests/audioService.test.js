@@ -1,4 +1,3 @@
-// [utest->req~audio.service-failure-non-blocking~1]
 import { describe, expect, it, vi } from "vitest";
 import { createAudioService } from "../src/adapters/audioService.js";
 
