@@ -129,6 +129,9 @@ Acceptance criteria:
   * Terminer un niveau en mode debug ne déclenche pas la sauvegarde automatique de progression.
   * Terminer un niveau en mode debug ne modifie aucune progression de compte existant.
   * Rejouer un niveau en mode debug ne réduit aucune progression existante.
+  * Terminer un niveau en mode debug enchaîné ne modifie aucune progression de compte existant.
+  * Terminer un niveau avec le raccourci de complétion maximale ne modifie aucune progression de compte existant.
+  * Ces garanties s'appliquent même si un compte joueur est actif en arrière-plan.
 
 Needs:
   * impl
@@ -154,36 +157,37 @@ Acceptance criteria:
   * Terminer une dictée en mode debug ne modifie pas le nombre de tentatives enregistré.
   * Terminer une dictée en mode debug ne modifie pas le nombre d'erreurs enregistré.
   * Terminer un niveau en mode debug ne modifie pas le Tableau des champions.
+  * Terminer un niveau en mode debug enchaîné ne crée ni ne modifie les statistiques joueur.
+  * Terminer un niveau avec le raccourci de complétion maximale ne crée ni ne modifie les statistiques joueur.
+  * Ces garanties s'appliquent même si un compte joueur est actif en arrière-plan.
 
 Needs:
   * impl
   * utest
 
-#### Le mode debug doit revenir au menu debug après un niveau
+#### Le mode debug doit revenir au menu debug après un niveau par défaut
 
 `req~debug.return-to-selector~1`
 
-Status: approved
-Priority: high
-Verification: test
-Additional verification: manual-review
+Status: approved Priority: high Verification: test Additional verification: manual-review
 
-Après la fin d'un niveau lancé depuis le mode debug, le système doit revenir au menu debug sans lancer automatiquement la progression normale.
+Après la fin d'un niveau lancé depuis le mode debug, le système doit revenir au menu debug par défaut, sans lancer automatiquement la progression normale.
 
-Rationale:
-Le mode debug sert à tester des niveaux isolés et à enchaîner librement plusieurs essais choisis par le testeur.
+Rationale: Le mode debug sert principalement à tester des niveaux isolés et à enchaîner librement plusieurs essais choisis par le testeur. Le retour au menu debug doit rester le comportement sûr et explicite lorsqu'aucune option d'enchaînement n'est activée.
 
 Acceptance criteria:
-  * Terminer un niveau de tranchage en mode debug revient au menu debug.
-  * Terminer un niveau de dictée en mode debug revient au menu debug lorsque le joueur choisit de continuer.
-  * La fin d'un niveau en mode debug ne lance pas automatiquement le niveau suivant.
-  * La fin d'un niveau en mode debug ne revient pas automatiquement au Tableau des champions.
-  * Le retour au menu debug conserve la possibilité de sélectionner un autre niveau.
-  * Le menu debug propose une action permettant de quitter le mode debug et de revenir au menu principal.
+
+* Terminer un niveau de tranchage en mode debug revient au menu debug lorsque l'option d'enchaînement debug est désactivée.
+* Terminer un niveau de dictée en mode debug revient au menu debug lorsque l'option d'enchaînement debug est désactivée et que le joueur choisit de continuer.
+* L'option d'enchaînement debug est désactivée par défaut.
+* La fin d'un niveau en mode debug ne revient pas automatiquement au Tableau des champions.
+* Le retour au menu debug conserve la possibilité de sélectionner un autre niveau.
+* Le menu debug propose une action permettant de quitter le mode debug et de revenir au menu principal.
 
 Needs:
-  * impl
-  * utest
+
+* impl
+* utest
 
 #### Le mode debug doit respecter les prérequis techniques des niveaux
 
@@ -210,8 +214,98 @@ Needs:
   * impl
   * utest
 
+#### Le mode debug doit permettre d'enchaîner les niveaux depuis un niveau sélectionné
+
+`req~debug.chain-levels~1`
+
+Status: approved Priority: medium Verification: test Additional verification: manual-review
+
+Le système doit proposer dans le menu debug une option permettant d'enchaîner les niveaux à partir du niveau sélectionné.
+
+Rationale: Le testeur doit pouvoir vérifier le comportement réel de transition entre niveaux sans passer par le flux complet de progression joueur et sans modifier les données sauvegardées.
+
+Acceptance criteria:
+
+* Le menu debug propose une option intitulée « Enchaîner les niveaux après complétion » ou une formulation équivalente.
+* L'option d'enchaînement debug est désactivée par défaut.
+* Lorsque l'option est désactivée, un niveau lancé depuis le menu debug revient au menu debug après complétion.
+* Lorsque l'option est activée, un niveau lancé depuis le menu debug conserve un contexte debug enchaîné.
+* En contexte debug enchaîné, terminer un niveau affiche l'écran normal de fin de niveau.
+* En contexte debug enchaîné, l'action Continuer depuis l'écran de fin de niveau lance le niveau suivant.
+* L'enchaînement utilise l'ordre des niveaux de la campagne.
+* L'enchaînement respecte le type du niveau suivant, notamment les niveaux de tranchage et les niveaux de dictée.
+* L'enchaînement ne nécessite pas de compte joueur actif.
+* L'enchaînement utilise le personnage debug par défaut si aucun personnage n'est sélectionné.
+* L'enchaînement ne modifie pas la progression sauvegardée.
+* L'enchaînement ne crée ni ne modifie les statistiques joueur.
+* L'enchaînement ne modifie aucune donnée de compte joueur, même si un compte joueur est actif en arrière-plan.
+
+Needs:
+
+* impl
+* utest
+
+#### Le mode debug enchaîné doit signaler la fin de séquence
+
+`req~debug.chain-end~1`
+
+Status: approved Priority: medium Verification: test Additional verification: manual-review
+
+Lorsque le dernier niveau disponible est terminé en mode debug enchaîné, le système doit signaler la fin de la séquence debug puis revenir au menu debug.
+
+Rationale: Le testeur doit comprendre que la campagne debug enchaînée est terminée sans être renvoyé silencieusement au menu ni boucler implicitement vers le premier niveau.
+
+Acceptance criteria:
+
+* Lorsque le niveau terminé est le dernier niveau de la campagne, le système ne tente pas de lancer un niveau inexistant.
+* Lorsque le dernier niveau est terminé en mode debug enchaîné, le système affiche un message « Fin de séquence debug » ou une formulation équivalente.
+* Après validation du message de fin de séquence debug, le système revient au menu debug.
+* Le système ne boucle pas automatiquement vers le premier niveau.
+* Le retour au menu debug conserve la possibilité de sélectionner un autre niveau.
+* La fin de séquence debug ne modifie pas la progression sauvegardée.
+* La fin de séquence debug ne crée ni ne modifie les statistiques joueur.
+
+Needs:
+
+* impl
+* utest
+
+#### Le mode debug doit permettre de terminer un niveau avec la note maximale
+
+`req~debug.max-score-completion-shortcut~1`
+
+Status: approved Priority: medium Verification: test Additional verification: manual-review
+
+Le système doit fournir, pendant un niveau lancé en mode debug, un raccourci permettant de terminer immédiatement le niveau courant avec la note maximale.
+
+Rationale: Le testeur doit pouvoir valider rapidement les écrans de fin de niveau, les transitions et l'enchaînement de campagne sans réussir manuellement chaque niveau.
+
+Acceptance criteria:
+
+* Le raccourci de complétion maximale est disponible uniquement pendant un niveau lancé en mode debug.
+* Le raccourci par défaut est `Ctrl+Shift+D`.
+* Le raccourci est modifiable par configuration.
+* Le raccourci est ignoré hors contexte debug.
+* Le raccourci termine le niveau courant en utilisant le flux normal de fin de niveau.
+* Pour un niveau de tranchage, le raccourci produit la note maximale, actuellement `5 / 5`.
+* Pour un niveau de dictée, le raccourci produit la note maximale, actuellement `5 / 5`.
+* La note maximale ne dépend pas du taux de succès, du nombre d'erreurs ou du détail interne des statistiques du niveau.
+* En mode debug isolé, la complétion maximale mène à l'écran de fin de niveau puis au retour au menu debug lorsque le joueur choisit de continuer.
+* En mode debug enchaîné, la complétion maximale mène à l'écran de fin de niveau puis au niveau suivant lorsque le joueur choisit de continuer.
+* Sur le dernier niveau en mode debug enchaîné, la complétion maximale mène à l'écran de fin de niveau puis à la fin de séquence debug.
+* La complétion maximale ne modifie pas la progression sauvegardée.
+* La complétion maximale ne crée ni ne modifie les statistiques joueur.
+* La complétion maximale ne modifie aucune donnée de compte joueur, même si un compte joueur est actif en arrière-plan.
+
+Needs:
+
+* impl
+* utest
+
+
 ## Change history
 
 | Date | Spec version | Game version | Location | Modification | Justification |
 |---|---|---|---|---|---|
 | 2026-05-03 | 2.1.0 | 1.3.0 | docs/requirements/debug.md | Added debug level selector requirements | Allow testing any level from the normal interface without account, progress update or statistics pollution |
+| 2026-05-03 | 2.2.0 | 1.3.0 | docs/requirements/debug.md | Added optional debug level chaining and max-score completion shortcut requirements | Allow testers to validate post-level transitions and campaign chaining from debug mode without altering player progression or statistics |
