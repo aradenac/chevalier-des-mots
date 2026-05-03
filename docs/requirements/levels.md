@@ -193,7 +193,7 @@ Needs:
 #### La campagne doit progresser par mondes
 `req~level.extended-campaign-worlds~1`
 
-Status: draft
+Status: approved
 Priority: high
 Verification: inspection, test
 
@@ -216,7 +216,7 @@ Needs:
 #### Le second monde doit consolider l'orthographe et la grammaire
 `req~level.world-two-grammar-consolidation~1`
 
-Status: draft
+Status: approved
 Priority: high
 Verification: inspection, test
 
@@ -238,7 +238,7 @@ Needs:
 #### La campagne complète doit durer plus longtemps
 `req~level.longer-play-session~1`
 
-Status: draft
+Status: approved
 Priority: medium
 Verification: inspection
 
@@ -289,3 +289,4 @@ Les cibles et distracteurs ci-dessous sont représentatifs et non exhaustifs.
 |---|---|---|---|---|---|
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/levels.md | Added level structure, pedagogical overview, synthesis table, and progression requirement | Let readers understand progression without duplicating level data |
 | 2026-05-02 | 1.1.0 | 1.0.0 | docs/requirements/levels.md | Added world-based campaign extension for levels 21 to 40 | Extend play duration while keeping the learning progression readable |
+| 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/levels.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |

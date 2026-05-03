@@ -11,6 +11,7 @@ Elle permet de suivre les changements globaux sans disperser l'historique dans l
 | 2026-05-03 | 1.1.0 | 1.1.0 | src/data/levels.js, src/data/worlds.js, src/data/pedagogicalProgression.js, src/main.js, tests/levels.test.js, tests/worlds.test.js | Implemented the extended 40-level campaign with two progressive worlds | Deliver the new campaign length while keeping the progression and traceability coherent |
 | 2026-05-03 | 1.1.0 | 1.1.0 | docs/requirements/inputs-ui.md, docs/requirements/index.md | Added character selection requirements to the interface spec | Let the player choose a cosmetic character before starting without changing gameplay rules |
 | 2026-05-03 | 1.1.0 | 1.2.0 | index.html, src/data/characters.js, src/main.js, src/styles/game.css, tests/characters.test.js, tests/collision.test.js | Implemented character selection with cosmetic-only character variants | Add startup personalization while keeping score, collision and progression unchanged |
+| 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/ | Approved all existing requirements and normalized page structure with no code changes | All listed requirements represent accepted product targets; page history must remain at the end |
 
 ## Change history
 
@@ -22,3 +23,4 @@ Elle permet de suivre les changements globaux sans disperser l'historique dans l
 | 2026-05-03 | 1.1.0 | 1.1.0 | docs/requirements/version-history.md | Recorded the 40-level world implementation | Keep the version history aligned with the delivered campaign extension |
 | 2026-05-03 | 1.1.0 | 1.1.0 | docs/requirements/version-history.md | Recorded the character selection specification update | Keep the version history aligned with the new start-selection requirements |
 | 2026-05-03 | 1.1.0 | 1.2.0 | docs/requirements/version-history.md | Recorded the character selection implementation | Keep the global history aligned with the cosmetic character release |
+| 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/version-history.md | Recorded approved status normalization with no code changes | Keep the global history aligned with the accepted product target status |

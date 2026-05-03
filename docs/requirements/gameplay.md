@@ -24,7 +24,7 @@ Needs:
 #### Une erreur ne doit pas bloquer la partie
 `req~game.no-blocking-punishment~1`
 
-Status: draft
+Status: approved
 Priority: medium
 Verification: inspection
 
@@ -47,3 +47,4 @@ Needs:
 |---|---|---|---|---|---|
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/gameplay.md | Added gameplay requirements for target slicing and non-blocking punishment | Preserve a compact, readable gameplay spec |
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/gameplay.md | Restored explicit utest linkage under Needs for target slicing | Keep traceability structurally valid for OpenFastTrace |
+| 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/gameplay.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |

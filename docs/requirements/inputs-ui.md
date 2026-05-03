@@ -55,7 +55,7 @@ Needs:
 #### La consigne courante doit rester visible
 `req~ui.visible-instruction~1`
 
-Status: draft
+Status: approved
 Priority: high
 Verification: manual-review
 
@@ -74,7 +74,7 @@ Needs:
 #### Les entrées clavier, tactiles et manette doivent être normalisées
 `req~input.normalized-state~1`
 
-Status: draft
+Status: approved
 Priority: high
 Verification: test
 
@@ -98,3 +98,4 @@ Needs:
 |---|---|---|---|---|---|
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/inputs-ui.md | Added interface and input requirements | Keep input and visible instruction expectations in one themed page |
 | 2026-05-03 | 1.1.0 | 1.1.0 | docs/requirements/inputs-ui.md | Added character selection and cosmetic-only character requirements | Let the player choose a character without changing gameplay rules |
+| 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/inputs-ui.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |

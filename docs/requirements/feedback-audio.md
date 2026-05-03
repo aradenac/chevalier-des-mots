@@ -3,7 +3,7 @@
 #### Le résultat d'une action doit s'afficher immédiatement
 `req~feedback.immediate-result~1`
 
-Status: draft
+Status: approved
 Priority: high
 Verification: manual-review
 
@@ -41,11 +41,6 @@ Needs:
 - impl
 - utest
 
-## Change history
-
-| Date | Spec version | Game version | Location | Modification | Justification |
-|---|---|---|---|---|---|
-| 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/feedback-audio.md | Added feedback, narration, and audio requirements | Keep feedback and audio behaviors together for review |
 #### Le service audio ne doit pas bloquer le jeu
 `req~audio.service-failure-non-blocking~1`
 
@@ -66,3 +61,10 @@ Acceptance criteria:
 Needs:
 - impl
 - utest
+
+## Change history
+
+| Date | Spec version | Game version | Location | Modification | Justification |
+|---|---|---|---|---|---|
+| 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/feedback-audio.md | Added feedback, narration, and audio requirements | Keep feedback and audio behaviors together for review |
+| 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/feedback-audio.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |

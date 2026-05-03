@@ -3,7 +3,7 @@
 #### Le noyau du jeu doit rester séparé des adapters navigateur
 `req~tech.core-adapters-separation~1`
 
-Status: draft
+Status: approved
 Priority: medium
 Verification: test
 
@@ -26,3 +26,4 @@ Needs:
 | Date | Spec version | Game version | Location | Modification | Justification |
 |---|---|---|---|---|---|
 | 2026-05-02 | 1.0.0 | 1.0.0 | docs/requirements/technical.md | Added the core/adapters separation requirement | Keep technical separation explicit without over-specifying implementation |
+| 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/technical.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |
