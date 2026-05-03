@@ -292,6 +292,32 @@ Acceptance criteria:
 Needs: impl, utest
 
 
+#### Le mode debug doit appliquer la musique du contexte testé
+
+`req~debug.context-music~1`
+
+Status: approved
+Priority: low
+Verification: manual-review
+Additional verification: test
+
+Lorsqu'un écran ou un niveau est lancé depuis le mode debug, le système doit appliquer les mêmes règles musicales que dans le flux normal du jeu.
+
+Rationale: Le mode debug doit permettre de vérifier rapidement la musique associée aux menus et aux types de niveaux.
+
+Acceptance criteria:
+- Un niveau `slicing` lancé depuis le debug utilise la musique de tranchage.
+- Un niveau `dictation` lancé depuis le debug utilise la musique de dictée.
+- Un niveau `cannon` lancé depuis le debug utilise la musique cannon.
+- Le retour au menu debug utilise une musique de menu ou coupe la musique de niveau selon la règle générale des menus.
+- L'enchaînement debug met à jour la musique lorsque le type du niveau suivant change.
+- Le mode debug ne crée pas de règle musicale différente de la campagne normale.
+- Le contrôle de volume musique reste applicable en mode debug.
+- Le bouton d'activation ou désactivation de la musique reste applicable en mode debug.
+
+Needs: impl, utest
+
+
 ## Change history
 
 | Date | Spec version | Game version | Location | Modification | Justification |
@@ -299,3 +325,4 @@ Needs: impl, utest
 | 2026-05-03 | 2.1.0 | 1.3.0 | docs/requirements/debug.md | Added debug level selector requirements | Allow testing any level from the normal interface without account, progress update or statistics pollution |
 | 2026-05-03 | 2.2.0 | 1.3.0 | docs/requirements/debug.md | Added optional debug level chaining and max-score completion shortcut requirements | Allow testers to validate post-level transitions and campaign chaining from debug mode without altering player progression or statistics |
 | 2026-05-03 | 2.3.0 | 1.3.0 | docs/requirements/debug.md | Extended debug coverage to cannon levels for selection, isolated completion, chaining and max-score completion | Keep debug behavior aligned with the new autonomous cannon levels |
+| 2026-05-03 | 2.2.0 | 1.4.0 | docs/requirements/debug.md | Added debug coverage for contextual music | Allow testers to validate music selection and music controls in debug mode |
