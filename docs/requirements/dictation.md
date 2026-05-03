@@ -4,24 +4,29 @@
 
 Les niveaux de dictée sont des niveaux obligatoires de la progression principale. Ils utilisent la synthèse vocale française, la saisie clavier et une évaluation par comparaison caractère par caractère.
 
-#### Les dictées doivent appartenir à la progression principale
+#### Les dictées doivent être des niveaux autonomes de la progression principale
 
-`req~dictation.main-progression~1`
+`req~dictation.main-progression~2`
 
 Status: approved
 Priority: high
 Verification: test
 Additional verification: inspection
 
-Le système doit intégrer les niveaux de dictée comme niveaux obligatoires de la progression linéaire principale.
+Le système doit intégrer chaque dictée de campagne comme un niveau autonome de la progression linéaire principale.
 
 Rationale:
-La dictée doit renforcer l'orthographe dans la campagne principale sans devenir un mode secondaire optionnel.
+La dictée doit être jouée comme un niveau à part entière, au même titre que les niveaux de tranchage, et non comme un exercice intercalé entre deux niveaux ou à l'intérieur d'un autre niveau.
 
 Acceptance criteria:
-  * Les niveaux de dictée sont présents dans la liste ordonnée des niveaux de campagne.
-  * Les niveaux de dictée ne sont pas placés dans un menu optionnel séparé.
-  * Un niveau de dictée terminé permet d'avancer dans la même progression que les autres niveaux.
+  * Chaque dictée de campagne occupe une entrée propre dans la liste ordonnée des niveaux.
+  * Chaque niveau de dictée possède son propre index de niveau.
+  * Chaque niveau de dictée possède son propre titre affichable.
+  * Chaque niveau de dictée possède le type `dictation`.
+  * Un niveau de dictée n'est pas stocké comme sous-exercice, interlude, étape interne ou écran intermédiaire d'un niveau de tranchage.
+  * Lorsqu'un niveau de dictée est le prochain niveau de la progression, le système lance directement ce niveau de dictée.
+  * Terminer le niveau précédent mène au niveau de dictée si celui-ci est le prochain niveau de la campagne.
+  * Terminer un niveau de dictée permet d'avancer vers le niveau suivant de la même campagne lorsque le joueur choisit de continuer.
   * Le joueur ne peut pas terminer la campagne sans terminer les niveaux de dictée.
   * Après le premier niveau de dictée, la campagne ne contient pas plus de cinq niveaux non dictée consécutifs entre deux niveaux de dictée.
 
@@ -49,6 +54,8 @@ Acceptance criteria:
   * Chaque dictée peut exposer une liste de variantes acceptées.
   * Les variantes acceptées sont stockées avec les données de dictée.
   * Les dictées d'un même niveau appartiennent à la même famille de contenu parmi mot simple, mot avec accent ou lettre muette, groupe de mots, phrase courte.
+  * Un niveau de dictée est représenté par une entrée de niveau complète dans le module de données des niveaux.
+  * Un niveau de dictée n'est pas représenté comme une propriété secondaire d'un niveau de tranchage.
 
 Needs:
   * impl
@@ -226,6 +233,7 @@ Acceptance criteria:
   * Le niveau de dictée n'exige pas d'action d'attaque.
   * Le niveau de dictée ne se termine pas tant que le joueur n'a pas validé sa saisie.
   * Les erreurs de saisie avant validation ne déclenchent pas de pénalité immédiate.
+  * Le moteur de niveau de tranchage n'est pas actif pendant une tentative de dictée.
 
 Needs:
   * impl
@@ -417,3 +425,4 @@ Needs:
 | Date | Spec version | Game version | Location | Modification | Justification |
 |---|---|---|---|---|---|
 | 2026-05-03 | 2.0.0 | 1.3.0 | docs/requirements/dictation.md | Added normative dictation requirements | Specify mandatory dictation levels before implementation |
+| 2026-05-03 | 2.1.0 | 1.3.0 | docs/requirements/dictation.md | Replaced dictation progression requirement with autonomous dictation level requirement | Clarify that dictation is a full campaign level, not an intercalated exercise between levels |

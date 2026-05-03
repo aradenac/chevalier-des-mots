@@ -21,6 +21,34 @@ Needs:
 - impl
 - utest
 
+#### Chaque entrée de campagne doit représenter un niveau jouable autonome
+
+`req~level.campaign-entry-is-playable-level~1`
+
+Status: approved
+Priority: high
+Verification: test
+Additional verification: inspection
+
+Le système doit représenter chaque entrée de la campagne comme un niveau jouable autonome possédant un type unique.
+
+Rationale:
+La campagne doit rester une progression de niveaux homogènes, même lorsque les niveaux utilisent des mécaniques différentes.
+
+Acceptance criteria:
+  * Chaque entrée de campagne possède un identifiant ou index de niveau unique.
+  * Chaque entrée de campagne possède un titre affichable.
+  * Chaque entrée de campagne possède un type de niveau.
+  * Un niveau de tranchage possède le type `slicing`.
+  * Un niveau de dictée possède le type `dictation`.
+  * Le système sélectionne le moteur de jeu à lancer selon le type du niveau courant.
+  * Une entrée de campagne ne mélange pas simultanément les mécaniques `slicing` et `dictation`.
+  * Une entrée de campagne ne sert pas de conteneur à plusieurs sous-niveaux jouables.
+
+Needs:
+  * impl
+  * utest
+
 ## Contexte non normatif : vue pédagogique des niveaux
 
 Les 20 niveaux actuels constituent le Monde 1 — Écuyer.
@@ -183,6 +211,9 @@ Acceptance criteria:
   * Un niveau de dictée validé sélectionne le niveau suivant quand le joueur choisit de continuer.
   * Un niveau final terminé renvoie au premier niveau ou à l'état de fin de campagne défini par l'interface.
   * Le passage au niveau suivant conserve le compte joueur actif.
+  * Le passage d'un niveau à l'autre utilise les entrées de campagne, quel que soit leur type.
+  * Un niveau de dictée n'est pas sauté, fusionné avec le niveau précédent ou fusionné avec le niveau suivant.
+  * Le type du niveau suivant détermine l'écran et le moteur de jeu lancés.
 
 Needs:
   * impl
@@ -293,3 +324,4 @@ Les cibles et distracteurs ci-dessous sont représentatifs et non exhaustifs.
 | 2026-05-02 | 1.1.0 | 1.0.0 | docs/requirements/levels.md | Added world-based campaign extension for levels 21 to 40 | Extend play duration while keeping the learning progression readable |
 | 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/levels.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |
 | 2026-05-03 | 1.4.0 | 1.2.0 | docs/requirements/levels.md | Normalized verification fields, separated progression concerns and marked overview sections as non-normative | Apply writing rules without changing the approved level model |
+| 2026-05-03 | 2.1.0 | 1.3.0 | docs/requirements/levels.md | Added autonomous campaign entry requirement and clarified type-based progression | Prevent dictation from being implemented as an interstitial exercise between levels |

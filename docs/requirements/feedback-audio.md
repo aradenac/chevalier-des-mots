@@ -20,26 +20,28 @@ Acceptance criteria:
 Needs:
 - impl
 
-#### Une voix française doit être disponible pour jouer
+#### Une voix française doit être disponible avant l'accès au jeu
 
-`req~speech.french-voice-required~1`
+`req~speech.french-voice-required~2`
 
 Status: approved
 Priority: high
 Verification: test
 Additional verification: manual-review
 
-Au démarrage, le système doit empêcher l'accès au jeu si aucune voix française de synthèse vocale n'est disponible.
+Au lancement du site, le système doit vérifier la disponibilité d'une voix française de synthèse vocale avant de permettre l'accès aux menus de jeu.
 
 Rationale:
-Les niveaux de dictée sont obligatoires et dépendent d'une lecture vocale française.
+Les niveaux de dictée sont obligatoires dans la progression principale et le mode debug doit tester les niveaux dans les mêmes conditions techniques critiques que la campagne normale.
 
 Acceptance criteria:
-  * Le système détecte la disponibilité de l'API de synthèse vocale.
+  * La vérification de disponibilité de l'API de synthèse vocale fait partie des premières opérations de lancement du site.
   * Le système détecte au moins une voix dont la langue commence par `fr` ou dont le nom indique une voix française.
-  * Si aucune voix française n'est disponible, le système affiche un message d'erreur lisible.
-  * Si aucune voix française n'est disponible, le système ne lance pas la progression de jeu.
-  * Si une voix française est disponible, le système peut lancer la progression de jeu.
+  * Si les voix ne sont pas disponibles immédiatement, le système attend l'événement navigateur permettant de réévaluer la liste des voix avant de conclure à l'indisponibilité.
+  * Si aucune voix française n'est disponible après la phase de détection, le système affiche un message d'erreur lisible.
+  * Si aucune voix française n'est disponible, le système ne permet pas d'accéder au menu principal.
+  * Si aucune voix française n'est disponible, le système ne permet pas d'accéder au menu debug.
+  * Si une voix française est disponible, le système permet d'accéder au menu principal.
   * L'indisponibilité de WebAudio pour les effets sonores ne rend pas cette exigence échouée.
 
 Needs:
@@ -54,3 +56,4 @@ Needs:
 | 2026-05-03 | 1.2.0 | 1.2.0 | docs/requirements/feedback-audio.md | Approved all requirements and normalized page structure | All listed requirements represent accepted product targets; page history must remain at the end |
 | 2026-05-03 | 1.4.0 | 1.2.0 | docs/requirements/feedback-audio.md | Reworded feedback, speech and audio requirements with observable conditions | Apply writing rules without changing feedback or optional-audio behavior |
 | 2026-05-03 | 2.0.0 | 1.3.0 | docs/requirements/feedback-audio.md | Replaced optional speech fallback with mandatory French voice requirement | Dictation levels require French speech synthesis to be playable |
+| 2026-05-03 | 2.1.0 | 1.3.0 | docs/requirements/feedback-audio.md | Replaced progression speech gate with site launch French voice gate | Ensure mandatory dictation and debug levels cannot be reached without French speech synthesis |

@@ -42,7 +42,6 @@ nav:
       - Vue d'ensemble: requirements/index.md
       - Format: requirements/format.md
       - Règles de rédaction: requirements/writing-rules.md
-      - Audit de traçabilité: requirements/traceability-audit.md
       - Gameplay: requirements/gameplay.md
       - Niveaux: requirements/levels.md
       - Dictée: requirements/dictation.md
@@ -55,3 +54,4 @@ nav:
       - Version history: requirements/version-history.md
       - Traçabilité:
         - Audit: traceability/audit.md
+      - Mode debug: requirements/debug.md

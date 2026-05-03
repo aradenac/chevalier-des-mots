@@ -12,9 +12,11 @@ Le périmètre couvre le jeu jouable dans un navigateur, la documentation d'exig
 
 Les exigences sont regroupées par thème pour rester faciles à éditer sans réintroduire de hiérarchie NEED / STKREQ / SYSREQ / SWREQ / VERREQ.
 
-Le workflow attendu est en deux phases:
-- `SPEC REVIEW` pour relire les exigences, détecter les ambiguïtés et modifier seulement les pages de specs;
-- `IMPLEMENTATION` pour modifier le code uniquement après validation explicite de l'utilisateur.
+Le workflow attendu est le suivant:
+
+- l'utilisateur met à jour et valide les exigences dans `docs/requirements/`;
+- l'agent d'implémentation lit les exigences validées;
+- l'agent d'implémentation modifie le code, les tests, les liens OpenFastTrace et l'audit de traçabilité sans modifier les exigences.
 
 Chaque page de `docs/requirements/` se termine par un `Change history` qui enregistre les modifications locales de cette page.
 La page [Version history](version-history.md) relie les versions de specs et les versions du jeu pour garder un suivi global.
@@ -33,6 +35,7 @@ La page [Audit de traçabilité](traceability-audit.md) donne une matrice manuel
 - [Feedback et audio](feedback-audio.md)
 - [Technique](technical.md)
 - [Vérification](verification.md)
+- [Mode debug](debug.md)
 
 La page [Niveaux](levels.md) rassemble les exigences de structure, une vue pédagogique synthétique des mondes, le Monde 1 — Écuyer, le Monde 2 — Chevalier et une table non exhaustive pour faciliter la lecture sans dupliquer `src/data/levels.js`.
 Un Monde 3 — Maître chevalier pourra être spécifié dans une évolution ultérieure.
@@ -40,6 +43,7 @@ La page [Dictée](dictation.md) couvre les niveaux de dictée obligatoires, leur
 La page [Interface et entrées](inputs-ui.md) couvre aussi le choix du personnage au démarrage en plus des entrées et de la consigne visible.
 La page [Comptes locaux et progression](accounts-progress.md) couvre les comptes sans authentification, le stockage serveur du niveau atteint et la reprise linéaire.
 La page [Statistiques](statistics.md) couvre les scores persistants par niveau, le score global, le Tableau des champions et le rejeu des niveaux accomplis.
+La page [Mode debug](debug.md) couvre la sélection libre des niveaux à des fins de test, sans compte actif, sans sauvegarde de progression et sans mise à jour des statistiques.
 
 ## Change history
 
@@ -53,3 +57,4 @@ La page [Statistiques](statistics.md) couvre les scores persistants par niveau, 
 | 2026-05-03 | 1.7.0 | 1.2.0 | docs/requirements/index.md | Added local accounts and progression page to the overview | Keep the requirements index aligned with the new local progress specification |
 | 2026-05-03 | 1.8.0 | 1.2.0 | docs/requirements/index.md | Updated the account progression scope to server-side persistence | Keep the overview aligned with the corrected storage boundary |
 | 2026-05-03 | 1.9.0 | 1.3.0 | docs/requirements/index.md | Added the statistics page to the requirements overview | Make persistent scores and completed-level replay requirements discoverable |
+| 2026-05-03 | 2.1.0 | 1.3.0 | docs/requirements/index.md | Added debug requirements entry and corrected implementation workflow wording | Align the requirements overview with the agent workflow and the moved traceability audit |
