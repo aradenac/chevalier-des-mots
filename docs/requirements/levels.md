@@ -3,51 +3,47 @@
 #### Les niveaux doivent rester des données séparées du moteur
 `req~data.levels-separated-from-engine~1`
 
-Status: approved
-Priority: high
-Verification: test
+Status: approved  
+Priority: high  
+Verification: test  
 
 Le système doit définir les niveaux dans un module de données séparé de la logique d'exécution du jeu.
 
-Rationale:
-La liste des niveaux doit rester éditable sans mélanger contenu pédagogique et moteur.
+Rationale: La liste des niveaux doit rester éditable sans mélanger contenu pédagogique et moteur.
 
 Acceptance criteria:
+
 - Les niveaux sont listés dans un module de données dédié.
 - Chaque niveau expose ses métadonnées et ses items.
 - Les tests vérifient la présence des métadonnées obligatoires et des items de chaque niveau.
 
-Needs:
-- impl
-- utest
+Needs: impl, utest
 
 #### Chaque entrée de campagne doit représenter un niveau jouable autonome
 
 `req~level.campaign-entry-is-playable-level~1`
 
-Status: approved
-Priority: high
-Verification: test
-Additional verification: inspection
+Status: approved  
+Priority: high  
+Verification: test  
+Additional verification: inspection  
 
 Le système doit représenter chaque entrée de la campagne comme un niveau jouable autonome possédant un type unique.
 
-Rationale:
-La campagne doit rester une progression de niveaux homogènes, même lorsque les niveaux utilisent des mécaniques différentes.
+Rationale: La campagne doit rester une progression de niveaux homogènes, même lorsque les niveaux utilisent des mécaniques différentes.
 
 Acceptance criteria:
-  * Chaque entrée de campagne possède un identifiant ou index de niveau unique.
-  * Chaque entrée de campagne possède un titre affichable.
-  * Chaque entrée de campagne possède un type de niveau.
-  * Un niveau de tranchage possède le type `slicing`.
-  * Un niveau de dictée possède le type `dictation`.
-  * Le système sélectionne le moteur de jeu à lancer selon le type du niveau courant.
-  * Une entrée de campagne ne mélange pas simultanément les mécaniques `slicing` et `dictation`.
-  * Une entrée de campagne ne sert pas de conteneur à plusieurs sous-niveaux jouables.
 
-Needs:
-  * impl
-  * utest
+- Chaque entrée de campagne possède un identifiant ou index de niveau unique.
+- Chaque entrée de campagne possède un titre affichable.
+- Chaque entrée de campagne possède un type de niveau.
+- Un niveau de tranchage possède le type `slicing`.
+- Un niveau de dictée possède le type `dictation`.
+- Le système sélectionne le moteur de jeu à lancer selon le type du niveau courant.
+- Une entrée de campagne ne mélange pas simultanément les mécaniques `slicing` et `dictation`.
+- Une entrée de campagne ne sert pas de conteneur à plusieurs sous-niveaux jouables.
+
+Needs: impl, utest
 
 ## Contexte non normatif : vue pédagogique des niveaux
 
@@ -169,17 +165,17 @@ Maximale, avec plusieurs types de décisions possibles au sein d'un même niveau
 #### Progression pédagogique des niveaux
 `req~level.pedagogical-progression~1`
 
-Status: approved
-Priority: high
-Verification: test
-Additional verification: inspection
+Status: approved  
+Priority: high  
+Verification: test  
+Additional verification: inspection  
 
 Le système doit organiser les niveaux selon une progression allant de distinctions visuelles simples vers des distinctions grammaticales plus abstraites.
 
-Rationale:
-L'enfant doit pouvoir construire ses compétences progressivement sans rupture brutale de difficulté.
+Rationale: L'enfant doit pouvoir construire ses compétences progressivement sans rupture brutale de difficulté.
 
 Acceptance criteria:
+
 - Les premiers niveaux portent sur des erreurs visibles ou familières.
 - Les niveaux intermédiaires portent sur les catégories grammaticales.
 - Les niveaux avancés portent sur les accords dans le groupe nominal, les groupes verbaux, l'imparfait, les autres temps et les homophones plus fins.
@@ -187,106 +183,97 @@ Acceptance criteria:
 - Le dernier niveau combine plusieurs types de décisions.
 - La structure des niveaux reste cohérente avec les métadonnées de `src/data/levels.js`.
 
-Needs:
-- impl
-- utest
+Needs: impl, utest
 
 #### La progression doit avancer après un niveau terminé
 
 `req~level.progression-model~2`
 
-Status: approved
-Priority: high
-Verification: test
+Status: approved  
+Priority: high  
+Verification: test  
 
 Le système doit gérer le niveau courant avec un indice borné et passer au niveau suivant après qu'un niveau est terminé selon les règles de son type.
 
-Rationale:
-La progression doit couvrir les niveaux de tranchage et les niveaux de dictée sans dépendre uniquement de la notion de victoire.
+Rationale: La progression doit couvrir les niveaux de tranchage et les niveaux de dictée sans dépendre uniquement de la notion de victoire.
 
 Acceptance criteria:
-  * Un index trop petit est ramené au premier niveau.
-  * Un index trop grand est ramené au dernier niveau.
-  * Un niveau de tranchage terminé avec victoire sélectionne le niveau suivant.
-  * Un niveau de dictée validé sélectionne le niveau suivant quand le joueur choisit de continuer.
-  * Un niveau final terminé renvoie au premier niveau ou à l'état de fin de campagne défini par l'interface.
-  * Le passage au niveau suivant conserve le compte joueur actif.
-  * Le passage d'un niveau à l'autre utilise les entrées de campagne, quel que soit leur type.
-  * Un niveau de dictée n'est pas sauté, fusionné avec le niveau précédent ou fusionné avec le niveau suivant.
-  * Le type du niveau suivant détermine l'écran et le moteur de jeu lancés.
 
-Needs:
-  * impl
-  * utest
+- Un index trop petit est ramené au premier niveau.
+- Un index trop grand est ramené au dernier niveau.
+- Un niveau de tranchage terminé avec victoire sélectionne le niveau suivant.
+- Un niveau de dictée validé sélectionne le niveau suivant quand le joueur choisit de continuer.
+- Un niveau final terminé renvoie au premier niveau ou à l'état de fin de campagne défini par l'interface.
+- Le passage au niveau suivant conserve le compte joueur actif.
+- Le passage d'un niveau à l'autre utilise les entrées de campagne, quel que soit leur type.
+- Un niveau de dictée n'est pas sauté, fusionné avec le niveau précédent ou fusionné avec le niveau suivant.
+- Le type du niveau suivant détermine l'écran et le moteur de jeu lancés.
+
+Needs: impl, utest
 
 ## Campagne étendue
 
 #### La campagne doit progresser par mondes
 `req~level.extended-campaign-worlds~1`
 
-Status: approved
-Priority: high
-Verification: test
-Additional verification: inspection
+Status: approved  
+Priority: high  
+Verification: test  
+Additional verification: inspection  
 
 Le système doit organiser la campagne en mondes progressifs afin d'augmenter la durée de jeu et de structurer l'apprentissage.
 
-Rationale:
-Le découpage en mondes permet d'allonger la campagne, de clarifier l'intention pédagogique de chaque tranche de niveaux et de garder une progression lisible.
+Rationale: Le découpage en mondes permet d'allonger la campagne, de clarifier l'intention pédagogique de chaque tranche de niveaux et de garder une progression lisible.
 
 Acceptance criteria:
+
 - Le Monde 1 contient les niveaux 1 à 20.
 - Le Monde 2 contient les niveaux 21 à 40.
 - Chaque monde a un titre et une intention pédagogique.
 - Les boss de monde révisent plusieurs familles de notions.
 - Les mondes sont ordonnés selon leurs plages de niveaux.
 
-Needs:
-- impl
-- utest
+Needs: impl, utest
 
 #### Le second monde doit consolider l'orthographe et la grammaire
 `req~level.world-two-grammar-consolidation~1`
 
-Status: approved
-Priority: high
-Verification: test
-Additional verification: inspection
+Status: approved  
+Priority: high  
+Verification: test  
+Additional verification: inspection  
 
 Le système doit définir un second monde de niveaux centré sur la consolidation grammaticale et orthographique.
 
-Rationale:
-Le second monde doit prolonger la courbe d'apprentissage sans recopier la base complète des items dans la documentation.
+Rationale: Le second monde doit prolonger la courbe d'apprentissage sans recopier la base complète des items dans la documentation.
 
 Acceptance criteria:
+
 - Les niveaux 21 à 40 sont définis par thème.
 - Les niveaux 21 à 40 couvrent orthographe fine, accords, pronoms, groupes verbaux, temps et homophones.
 - Le niveau 40 mélange les notions du monde 2.
 - Les niveaux du monde 2 utilisent des cibles et distracteurs représentatifs sans dupliquer toute la base d'items dans la spec.
 
-Needs:
-- impl
-- utest
+Needs: impl, utest
 
 #### La campagne complète doit durer plus longtemps
 `req~level.longer-play-session~1`
 
-Status: approved
-Priority: medium
-Verification: inspection
+Status: approved  
+Priority: medium  
+Verification: inspection  
 
 Le système doit fournir une campagne complète contenant au moins 40 niveaux approuvés ou implémentés.
 
-Rationale:
-Le jeu actuel est trop court pour installer suffisamment de répétition et de consolidation.
+Rationale: Le jeu actuel est trop court pour installer suffisamment de répétition et de consolidation.
 
 Acceptance criteria:
+
 - La campagne complète contient au moins 40 niveaux approuvés ou implémentés.
 - Les niveaux ajoutés ne dépassent pas la borne de `fallSpeed` définie par les tests de niveaux.
 - Les niveaux ajoutés couvrent plusieurs familles pédagogiques distinctes.
 
-Needs:
-- impl
+Needs: impl
 
 ### Contexte non normatif : Monde 2 — Chevalier
 

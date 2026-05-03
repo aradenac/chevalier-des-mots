@@ -6,17 +6,17 @@ Le démarrage présente un choix de personnage avant la partie. Ce choix concern
 #### La sélection du personnage doit être proposée au démarrage
 `req~character.start-selection~1`
 
-Status: approved
-Priority: high
-Verification: test
-Additional verification: manual-review
+Status: approved  
+Priority: high  
+Verification: test  
+Additional verification: manual-review  
 
 Le système doit permettre au joueur de choisir son personnage avant le démarrage d'une partie.
 
-Rationale:
-Le choix du personnage augmente l'appropriation du jeu par l'enfant sans modifier les règles pédagogiques.
+Rationale: Le choix du personnage augmente l'appropriation du jeu par l'enfant sans modifier les règles pédagogiques.
 
 Acceptance criteria:
+
 - L'écran de démarrage propose au moins trois personnages.
 - Les personnages disponibles incluent `Chevalier`, `Pépé` et `Maître laser` ou `Sage galactique`.
 - Le personnage sélectionné est utilisé pendant la partie.
@@ -24,72 +24,65 @@ Acceptance criteria:
 - Chaque personnage possède une animation ou un effet visuel déclenché lors d'une frappe.
 - Un personnage par défaut est sélectionné si le joueur ne fait aucun choix.
 
-Needs:
-- impl
-- utest
+Needs: impl, utest
 
 #### Les personnages doivent rester cosmétiques
 `req~character.cosmetic-only~1`
 
-Status: approved
-Priority: high
-Verification: test
-Additional verification: manual-review
+Status: approved  
+Priority: high  
+Verification: test  
+Additional verification: manual-review  
 
 Le système doit garantir que le choix du personnage est cosmétique et ne modifie pas les règles du jeu.
 
-Rationale:
-Les personnages doivent personnaliser l'expérience sans déséquilibrer la difficulté ni perturber l'apprentissage.
+Rationale: Les personnages doivent personnaliser l'expérience sans déséquilibrer la difficulté ni perturber l'apprentissage.
 
 Acceptance criteria:
+
 - Tous les personnages utilisent la même logique de déplacement.
 - Tous les personnages utilisent la même logique de collision.
 - Tous les personnages utilisent la même logique de score.
 - Les différences entre personnages sont limitées au nom, à l'apparence, à l'arme et aux effets visuels ou sonores.
 
-Needs:
-- impl
-- utest
+Needs: impl, utest
 
 #### La consigne courante doit rester visible
 `req~ui.visible-instruction~1`
 
-Status: approved
-Priority: high
-Verification: manual-review
+Status: approved  
+Priority: high  
+Verification: manual-review  
 
 Le système doit afficher la consigne du niveau courant dans l'interface et la mettre à jour quand le niveau change.
 
-Rationale:
-Le joueur doit savoir immédiatement quoi trancher.
+Rationale: Le joueur doit savoir immédiatement quoi trancher.
 
 Acceptance criteria:
+
 - La consigne affichée correspond au niveau courant.
 - Le texte change quand un nouveau niveau démarre.
 
-Needs:
-- impl
+Needs: impl
 
 #### Les entrées clavier, tactiles et manette doivent être normalisées
 `req~input.normalized-state~1`
 
-Status: approved
-Priority: high
-Verification: test
+Status: approved  
+Priority: high  
+Verification: test  
 
 Le système doit traduire le clavier, le tactile et la manette vers un état d'entrée commun avec déplacement gauche, déplacement droit, attaque et pause.
 
-Rationale:
-Le moteur du jeu ne doit pas dépendre du périphérique utilisé.
+Rationale: Le moteur du jeu ne doit pas dépendre du périphérique utilisé.
 
 Acceptance criteria:
+
 - Les trois périphériques exposent la même forme d'état.
 - Les actions ponctuelles ne sont consommées qu'une fois par lecture.
 - La manette standard et les variantes génériques restent utilisables.
 
-Needs:
-- impl
-- utest
+Needs: impl, utest
 
 ## Change history
 

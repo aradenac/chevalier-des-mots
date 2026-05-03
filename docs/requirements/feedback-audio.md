@@ -3,50 +3,47 @@
 #### Le résultat d'une action doit s'afficher immédiatement
 `req~feedback.immediate-result~1`
 
-Status: approved
-Priority: high
-Verification: manual-review
+Status: approved  
+Priority: high  
+Verification: manual-review  
 
 Lorsque le joueur effectue une frappe correcte ou incorrecte, le système doit afficher un message de feedback dans l'interface pendant le traitement de cette frappe.
 
-Rationale:
-Le joueur doit comprendre sans délai l'effet de son action.
+Rationale: Le joueur doit comprendre sans délai l'effet de son action.
 
 Acceptance criteria:
+
 - Une bonne frappe affiche un feedback positif.
 - Une mauvaise frappe affiche un feedback négatif.
 - Le message contient moins de 80 caractères.
 
-Needs:
-- impl
+Needs: impl
 
 #### Une voix française doit être disponible avant l'accès au jeu
 
 `req~speech.french-voice-required~2`
 
-Status: approved
-Priority: high
-Verification: test
-Additional verification: manual-review
+Status: approved  
+Priority: high  
+Verification: test  
+Additional verification: manual-review  
 
 Au lancement du site, le système doit vérifier la disponibilité d'une voix française de synthèse vocale avant de permettre l'accès aux menus de jeu.
 
-Rationale:
-Les niveaux de dictée sont obligatoires dans la progression principale et le mode debug doit tester les niveaux dans les mêmes conditions techniques critiques que la campagne normale.
+Rationale: Les niveaux de dictée sont obligatoires dans la progression principale et le mode debug doit tester les niveaux dans les mêmes conditions techniques critiques que la campagne normale.
 
 Acceptance criteria:
-  * La vérification de disponibilité de l'API de synthèse vocale fait partie des premières opérations de lancement du site.
-  * Le système détecte au moins une voix dont la langue commence par `fr` ou dont le nom indique une voix française.
-  * Si les voix ne sont pas disponibles immédiatement, le système attend l'événement navigateur permettant de réévaluer la liste des voix avant de conclure à l'indisponibilité.
-  * Si aucune voix française n'est disponible après la phase de détection, le système affiche un message d'erreur lisible.
-  * Si aucune voix française n'est disponible, le système ne permet pas d'accéder au menu principal.
-  * Si aucune voix française n'est disponible, le système ne permet pas d'accéder au menu debug.
-  * Si une voix française est disponible, le système permet d'accéder au menu principal.
-  * L'indisponibilité de WebAudio pour les effets sonores ne rend pas cette exigence échouée.
 
-Needs:
-  * impl
-  * utest
+- La vérification de disponibilité de l'API de synthèse vocale fait partie des premières opérations de lancement du site.
+- Le système détecte au moins une voix dont la langue commence par `fr` ou dont le nom indique une voix française.
+- Si les voix ne sont pas disponibles immédiatement, le système attend l'événement navigateur permettant de réévaluer la liste des voix avant de conclure à l'indisponibilité.
+- Si aucune voix française n'est disponible après la phase de détection, le système affiche un message d'erreur lisible.
+- Si aucune voix française n'est disponible, le système ne permet pas d'accéder au menu principal.
+- Si aucune voix française n'est disponible, le système ne permet pas d'accéder au menu debug.
+- Si une voix française est disponible, le système permet d'accéder au menu principal.
+- L'indisponibilité de WebAudio pour les effets sonores ne rend pas cette exigence échouée.
+
+Needs: impl, utest
 
 ## Change history
 

@@ -66,23 +66,22 @@ Chaque exigence doit suivre ce gabarit :
 #### Titre court
 `req~domain.slug~1`
 
-Status: approved
-Priority: high|medium|low
-Verification: test|manual-review|inspection|command
+Status: approved  
+Priority: high|medium|low  
+Verification: test|manual-review|inspection|command  
+
 [Additional verification: manual-review|inspection|command]
 
 Énoncé normatif avec "doit" ou "ne doit pas".
 
-Rationale:
-Justification courte.
+Rationale: Justification courte.
 
 Acceptance criteria:
+
 - Critère observable 1.
 - Critère observable 2.
 
-Needs:
-- impl
-- utest
+Needs: impl, utest
 ```
 
 ## Cohérence entre Verification et Needs
