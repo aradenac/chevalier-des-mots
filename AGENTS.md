@@ -60,6 +60,8 @@ L'agent ne doit pas modifier :
 
 En cas d'écart détecté dans une exigence, l'agent doit produire un rapport de correction attendu plutôt que modifier l'exigence.
 
+Si le prompt commence par SPECSREWORK l'agent est autorisé à modifier les requirements dans `docs/requirements`.
+
 ## 4. Workflow d'implémentation
 
 Pour toute demande d'implémentation, l'agent doit commencer par une phase de cadrage fondée sur les exigences et la traçabilité.
