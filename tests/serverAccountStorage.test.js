@@ -1,4 +1,5 @@
 // [utest->req~account.server-database-storage~1]
+// [utest->req~stats.server-database-persistence~1]
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -15,10 +16,24 @@ describe("server account storage", () => {
     const database = createJsonAccountDatabase({ filePath });
 
     try {
-      await database.writeAccounts([{ id: "a", name: "Alice", highestCompletedLevel: 2 }]);
+      await database.writeAccounts([{
+        id: "a",
+        name: "Alice",
+        highestCompletedLevel: 2,
+        levelScores: {
+          "2": { levelNumber: 2, bestScore: 5, successfulHits: 5, errors: 0 }
+        }
+      }]);
 
       expect(await database.readAccounts()).toEqual([
-        { id: "a", name: "Alice", highestCompletedLevel: 2 }
+        {
+          id: "a",
+          name: "Alice",
+          highestCompletedLevel: 2,
+          levelScores: {
+            "2": { levelNumber: 2, bestScore: 5, successfulHits: 5, errors: 0 }
+          }
+        }
       ]);
       expect(JSON.parse(await readFile(filePath, "utf8")).accounts).toHaveLength(1);
     } finally {

@@ -68,6 +68,7 @@
         <div class="menuBtns">
           <button id="playBtn" class="bigBtn" type="button">Jouer</button>
           <button id="easyBtn" class="bigBtn secondary" type="button">Mode très facile</button>
+          <button id="championsBtn" class="bigBtn secondary" type="button">Tableau des champions</button>
           <button id="voiceBtn" class="bigBtn secondary" type="button">Activer la voix</button>
           <button id="chooseBtn" class="bigBtn secondary" type="button">Choisir un niveau</button>
           <button id="padBtn" class="bigBtn pink" type="button">Tester la manette</button>
@@ -91,6 +92,15 @@
         <h1 id="levelTitle">Bravo !</h1>
         <p id="levelText" class="subtitle">Niveau suivant</p>
         <button id="nextBtn" class="bigBtn" type="button">Continuer</button>
+      </div>
+    </div>
+
+    <div id="championsOverlay" class="overlay hidden">
+      <div class="panel">
+        <h1>Tableau des champions</h1>
+        <div id="championsList" class="championsList"></div>
+        <div id="playerStatsDetail" class="playerStatsDetail"></div>
+        <button id="championsBackBtn" class="bigBtn pink" type="button">Retour</button>
       </div>
     </div>
   </main>

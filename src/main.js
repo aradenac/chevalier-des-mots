@@ -5,6 +5,13 @@ import { clamp, createGameState, resetGameStateForLevel } from "./core/gameState
 import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLevelIndex } from "./core/progression.js";
 import { chooseNextItem, getMaxActiveWords, getSpawnDelay, getWordSpeedBase } from "./core/wordSpawner.js";
 import { findSwordCollision, isTargetHit } from "./core/collision.js";
+import {
+  calculateLevelScore,
+  createLevelStats,
+  recordLevelError,
+  recordSuccessfulHit,
+  shouldReturnToStatsAfterReplay
+} from "./core/statistics.js";
 import { createKeyboardInput } from "./adapters/keyboardInput.js";
 import { createTouchInput } from "./adapters/touchInput.js";
 import { createGamepadInput } from "./adapters/gamepadInput.js";
@@ -41,7 +48,12 @@ const resetAccountBtn = document.getElementById("resetAccountBtn");
 const deleteAccountBtn = document.getElementById("deleteAccountBtn");
 const playBtn = document.getElementById("playBtn");
 const easyBtn = document.getElementById("easyBtn");
+const championsBtn = document.getElementById("championsBtn");
 const chooseBtn = document.getElementById("chooseBtn");
+const championsOverlay = document.getElementById("championsOverlay");
+const championsList = document.getElementById("championsList");
+const playerStatsDetail = document.getElementById("playerStatsDetail");
+const championsBackBtn = document.getElementById("championsBackBtn");
 
 const initialState = createGameState({ knightX: window.innerWidth / 2 });
 let state = initialState.state;
@@ -57,6 +69,8 @@ let spawnTimer = initialState.spawnTimer;
 let wordIndex = initialState.wordIndex;
 let targetRetryQueue = initialState.targetRetryQueue;
 let selectedCharacterId = DEFAULT_CHARACTER_ID;
+let levelStats = createLevelStats();
+let replayContext = null;
 const narrationStatus = document.getElementById("narrationStatus");
 const services = {
   audio: createAudioService(),
@@ -223,6 +237,90 @@ function renderAccounts(snapshot = accountSession.getSnapshot()) {
   deleteAccountBtn.disabled = !hasAccount;
   if (snapshot.diagnostic) setAccountStatus(snapshot.diagnostic);
   if (!hasAccount && !snapshot.diagnostic) setAccountStatus("Choisis ou crée un compte avant de jouer.");
+}
+
+function renderChampionsDashboard() {
+  if (!championsList || !playerStatsDetail) return;
+  championsList.innerHTML = "";
+  playerStatsDetail.innerHTML = "";
+  // [impl->req~stats.champions-dashboard~1]
+  const champions = accountSession.getChampionsDashboard();
+  if (champions.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "accountEmpty";
+    empty.textContent = "Aucun joueur pour l'instant.";
+    championsList.appendChild(empty);
+    return;
+  }
+
+  champions.forEach(player => {
+    const button = document.createElement("button");
+    button.className = "championChoice";
+    button.type = "button";
+    button.dataset.accountId = player.id;
+    const name = document.createElement("span");
+    name.className = "championChoice__name";
+    name.textContent = player.name;
+    const progress = document.createElement("span");
+    progress.textContent = "Niveau atteint : " + player.highestCompletedLevel;
+    const score = document.createElement("span");
+    score.textContent = "Score global : " + player.globalScore;
+    button.appendChild(name);
+    button.appendChild(progress);
+    button.appendChild(score);
+    button.addEventListener("click", () => renderPlayerStatsDetail(player.id));
+    championsList.appendChild(button);
+  });
+}
+
+function renderPlayerStatsDetail(accountId) {
+  if (!playerStatsDetail) return;
+  playerStatsDetail.innerHTML = "";
+  // [impl->req~stats.player-detail~1]
+  const levels = accountSession.getPlayerStatsDetail(accountId, LEVELS);
+  if (levels.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "accountEmpty";
+    empty.textContent = "Aucun niveau accompli.";
+    playerStatsDetail.appendChild(empty);
+    return;
+  }
+
+  levels.forEach(level => {
+    const row = document.createElement("div");
+    row.className = "levelScoreRow";
+    const summary = document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = "Niveau " + level.levelNumber + " · " + level.title;
+    const score = document.createElement("span");
+    score.textContent = "Meilleur score : " + level.bestScore + " / 5";
+    summary.appendChild(title);
+    summary.appendChild(score);
+    const replayBtn = document.createElement("button");
+    replayBtn.className = "smallBtn secondary";
+    replayBtn.type = "button";
+    replayBtn.disabled = !level.replayAvailable;
+    replayBtn.textContent = "Rejouer";
+    replayBtn.addEventListener("click", () => replayCompletedLevel(accountId, level.levelNumber));
+    row.appendChild(summary);
+    row.appendChild(replayBtn);
+    playerStatsDetail.appendChild(row);
+  });
+}
+
+function openChampionsDashboard() {
+  renderChampionsDashboard();
+  startOverlay.classList.add("hidden");
+  selectOverlay.classList.add("hidden");
+  levelOverlay.classList.add("hidden");
+  championsOverlay.classList.remove("hidden");
+  state = "menu";
+}
+
+function closeChampionsDashboard() {
+  championsOverlay.classList.add("hidden");
+  startOverlay.classList.remove("hidden");
+  state = "menu";
 }
 
 async function createAccountFromInput() {
@@ -396,6 +494,8 @@ function strike() {
 
   const rect = hit.el.getBoundingClientRect();
   if (isTargetHit(hit)) {
+    // [impl->req~stats.level-error-counting~1]
+    levelStats = recordSuccessfulHit(levelStats);
     stars++;
     updateHud();
     // [impl->req~feedback.immediate-result~1]
@@ -407,6 +507,8 @@ function strike() {
     activeWords = activeWords.filter(w => w !== hit);
     if (hasWonLevel(stars, getLevel())) finishLevel();
   } else {
+    // [impl->req~stats.level-error-counting~1]
+    levelStats = recordLevelError(levelStats);
     bounceWord(hit);
     // [impl->req~game.no-blocking-punishment~1]
     setMessage(hit.data.feedbackKo);
@@ -419,30 +521,54 @@ function finishLevel() {
   state = "level";
   levelOverlay.classList.remove("hidden");
   resetWords();
-  void accountSession.saveCompletedLevel(current.id).then(snapshot => {
+  // [impl->req~stats.level-score-five-stars~1]
+  // [impl->req~stats.best-level-score~1]
+  // [impl->req~stats.global-score~1]
+  // [impl->req~stats.server-database-persistence~1]
+  void accountSession.saveCompletedLevelResult(current.id, levelStats).then(snapshot => {
     renderAccounts(snapshot);
+    if (replayContext) renderPlayerStatsDetail(replayContext.accountId);
   });
+  const scoreText = " Score : " + calculateLevelScore(levelStats) + " / 5.";
+  if (shouldReturnToStatsAfterReplay(replayContext)) {
+    document.getElementById("levelTitle").textContent = "Niveau rejoué !";
+    document.getElementById("levelText").textContent = current.title + " terminé." + scoreText;
+    document.getElementById("nextBtn").textContent = "Retour au tableau";
+    services.narration.speak("Bravo, niveau rejoué.");
+    return;
+  }
   if (isFinalLevel(currentLevelIndex, LEVELS.length)) {
     document.getElementById("levelTitle").textContent = "Victoire finale !";
-    document.getElementById("levelText").textContent = "Le chevalier maîtrise les 40 niveaux des mots.";
+    document.getElementById("levelText").textContent = "Le chevalier maîtrise les 40 niveaux des mots." + scoreText;
     document.getElementById("nextBtn").textContent = "Rejouer";
   } else {
     document.getElementById("levelTitle").textContent = "Bravo !";
     const world = getWorldForLevel(current.id);
-    document.getElementById("levelText").textContent = world.title + " terminé. Prochaine mission : " + LEVELS[currentLevelIndex + 1].title + " !";
+    document.getElementById("levelText").textContent = world.title + " terminé." + scoreText + " Prochaine mission : " + LEVELS[currentLevelIndex + 1].title + " !";
     document.getElementById("nextBtn").textContent = "Continuer";
   }
   services.narration.speak("Bravo, niveau terminé.");
 }
 
-function startGame(easy) {
+function startGame(easy, options = {}) {
   if (!hasActiveAccount()) {
     // [impl->req~account.start-selection~1]
     setAccountStatus("Choisis ou crée un compte avant de jouer.");
     return;
   }
-  currentLevelIndex = accountSession.getResumeLevelIndex();
+  if (options.replayFromStats) {
+    // [impl->req~stats.replay-completed-level~1]
+    replayContext = {
+      accountId: accountSession.getSnapshot().activeAccountId,
+      levelIndex: options.levelIndex
+    };
+    currentLevelIndex = selectLevelIndex(options.levelIndex, LEVELS.length);
+  } else {
+    replayContext = null;
+    currentLevelIndex = accountSession.getResumeLevelIndex();
+  }
   resetWords();
+  levelStats = createLevelStats();
   const nextState = resetGameStateForLevel({
     state,
     veryEasy,
@@ -468,6 +594,7 @@ function startGame(easy) {
   startOverlay.classList.add("hidden");
   selectOverlay.classList.add("hidden");
   levelOverlay.classList.add("hidden");
+  championsOverlay.classList.add("hidden");
   pauseBtn.classList.remove("paused");
   pauseBtn.textContent = "⏸";
   setMessage(getLevel().instruction);
@@ -478,21 +605,45 @@ function startGame(easy) {
 }
 
 function continueLevel() {
+  if (replayContext) {
+    // [impl->req~stats.replay-return-flow~1]
+    // [impl->req~stats.replay-does-not-regress-progression~1]
+    levelOverlay.classList.add("hidden");
+    championsOverlay.classList.remove("hidden");
+    renderChampionsDashboard();
+    renderPlayerStatsDetail(replayContext.accountId);
+    replayContext = null;
+    state = "menu";
+    return;
+  }
   currentLevelIndex = getNextLevelIndex(currentLevelIndex, LEVELS.length);
   startGame(veryEasy);
 }
 
 function returnToMenu() {
   resetWords();
+  replayContext = null;
   stars = 0;
   state = "menu";
   updateHud();
   pauseBtn.classList.remove("paused");
   pauseBtn.textContent = "⏸";
   levelOverlay.classList.add("hidden");
+  championsOverlay.classList.add("hidden");
   selectOverlay.classList.add("hidden");
   startOverlay.classList.remove("hidden");
   setMessage(getLevel().instruction);
+}
+
+function replayCompletedLevel(accountId, levelNumber) {
+  // [impl->req~stats.replay-completed-level~1]
+  accountSession.selectAccount(accountId);
+  renderAccounts();
+  championsOverlay.classList.add("hidden");
+  startGame(veryEasy, {
+    replayFromStats: true,
+    levelIndex: levelNumber - 1
+  });
 }
 
 function togglePause() {
@@ -557,7 +708,11 @@ function tick(time) {
       if (word.y > ground) {
         word.el.remove();
         activeWords = activeWords.filter(w => w !== word);
-        if (word.data.target) targetRetryQueue.push(word.data);
+        if (word.data.target) {
+          // [impl->req~stats.level-error-counting~1]
+          levelStats = recordLevelError(levelStats);
+          targetRetryQueue.push(word.data);
+        }
       }
     }
   }
@@ -604,6 +759,8 @@ pauseBtn.addEventListener("click", togglePause);
 voiceBtn.addEventListener("click", toggleNarration);
 playBtn.addEventListener("click", () => startGame(false));
 easyBtn.addEventListener("click", () => startGame(true));
+championsBtn.addEventListener("click", openChampionsDashboard);
+championsBackBtn.addEventListener("click", closeChampionsDashboard);
 createAccountBtn.addEventListener("click", () => { void createAccountFromInput(); });
 renameAccountBtn.addEventListener("click", () => { void renameActiveAccount(); });
 resetAccountBtn.addEventListener("click", () => { void resetActiveAccount(); });

@@ -28,8 +28,8 @@ describe("accounts progression model", () => {
     const accounts = addAccount(addAccount([], first), second);
 
     expect(accounts).toEqual([
-      { id: "child-a", name: "Alice", highestCompletedLevel: 0 },
-      { id: "child-b", name: "Bob", highestCompletedLevel: 0 }
+      { id: "child-a", name: "Alice", highestCompletedLevel: 0, levelScores: {} },
+      { id: "child-b", name: "Bob", highestCompletedLevel: 0, levelScores: {} }
     ]);
     expect(createAccountId({ now: 123, random: () => 0.5 })).toMatch(/^account-/);
   });
@@ -53,8 +53,8 @@ describe("accounts progression model", () => {
     ];
 
     expect(resetAccountProgress(accounts, "a")).toEqual([
-      { id: "a", name: "Alice", highestCompletedLevel: 0 },
-      { id: "b", name: "Bob", highestCompletedLevel: 3 }
+      { id: "a", name: "Alice", highestCompletedLevel: 0, levelScores: {} },
+      { id: "b", name: "Bob", highestCompletedLevel: 3, levelScores: {} }
     ]);
     expect(deleteAccount(accounts, "a")).toEqual([
       { id: "b", name: "Bob", highestCompletedLevel: 3 }

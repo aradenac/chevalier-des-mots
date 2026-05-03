@@ -1,4 +1,5 @@
 // [impl->req~account.server-database-storage~1]
+// [impl->req~stats.server-database-persistence~1]
 export function createServerAccountStorage({ baseUrl = "", fetchImpl = fetch } = {}) {
   const endpoint = baseUrl + "/api/accounts";
 

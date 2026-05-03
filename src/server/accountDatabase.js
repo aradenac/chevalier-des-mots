@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
 // [impl->req~account.server-database-storage~1]
+// [impl->req~stats.server-database-persistence~1]
 export function createJsonAccountDatabase({ filePath }) {
   async function readAccounts() {
     try {

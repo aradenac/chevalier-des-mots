@@ -1,4 +1,5 @@
 // [impl->req~account.server-database-storage~1]
+// [impl->req~stats.server-database-persistence~1]
 export function createAccountApiMiddleware({ database }) {
   return async function accountApiMiddleware(req, res, next) {
     if (!req.url?.startsWith("/api/accounts")) {

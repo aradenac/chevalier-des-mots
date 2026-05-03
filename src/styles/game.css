@@ -532,6 +532,40 @@ h1 {
   font-size: 13px;
   margin-top: 3px;
 }
+.championsList,
+.playerStatsDetail {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0;
+  text-align: left;
+}
+.championChoice,
+.levelScoreRow {
+  min-height: 72px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #f4fbff;
+  border: 3px solid #258dc7;
+  box-shadow: 0 4px 0 #258dc7;
+  font-weight: 900;
+}
+.championChoice span,
+.levelScoreRow span {
+  display: block;
+  margin-top: 4px;
+  color: #6849d8;
+  font-size: 14px;
+}
+.championChoice__name {
+  color: var(--ink) !important;
+  font-size: 20px !important;
+}
+.levelScoreRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
 .accountEditor {
   display: grid;
   gap: 6px;
