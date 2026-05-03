@@ -6,7 +6,7 @@ Le jeu est un jeu éducatif web en Vanilla JS. Le joueur incarne un chevalier qu
 
 ## Périmètre
 
-Le périmètre couvre le jeu jouable dans un navigateur, la documentation d'exigences consultable dans MkDocs et la validation locale de la traçabilité avec OpenFastTrace. Le projet prévoit des comptes locaux sans authentification et sans backend. Il ne prévoit pas de compte distant, pas de sauvegarde distante et pas de synchronisation réseau.
+Le périmètre couvre le jeu jouable dans un navigateur, la documentation d'exigences consultable dans MkDocs et la validation locale de la traçabilité avec OpenFastTrace. Le projet prévoit des comptes locaux sans authentification avec sauvegarde de progression en base de données serveur. Il ne prévoit pas de compte distant authentifié ni de synchronisation multi-appareil.
 
 ## Structure
 
@@ -35,7 +35,7 @@ La page [Audit de traçabilité](traceability-audit.md) donne une matrice manuel
 La page [Niveaux](levels.md) rassemble les exigences de structure, une vue pédagogique synthétique des mondes, le Monde 1 — Écuyer, le Monde 2 — Chevalier et une table non exhaustive pour faciliter la lecture sans dupliquer `src/data/levels.js`.
 Un Monde 3 — Maître chevalier pourra être spécifié dans une évolution ultérieure.
 La page [Interface et entrées](inputs-ui.md) couvre aussi le choix du personnage au démarrage en plus des entrées et de la consigne visible.
-La page [Comptes locaux et progression](accounts-progress.md) couvre les comptes stockés dans le navigateur, le niveau atteint et la reprise linéaire.
+La page [Comptes locaux et progression](accounts-progress.md) couvre les comptes sans authentification, le stockage serveur du niveau atteint et la reprise linéaire.
 
 ## Change history
 
@@ -47,3 +47,4 @@ La page [Comptes locaux et progression](accounts-progress.md) couvre les comptes
 | 2026-05-03 | 1.3.0 | 1.2.0 | docs/requirements/index.md | Added the requirement writing rules entry point | Make the spec authoring rules discoverable from the requirements overview |
 | 2026-05-03 | 1.5.0 | 1.2.0 | docs/requirements/index.md | Added the traceability audit entry point | Make bidirectional traceability review discoverable from the requirements overview |
 | 2026-05-03 | 1.7.0 | 1.2.0 | docs/requirements/index.md | Added local accounts and progression page to the overview | Keep the requirements index aligned with the new local progress specification |
+| 2026-05-03 | 1.8.0 | 1.2.0 | docs/requirements/index.md | Updated the account progression scope to server-side persistence | Keep the overview aligned with the corrected storage boundary |

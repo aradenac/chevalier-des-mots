@@ -2,8 +2,9 @@
 
 ## Périmètre
 
-Le système de comptes couvre uniquement des comptes locaux stockés dans le navigateur.
-Il ne couvre pas l'authentification, les mots de passe, les comptes distants, la synchronisation multi-appareil, ni les statistiques pédagogiques.
+Le système de comptes couvre uniquement des comptes joueur sans authentification.
+Il couvre une sauvegarde de progression dans une base de données côté serveur.
+Il ne couvre pas les mots de passe, les comptes distants authentifiés, la synchronisation multi-appareil, ni les statistiques pédagogiques.
 
 La progression sauvegardée couvre uniquement le niveau atteint.
 La progression est linéaire et ne couvre pas le rejeu libre des anciens niveaux.
@@ -32,32 +33,31 @@ Acceptance criteria:
 - Le système permet d'avoir plusieurs comptes locaux.
 - Chaque compte local possède un identifiant stable.
 - Chaque compte local possède un nom affichable.
-- Les comptes locaux sont conservés après fermeture et réouverture du navigateur.
+- Les comptes locaux sont conservés après fermeture et réouverture du navigateur grâce au stockage serveur.
 - Les comptes locaux ne nécessitent pas de mot de passe.
-- Les comptes locaux ne nécessitent pas de backend.
+- Les comptes locaux ne nécessitent pas d'authentification.
 
 Needs:
 - impl
 - utest
 
-#### Stockage en base de données locale
-`req~account.local-database-storage~1`
+#### Stockage en base de données serveur
+`req~account.server-database-storage~1`
 
 Status: approved
 Priority: high
 Verification: test
 
-Le système doit stocker les comptes locaux et leur progression dans une base de données locale côté navigateur.
+Le système doit stocker les comptes locaux et leur progression dans une base de données côté serveur.
 
 Rationale:
-La progression doit être persistante sans dépendre d'un serveur distant.
+La progression doit être persistante sans faire du navigateur la source de vérité.
 
 Acceptance criteria:
-- Le stockage utilise une base de données locale côté navigateur.
-- Le stockage utilise IndexedDB lorsque l'API `indexedDB` est disponible dans le navigateur.
-- Les données de compte sont relues après rechargement de la page.
-- Le stockage local ne nécessite aucune connexion réseau.
-- Le stockage local reste encapsulé dans un module dédié.
+- Le stockage utilise une base de données côté serveur.
+- Les données de compte sont relues depuis le serveur après rechargement de la page.
+- Le navigateur ne reste pas la source de vérité de la progression sauvegardée.
+- L'accès au stockage serveur reste encapsulé dans un module dédié.
 
 Needs:
 - impl
@@ -271,14 +271,14 @@ Status: approved
 Priority: medium
 Verification: test
 
-Si la base de données locale est indisponible ou échoue, le système doit conserver le jeu utilisable pendant la session courante.
+Si la base de données serveur est indisponible ou échoue, le système doit conserver le jeu utilisable pendant la session courante.
 
 Rationale:
-Le jeu doit rester jouable même si le navigateur bloque le stockage local ou si le stockage local échoue.
+Le jeu doit rester jouable même si le stockage serveur est temporairement indisponible.
 
 Acceptance criteria:
-- Une erreur de lecture du stockage local n'empêche pas l'affichage du jeu.
-- Une erreur d'écriture du stockage local n'arrête pas la partie en cours.
+- Une erreur de lecture du stockage serveur n'empêche pas l'affichage du jeu.
+- Une erreur d'écriture du stockage serveur n'arrête pas la partie en cours.
 - Le système peut afficher un diagnostic lisible.
 - La progression non sauvegardée peut rester disponible en mémoire pendant la session courante.
 
@@ -291,3 +291,4 @@ Needs:
 | Date | Spec version | Game version | Location | Modification | Justification |
 |---|---|---|---|---|---|
 | 2026-05-03 | 1.7.0 | 1.2.0 | docs/requirements/accounts-progress.md | Added local account and saved progression requirements without implementation | Specify local multi-player progression before code changes |
+| 2026-05-03 | 1.8.0 | 1.2.0 | docs/requirements/accounts-progress.md | Replaced browser-side database storage with server-side database storage | Correct the persistence boundary before implementation |
