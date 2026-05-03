@@ -5,8 +5,16 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 JAR="$ROOT/tools/openfasttrace/openfasttrace.jar"
 OUTDIR="$ROOT/build/traceability"
-REPORT="$OUTDIR/openfasttrace.txt"
+TEXT_REPORT="$OUTDIR/openfasttrace.txt"
+HTML_REPORT="$OUTDIR/openfasttrace.html"
 QUIET=0
+SCAN_PATHS=(
+  "$ROOT/docs"
+  "$ROOT/src"
+  "$ROOT/tests"
+  "$ROOT/tools"
+  "$ROOT/mkdocs.yml"
+)
 
 for arg in "$@"; do
   case "$arg" in
@@ -38,15 +46,33 @@ if [ "$missing" -ne 0 ]; then
   exit 1
 fi
 
+TEXT_CMD=(
+  java -jar "$JAR" trace
+  -o plain
+  -v all
+  -f "$TEXT_REPORT"
+  "${SCAN_PATHS[@]}"
+)
+
+HTML_CMD=(
+  java -jar "$JAR" trace
+  -o html
+  -v all
+  --details-section-display expand
+  -f "$HTML_REPORT"
+  "${SCAN_PATHS[@]}"
+)
+
+format_command() {
+  printf '%q ' "$@"
+}
+
 if [ "$QUIET" -eq 0 ]; then
   echo "Lancement OpenFastTrace..."
   echo "Dossiers scannés :"
-  echo "  - $ROOT/docs"
-  echo "  - $ROOT/src"
-  echo "  - $ROOT/tests"
-  echo "  - $ROOT/tools"
-  echo "  - $ROOT/mkdocs.yml"
-  echo "Rapport : $REPORT"
+  for path in "${SCAN_PATHS[@]}"; do
+    echo "  - $path"
+  done
 fi
 
 JAVA_STDOUT=/dev/stdout
@@ -56,28 +82,44 @@ if [ "$QUIET" -eq 1 ]; then
   JAVA_STDERR=/dev/null
 fi
 
-if java -jar "$JAR" trace -o plain -f "$REPORT" \
-  "$ROOT/docs" \
-  "$ROOT/src" \
-  "$ROOT/tests" \
-  "$ROOT/tools" \
-  "$ROOT/mkdocs.yml" \
-  >"$JAVA_STDOUT" 2>"$JAVA_STDERR"; then
+rm -f "$TEXT_REPORT" "$HTML_REPORT"
+
+if "${TEXT_CMD[@]}" >"$JAVA_STDOUT" 2>"$JAVA_STDERR"; then
+  :
+else
+  status=$?
+  if [ "$QUIET" -eq 0 ]; then
+    echo "Échec OpenFastTrace pendant la génération du rapport texte." >&2
+    echo "Commande texte : $(format_command "${TEXT_CMD[@]}")" >&2
+    if [ -f "$TEXT_REPORT" ]; then
+      echo "Rapport texte : $TEXT_REPORT" >&2
+      cat "$TEXT_REPORT" >&2
+    fi
+  fi
+  exit "$status"
+fi
+
+if "${HTML_CMD[@]}" >"$JAVA_STDOUT" 2>"$JAVA_STDERR"; then
   if [ "$QUIET" -eq 0 ]; then
     echo "Traçabilité validée par OpenFastTrace."
-    echo "Rapport : $REPORT"
-    if [ -f "$REPORT" ]; then
-      sed -n '1,120p' "$REPORT"
+    echo "Rapport texte : $TEXT_REPORT"
+    echo "Rapport HTML : $HTML_REPORT"
+    echo "Commande texte : $(format_command "${TEXT_CMD[@]}")"
+    echo "Commande HTML : $(format_command "${HTML_CMD[@]}")"
+    if [ -f "$TEXT_REPORT" ]; then
+      echo "Aperçu du rapport texte :"
+      sed -n '1,80p' "$TEXT_REPORT"
     fi
   fi
 else
   status=$?
   if [ "$QUIET" -eq 0 ]; then
-    echo "Échec OpenFastTrace." >&2
-    if [ -f "$REPORT" ]; then
-      echo "Rapport : $REPORT" >&2
-      cat "$REPORT" >&2
+    echo "Échec OpenFastTrace pendant la génération du rapport HTML." >&2
+    echo "Commande HTML : $(format_command "${HTML_CMD[@]}")" >&2
+    if [ -f "$HTML_REPORT" ]; then
+      echo "Rapport HTML : $HTML_REPORT" >&2
     fi
+    echo "Rapport texte : $TEXT_REPORT" >&2
   fi
   exit "$status"
 fi

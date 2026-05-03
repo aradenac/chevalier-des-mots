@@ -44,4 +44,22 @@ La validation de traçabilité doit passer par OpenFastTrace uniquement.
 
 ## Usage local
 
-Le script `tools/trace.sh` lance OpenFastTrace sur le dépôt et dépose un rapport texte dans `build/traceability/`.
+Le script `tools/trace.sh` lance OpenFastTrace sur le dépôt et dépose les rapports dans `build/traceability/`.
+
+Rapports générés :
+
+- `build/traceability/openfasttrace.txt` : rapport texte détaillé avec `trace -o plain -v all`;
+- `build/traceability/openfasttrace.html` : rapport HTML détaillé avec `trace -o html -v all --details-section-display expand`.
+
+La commande `npm run trace` affiche les chemins des rapports et les commandes OpenFastTrace exactes utilisées.
+
+## Formats vérifiés localement
+
+La version locale du JAR annonce les formats de trace suivants :
+
+- `plain`;
+- `html`;
+- `aspec`.
+
+La commande `convert` annonce aussi le format de sortie `specobject`.
+Le wrapper du projet ne convertit pas les rapports et ne réinterprète pas leur contenu.
