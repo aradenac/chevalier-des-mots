@@ -569,6 +569,7 @@ function strike() {
       levelStats,
       setMessage,
       speak: (text) => services.narration.speak(text),
+      playCannonSound: () => services.audio.playCannonSound(),
       playSweetSound,
       finishLevel,
       knightX

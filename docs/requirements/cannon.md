@@ -334,6 +334,32 @@ Acceptance criteria:
 
 Needs: impl, utest
 
+#### Le tir de cannon doit déclencher une animation visuelle et audio
+
+`req~cannon.animation~1`
+
+Status: approved  
+Priority: high  
+Verification: test  
+Additional verification: inspection  
+
+Le tir de cannon doit produire des effets sonores et visuels.
+
+Effet sonore : un bruit de tir de cannon, type canon à poudre, une déflagration.
+Effets visuels : une flamme sort de l'embouchure du cannon au moment du tir, de la fumée sors brièvement et disparaît, et le cannon vibre avec un recul au moment du tir.
+
+Rationale: les effets visuels et sonores améliorent l'expérience de jeu.
+
+Acceptance criteria:
+
+- Le cannon produit lors du tir un son de type tir de cannon à poudre, une déflagration.
+- Au moment du tir une animation de flamme sors de l'embouchure du cannon.
+- L'embouchure du canon laisse s'échapper de la fumée lors du tir, qui se disperse progressivement.
+- Le cannon vibre brièvement lors du tir.
+- Le cannon présente un mouvement de recul lors du tir tout en revenant à sa position de tir à la fin de l'animation
+
+Needs: impl, utest
+
 ## Change history
 
 | Date | Spec version | Game version | Location | Modification | Justification |

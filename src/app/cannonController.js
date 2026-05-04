@@ -66,6 +66,32 @@ export function createCannonController({
     setTimeout(() => shot.remove(), success ? 420 : 840);
   }
 
+  function animateCannonMuzzle() {
+    if (!game || !cannonRig) return;
+    const rigRect = cannonRig.getBoundingClientRect();
+    const flame = document.createElement("div");
+    flame.className = "cannonMuzzle cannonMuzzle--flame";
+    flame.style.left = rigRect.left + 168 + "px";
+    flame.style.top = rigRect.top + 50 + "px";
+    const smoke = document.createElement("div");
+    smoke.className = "cannonMuzzle cannonMuzzle--smoke";
+    smoke.style.left = rigRect.left + 168 + "px";
+    smoke.style.top = rigRect.top + 50 + "px";
+    game.appendChild(flame);
+    game.appendChild(smoke);
+    setTimeout(() => flame.remove(), 180);
+    setTimeout(() => smoke.remove(), 520);
+  }
+
+  function animateCannonRecoil() {
+    if (!cannonRig?.classList) return;
+    cannonRig.classList.remove("is-firing");
+    void cannonRig.offsetWidth;
+    // [impl->req~cannon.animation~1]
+    cannonRig.classList.add("is-firing");
+    setTimeout(() => cannonRig.classList.remove("is-firing"), 220);
+  }
+
   function render(knightX) {
     if (!currentCannonState || !cannonPrompt) return;
     clearElement(cannonPrompt);
@@ -106,6 +132,7 @@ export function createCannonController({
     levelStats,
     setMessage,
     speak,
+    playCannonSound,
     playSweetSound,
     finishLevel,
     knightX
@@ -130,6 +157,10 @@ export function createCannonController({
       ? cannonPrompt.querySelector('[data-hole-index="' + outcome.holeIndex + '"]')
       : null;
     const targetRect = holeElement?.getBoundingClientRect() || null;
+    // [impl->req~cannon.animation~1]
+    playCannonSound?.();
+    animateCannonMuzzle();
+    animateCannonRecoil();
     if (outcome.type === "success") {
       const nextLevelStats = {
         levelType: "cannon",

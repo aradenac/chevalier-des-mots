@@ -1,3 +1,4 @@
+// [utest->req~cannon.animation~1]
 import { describe, expect, it, vi } from "vitest";
 import { createAudioService } from "../src/adapters/audioService.js";
 
@@ -5,8 +6,18 @@ function createFakeContext() {
   const context = {
     state: "suspended",
     currentTime: 10,
+    sampleRate: 44100,
     destination: {},
     resume: vi.fn(),
+    createBuffer: vi.fn((_channels, length) => ({
+      getChannelData: vi.fn(() => new Float32Array(length))
+    })),
+    createBufferSource: vi.fn(() => ({
+      buffer: null,
+      connect: vi.fn((node) => node),
+      start: vi.fn(),
+      stop: vi.fn()
+    })),
     createOscillator: vi.fn(() => ({
       type: "",
       frequency: { setValueAtTime: vi.fn(), exponentialRampToValueAtTime: vi.fn() },
@@ -41,8 +52,10 @@ describe("audioService", () => {
     expect(service.ensureReady()).toBe(ctx);
     expect(service.playSweetSound()).toBe(true);
     expect(service.playSwordSound()).toBe(true);
+    expect(service.playCannonSound()).toBe(true);
     expect(ctx.resume).toHaveBeenCalled();
     expect(ctx.createOscillator).toHaveBeenCalled();
+    expect(ctx.createBufferSource).toHaveBeenCalled();
   });
 
   it("ignore proprement quand WebAudio est indisponible", () => {
@@ -52,5 +65,6 @@ describe("audioService", () => {
     expect(service.ensureReady()).toBeNull();
     expect(service.playSweetSound()).toBe(false);
     expect(service.playSwordSound()).toBe(false);
+    expect(service.playCannonSound()).toBe(false);
   });
 });

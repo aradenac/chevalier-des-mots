@@ -34,6 +34,33 @@ function createSwordSound(context, now) {
   osc.stop(now + 0.15);
 }
 
+function createCannonSound(context, now) {
+  createOscillatorSound(context, now, [82.41, 123.47, 164.81], {
+    type: "sawtooth",
+    gainLevel: 0.18,
+    attack: 0.005,
+    release: 0.28,
+    spread: 0.02
+  });
+
+  const noiseBuffer = context.createBuffer(1, Math.max(1, Math.floor(context.sampleRate * 0.18)), context.sampleRate);
+  const channel = noiseBuffer.getChannelData(0);
+  for (let i = 0; i < channel.length; i += 1) {
+    channel[i] = (Math.random() * 2 - 1) * (1 - i / channel.length);
+  }
+  const noise = context.createBufferSource();
+  const filter = context.createBiquadFilter();
+  const gain = context.createGain();
+  noise.buffer = noiseBuffer;
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(780, now);
+  gain.gain.setValueAtTime(0.12, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+  noise.connect(filter).connect(gain).connect(context.destination);
+  noise.start(now);
+  noise.stop(now + 0.24);
+}
+
 export function createAudioService({ AudioContextCtor = typeof window !== "undefined" ? (window.AudioContext || window.webkitAudioContext) : null } = {}) {
   let context = null;
   const available = Boolean(AudioContextCtor);
@@ -77,6 +104,13 @@ export function createAudioService({ AudioContextCtor = typeof window !== "undef
       const ctx = ensureContext();
       if (!ctx) return false;
       createSwordSound(ctx, ctx.currentTime);
+      return true;
+    },
+    // [impl->req~cannon.animation~1]
+    playCannonSound() {
+      const ctx = ensureContext();
+      if (!ctx) return false;
+      createCannonSound(ctx, ctx.currentTime);
       return true;
     }
   };
