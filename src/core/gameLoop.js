@@ -40,8 +40,11 @@ export function advancePlayingLevelFrame({
   let nextActiveWords = activeWords;
   const limit = getMaxActiveWords(level, veryEasy);
   if (nextSpawnTimer <= 0 && nextActiveWords.length < limit) {
-    spawnWord();
-    nextSpawnTimer = getSpawnDelay(level, veryEasy);
+    const spawnResult = spawnWord();
+    if (spawnResult?.spawned) {
+      nextActiveWords = spawnResult.activeWords;
+      nextSpawnTimer = getSpawnDelay(level, veryEasy);
+    }
   }
 
   const ground = windowHeight - 78;
@@ -51,6 +54,7 @@ export function advancePlayingLevelFrame({
       word.bouncing -= dt;
       word.speed += 420 * dt;
     }
+    // [impl->req~game.slicing-word-animation~1]
     word.el.style.transform = "translate(-50%, -50%) translate(" + word.x + "px, " + word.y + "px)";
     if (word.y > ground) {
       word.el.remove();

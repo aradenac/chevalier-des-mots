@@ -495,7 +495,7 @@ function spawnWord() {
   activeWords = next.activeWords;
   targetRetryQueue = next.targetRetryQueue;
   wordIndex = next.wordIndex;
-  return next.spawned;
+  return next;
 }
 
 function updateAttackButtons() {

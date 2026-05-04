@@ -77,6 +77,7 @@ export function createSlicingController({
       activeWords: activeWords.concat({
         el,
         data: result.item,
+        // [impl->req~game.slicing-word-animation~1]
         x: 90 + Math.random() * Math.max(140, width - 180),
         y: -46,
         speed: speedBase + Math.random() * (veryEasy ? 12 : 24),

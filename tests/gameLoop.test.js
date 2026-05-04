@@ -1,6 +1,7 @@
 // [utest->req~dictation.no-time-pressure~1]
 // [utest->req~dictation.main-progression~2]
 // [utest->req~cannon.free-horizontal-aim~1]
+// [utest->req~game.slicing-word-animation~1]
 import { describe, expect, it, vi } from "vitest";
 import { advancePlayingLevelFrame } from "../src/core/gameLoop.js";
 import { LEVELS } from "../src/data/levels.js";
@@ -119,7 +120,10 @@ describe("game loop", () => {
 
     const dictationLevel = LEVELS[dictationIndex];
     const slicingLevel = LEVELS[slicingIndex];
-    const spawnWord = vi.fn();
+    const spawnWord = vi.fn(() => ({
+      spawned: true,
+      activeWords: []
+    }));
     const onTargetMissed = vi.fn();
 
     const dictationFrame = advancePlayingLevelFrame({
@@ -159,5 +163,110 @@ describe("game loop", () => {
 
     expect(spawnWord).toHaveBeenCalledTimes(1);
     expect(slicingFrame.spawnTimer).toBeGreaterThan(0);
+  });
+
+  it("attribue une position visuelle explicite dès la première frame puis la met à jour aux frames suivantes", () => {
+    const slicingLevel = LEVELS.find(level => level.type === "slicing");
+    const spawnWord = vi.fn();
+    const onTargetMissed = vi.fn();
+    const word = createWord({ y: -46, speed: 120, target: true });
+
+    const firstFrame = advancePlayingLevelFrame({
+      level: slicingLevel,
+      dt: 0.1,
+      moveLeft: false,
+      moveRight: false,
+      knightX: 300,
+      windowWidth: 1024,
+      windowHeight: 768,
+      spawnTimer: 10,
+      activeWords: [word],
+      veryEasy: false,
+      clamp,
+      spawnWord,
+      onTargetMissed
+    });
+
+    expect(word.el.style.transform).toBe("translate(-50%, -50%) translate(120px, -34px)");
+
+    const secondFrame = advancePlayingLevelFrame({
+      level: slicingLevel,
+      dt: 0.1,
+      moveLeft: false,
+      moveRight: false,
+      knightX: firstFrame.knightX,
+      windowWidth: 1024,
+      windowHeight: 768,
+      spawnTimer: firstFrame.spawnTimer,
+      activeWords: firstFrame.activeWords,
+      veryEasy: false,
+      clamp,
+      spawnWord,
+      onTargetMissed
+    });
+
+    expect(word.el.style.transform).toBe("translate(-50%, -50%) translate(120px, -22px)");
+    expect(secondFrame.activeWords).toEqual([word]);
+  });
+
+  it("repositionne chaque mot actif avec la même logique quand plusieurs mots sont présents", () => {
+    const slicingLevel = LEVELS.find(level => level.type === "slicing");
+    const spawnWord = vi.fn();
+    const onTargetMissed = vi.fn();
+    const firstWord = createWord({ y: 10, speed: 100, target: true });
+    const secondWord = createWord({ y: 40, speed: 60, target: false });
+    secondWord.x = 260;
+
+    const frame = advancePlayingLevelFrame({
+      level: slicingLevel,
+      dt: 0.2,
+      moveLeft: false,
+      moveRight: false,
+      knightX: 300,
+      windowWidth: 1024,
+      windowHeight: 768,
+      spawnTimer: 10,
+      activeWords: [firstWord, secondWord],
+      veryEasy: false,
+      clamp,
+      spawnWord,
+      onTargetMissed
+    });
+
+    expect(firstWord.el.style.transform).toBe("translate(-50%, -50%) translate(120px, 30px)");
+    expect(secondWord.el.style.transform).toBe("translate(-50%, -50%) translate(260px, 52px)");
+    expect(frame.activeWords).toEqual([firstWord, secondWord]);
+  });
+
+  it("garde dans l'état les mots générés pendant la frame pour qu'ils soient animés ensuite", () => {
+    const slicingLevel = LEVELS.find(level => level.type === "slicing");
+    const onTargetMissed = vi.fn();
+    const spawnedWord = createWord({ y: -46, speed: 80, target: true });
+    spawnedWord.x = 320;
+    const spawnWord = vi.fn(() => ({
+      spawned: true,
+      activeWords: [spawnedWord]
+    }));
+
+    const frame = advancePlayingLevelFrame({
+      level: slicingLevel,
+      dt: 0.1,
+      moveLeft: false,
+      moveRight: false,
+      knightX: 300,
+      windowWidth: 1024,
+      windowHeight: 768,
+      spawnTimer: 0,
+      activeWords: [],
+      veryEasy: false,
+      clamp,
+      spawnWord,
+      onTargetMissed
+    });
+
+    expect(spawnWord).toHaveBeenCalledTimes(1);
+    expect(frame.activeWords).toEqual([spawnedWord]);
+    expect(spawnedWord.el.style.transform).toBe("translate(-50%, -50%) translate(320px, -38px)");
+    expect(frame.spawnTimer).toBeGreaterThan(0);
   });
 });

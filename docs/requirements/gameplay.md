@@ -19,6 +19,29 @@ Acceptance criteria:
 
 Needs: impl, utest
 
+#### Les mots de tranchage doivent être positionnés et animés
+`req~game.slicing-word-animation~1`
+
+Status: approved  
+Priority: high  
+Verification: test  
+
+Pendant un niveau de tranchage actif, le système doit positionner et déplacer visuellement chaque mot actif dans l’arène.
+
+Rationale: La mécanique de tranchage exige que les mots soient visibles, mobiles et atteignables par le joueur.
+
+Acceptance criteria:
+
+- Lorsqu’un mot est généré, il reçoit une position horizontale initiale dans l’arène.
+- Chaque mot actif reçoit une position visuelle explicite au plus tard pendant la première frame suivant sa création.
+- Chaque mot actif est repositionné visuellement à chaque frame tant qu’il reste dans l’arène.
+- Plusieurs mots générés successivement suivent tous la même logique de déplacement.
+- Un mot actif ne doit pas rester affiché à la position CSS par défaut de son élément DOM.
+- Après une transition dictée vers tranchage, les mots générés dans le niveau de tranchage sont positionnés et animés.
+- En mode debug, les niveaux de tranchage respectent les mêmes règles de positionnement et d’animation.
+
+Needs: impl, utest
+
 #### Une erreur ne doit pas bloquer la partie
 `req~game.no-blocking-punishment~1`
 
