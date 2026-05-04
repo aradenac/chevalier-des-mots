@@ -114,7 +114,10 @@ export function createMusicService({
   AudioContextCtor = typeof window !== "undefined" ? (window.AudioContext || window.webkitAudioContext) : null,
   storage = typeof localStorage !== "undefined" ? localStorage : null,
   tracks = MUSIC_TRACKS,
-  scheduler = { setInterval, clearInterval },
+  scheduler = {
+    setInterval: (callback, delay) => globalThis.setInterval(callback, delay),
+    clearInterval: (timerId) => globalThis.clearInterval(timerId)
+  },
   logger = console
 } = {}) {
   let context = null;

@@ -1329,9 +1329,9 @@ musicToggleBtn?.addEventListener("click", () => {
   syncMusicContext();
 });
 musicVolume?.addEventListener("input", (event) => {
-  ensureAudio();
+  services.audio.ensureReady();
+  services.music.ensureReady();
   services.music.setVolume(Number(event.target.value) / 100);
-  syncMusicContext();
 });
 playBtn.addEventListener("click", () => startGame(false));
 easyBtn.addEventListener("click", () => startGame(true));

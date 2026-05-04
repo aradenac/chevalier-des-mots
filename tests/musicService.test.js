@@ -34,7 +34,7 @@ function createFakeContext() {
 }
 
 describe("music service", () => {
-  it("sélectionne une piste locale générée et ne redémarre pas inutilement la même", () => {
+  it("sélectionne une piste locale générée, garde une piste active et ne redémarre pas inutilement la même", () => {
     const ctx = createFakeContext();
     const setIntervalMock = vi.fn(() => 12);
     const clearIntervalMock = vi.fn();
@@ -53,6 +53,26 @@ describe("music service", () => {
     expect(setIntervalMock).toHaveBeenCalledTimes(1);
     expect(service.playContext("cannon")).toBe(true);
     expect(clearIntervalMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("arrête une piste active en annulant correctement l'intervalle", () => {
+    const ctx = createFakeContext();
+    const clearIntervalMock = vi.fn();
+    const service = createMusicService({
+      AudioContextCtor: vi.fn(() => ctx),
+      scheduler: {
+        setInterval: vi.fn(() => 42),
+        clearInterval: clearIntervalMock
+      }
+    });
+
+    expect(service.playContext("menu")).toBe(true);
+    expect(service.getCurrentTrackKey()).toBe("menu");
+
+    service.stop();
+
+    expect(clearIntervalMock).toHaveBeenCalledWith(42);
+    expect(service.getCurrentTrackKey()).toBeNull();
   });
 
   it("expose des pistes générées localement remplaçables par contexte", () => {
@@ -114,6 +134,32 @@ describe("music service", () => {
     });
     expect(failingService.playContext("menu")).toBe(false);
   });
+
+  it("utilise un scheduler par défaut sûr via des wrappers globalThis", () => {
+    const ctx = createFakeContext();
+    const originalSetInterval = globalThis.setInterval;
+    const originalClearInterval = globalThis.clearInterval;
+    const setIntervalSpy = vi.fn(() => 77);
+    const clearIntervalSpy = vi.fn();
+
+    globalThis.setInterval = setIntervalSpy;
+    globalThis.clearInterval = clearIntervalSpy;
+
+    try {
+      const service = createMusicService({
+        AudioContextCtor: vi.fn(() => ctx)
+      });
+
+      expect(() => service.playContext("menu")).not.toThrow();
+      expect(setIntervalSpy).toHaveBeenCalledTimes(1);
+
+      service.stop();
+      expect(clearIntervalSpy).toHaveBeenCalledWith(77);
+    } finally {
+      globalThis.setInterval = originalSetInterval;
+      globalThis.clearInterval = originalClearInterval;
+    }
+  });
 });
 
 describe("music controls UI", () => {
@@ -123,5 +169,14 @@ describe("music controls UI", () => {
     expect(html).toContain('id="musicControls"');
     expect(html).toContain('id="musicToggleBtn"');
     expect(html).toContain('id="musicVolume"');
+  });
+
+  it("ne resynchronise pas le contexte musical pendant le glissement du curseur", () => {
+    const mainSource = readFileSync(new URL("../src/main.js", import.meta.url), "utf8");
+
+    expect(mainSource).toContain('musicVolume?.addEventListener("input"');
+    expect(mainSource).toContain('services.music.setVolume(Number(event.target.value) / 100);');
+    expect(mainSource).not.toContain('musicVolume?.addEventListener("input", (event) => {\n  ensureAudio();');
+    expect(mainSource).not.toContain('musicVolume?.addEventListener("input", (event) => {\n  services.audio.ensureReady();\n  services.music.ensureReady();\n  services.music.setVolume(Number(event.target.value) / 100);\n  syncMusicContext();');
   });
 });
