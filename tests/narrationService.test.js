@@ -1,4 +1,5 @@
 // [utest->req~speech.french-voice-required~2]
+// [utest->req~speech.french-voice-required~3]
 import { describe, expect, it, vi } from "vitest";
 import { createNarrationService } from "../src/adapters/narrationService.js";
 import { SPEECH_UNAVAILABLE_MESSAGE } from "../src/diagnostics/speechDiagnostics.js";
@@ -129,7 +130,7 @@ describe("narrationService", () => {
     expect(onDiagnostic).toHaveBeenCalledWith(SPEECH_UNAVAILABLE_MESSAGE);
   });
 
-  it("n'émet rien quand la narration est désactivée", () => {
+  it("ignore une ancienne préférence stockée qui tentait de désactiver la voix", () => {
     const speech = createSpeechApi({ voices: [] });
     const storage = createStorage({ chevalierNarration: "off" });
     const onDiagnostic = vi.fn();
@@ -142,12 +143,13 @@ describe("narrationService", () => {
 
     service.init();
 
-    expect(service.isEnabled()).toBe(false);
-    expect(service.getDiagnosticMessage()).toBeNull();
-    expect(onDiagnostic).not.toHaveBeenCalled();
+    expect(service.isEnabled()).toBe(true);
+    expect(service.getDiagnosticMessage()).toBe(SPEECH_UNAVAILABLE_MESSAGE);
+    expect(storage.getItem).not.toHaveBeenCalled();
+    expect(onDiagnostic).toHaveBeenCalledWith(SPEECH_UNAVAILABLE_MESSAGE);
   });
 
-  it("parle quand la narration est activée", async () => {
+  it("refuse toute tentative de désactivation utilisateur et continue de parler", async () => {
     const speech = createSpeechApi({ voices: [{ name: "French", lang: "fr-FR" }] });
     const storage = createStorage({ chevalierNarration: "off" });
     const service = createNarrationService({
@@ -158,11 +160,13 @@ describe("narrationService", () => {
 
     vi.useFakeTimers();
     service.init();
-    service.setEnabled(true);
+    expect(service.setEnabled(false)).toBe(true);
     service.speak("Bonjour chevalier.");
     await vi.runAllTimersAsync();
     vi.useRealTimers();
 
+    expect(service.isEnabled()).toBe(true);
+    expect(storage.setItem).not.toHaveBeenCalled();
     expect(speech.cancel).toHaveBeenCalled();
     expect(speech.speak).toHaveBeenCalled();
   });

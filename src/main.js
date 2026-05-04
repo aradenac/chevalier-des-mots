@@ -275,7 +275,7 @@ function updateNarrationButton() {
   if (!voiceBtn) return;
   voiceBtn.disabled = !services.narration.isAvailable();
   voiceBtn.textContent = services.narration.getButtonLabel();
-  voiceBtn.setAttribute("aria-label", services.narration.isEnabled() ? "Désactiver la narration vocale" : "Activer la narration vocale");
+  voiceBtn.setAttribute("aria-label", "Tester la voix française");
 }
 
 function updateMusicControls() {
@@ -342,29 +342,10 @@ function playSwordSound() {
   services.audio.playSwordSound();
 }
 
-function enableNarration() {
+window.testNarration = function() {
   services.narration.setEnabled(true);
   updateNarrationButton();
   setNarrationStatus(services.narration.getDiagnosticMessage());
-  services.narration.speak("Voix activée.");
-}
-
-function disableNarration() {
-  services.narration.setEnabled(false);
-  updateNarrationButton();
-  setNarrationStatus(services.narration.getDiagnosticMessage());
-}
-
-function toggleNarration() {
-  if (services.narration.isEnabled()) {
-    disableNarration();
-  } else {
-    enableNarration();
-  }
-}
-
-window.testNarration = function() {
-  enableNarration();
   services.narration.speak("Bonjour chevalier. La voix fonctionne.");
 };
 
@@ -897,7 +878,10 @@ touchInput.bindStrike(touchStrikeBtn);
 strikeBtnTop.addEventListener("click", strike);
 menuBtn.addEventListener("click", returnToMenu);
 pauseBtn.addEventListener("click", togglePause);
-voiceBtn.addEventListener("click", toggleNarration);
+voiceBtn.addEventListener("click", () => {
+  ensureAudio();
+  window.testNarration();
+});
 musicToggleBtn?.addEventListener("click", () => {
   ensureAudio();
   services.music.setEnabled(!services.music.isEnabled());

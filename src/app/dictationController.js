@@ -44,6 +44,7 @@ export function createDictationController({
     dictationFeedback.textContent = "";
     validatedDictationState = null;
     // [impl->req~dictation.start-audio~1]
+    // [impl->req~speech.french-voice-required~3]
     speakCurrentDictation();
     focusPrompt();
   }
@@ -91,6 +92,7 @@ export function createDictationController({
       dictationFeedback.textContent = "";
       validatedDictationState = null;
       currentDictation = pickDictation(onContinue.getLevel());
+      // [impl->req~speech.french-voice-required~3]
       speakCurrentDictation();
     });
 

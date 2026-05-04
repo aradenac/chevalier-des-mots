@@ -1,6 +1,7 @@
 // [utest->req~dictation.validation-and-clear-controls~1]
 // [utest->req~dictation.retry-or-continue~1]
 // [utest->req~dictation.statistics~1]
+// [utest->req~speech.french-voice-required~3]
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createDictationController } from "../../src/app/dictationController.js";
 import { createValidatedDictationState } from "../../src/core/dictationFlow.js";

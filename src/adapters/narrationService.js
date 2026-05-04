@@ -1,4 +1,5 @@
 // [impl->req~speech.french-voice-required~2]
+// [impl->req~speech.french-voice-required~3]
 import { getSpeechDiagnostics, SPEECH_UNAVAILABLE_MESSAGE } from "../diagnostics/speechDiagnostics.js";
 
 function isFrenchVoice(voice) {
@@ -17,7 +18,6 @@ function pickFrenchVoice(voices) {
 export function createNarrationService({
   speechSynthesis = typeof window !== "undefined" ? window.speechSynthesis : null,
   SpeechSynthesisUtterance = typeof window !== "undefined" ? window.SpeechSynthesisUtterance : null,
-  storage = typeof localStorage !== "undefined" ? localStorage : null,
   onDiagnostic = () => {},
   onStateChange = () => {},
   onSpeakStateChange = () => {},
@@ -63,16 +63,6 @@ export function createNarrationService({
     };
   }
 
-  function loadPreference() {
-    try {
-      enabled = storage ? storage.getItem("chevalierNarration") !== "off" : true;
-    } catch {
-      enabled = true;
-    }
-    onStateChange(getState());
-    return enabled;
-  }
-
   function loadVoices() {
     if (!available) {
       voices = [];
@@ -100,7 +90,6 @@ export function createNarrationService({
   }
 
   function init() {
-    loadPreference();
     logger.log("[Narration] disponible:", available);
     logger.log("[Narration] activée:", enabled);
     logger.log("[Narration] déverrouillée:", unlocked);
@@ -174,30 +163,23 @@ export function createNarrationService({
     return pendingVoiceDetection;
   }
 
-  function setEnabled(nextEnabled) {
-    enabled = Boolean(nextEnabled);
-    try {
-      if (storage) storage.setItem("chevalierNarration", enabled ? "on" : "off");
-    } catch {}
-    if (!enabled) {
-      speechSynthesis?.cancel?.();
-      clearDiagnostic();
-    } else {
+  function setEnabled() {
+    enabled = true;
+    if (available && !voicesLoaded) {
       loadVoices();
-      if (available && !voicesLoaded) {
-        loadVoices();
-      }
-      if (!available || !hasFrenchVoiceInMemory()) {
-        emitDiagnostic(SPEECH_UNAVAILABLE_MESSAGE);
-      }
     }
-    logger.log("[Narration] activée:", enabled);
+    if (!available || !hasFrenchVoiceInMemory()) {
+      emitDiagnostic(SPEECH_UNAVAILABLE_MESSAGE);
+    } else {
+      clearDiagnostic();
+    }
+    logger.log("[Narration] activée:", true);
     onStateChange(getState());
-    return enabled;
+    return true;
   }
 
   function toggleEnabled() {
-    return setEnabled(!enabled);
+    return setEnabled(true);
   }
 
   function speak(text, options = {}) {
@@ -270,7 +252,7 @@ export function createNarrationService({
 
   function getButtonLabel() {
     if (!available) return "Voix indisponible";
-    return enabled ? "Désactiver la voix" : "Activer la voix";
+    return "Tester la voix";
   }
 
   function getDiagnosticMessage() {
