@@ -45,10 +45,13 @@ describe("cannon presentation", () => {
   it("garde le personnage visible et positionne le canon avec lui", () => {
     const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
     const mainSource = readFileSync(new URL("../src/main.js", import.meta.url), "utf8");
+    const cannonSource = readFileSync(new URL("../src/app/cannonController.js", import.meta.url), "utf8");
+    const flowSource = readFileSync(new URL("../src/app/levelFlow.js", import.meta.url), "utf8");
 
     expect(html).toContain('id="knight"');
     expect(html).toContain('id="cannonRig"');
-    expect(mainSource).toContain('selectedCharacterId = getLaunchCharacterId({ launchContext, selectedCharacterId })');
-    expect(mainSource).toContain('cannonRig.style.left = knightX + "px"');
+    expect(mainSource).toContain("characterController.setSelectedCharacterId(startPlan.launchCharacterId);");
+    expect(flowSource).toContain("const launchCharacterId = getLaunchCharacterId({");
+    expect(cannonSource).toContain('cannonRig.style.left = knightX + "px"');
   });
 });

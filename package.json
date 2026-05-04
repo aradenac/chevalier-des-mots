@@ -4,14 +4,18 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run",
-    "test:report": "mkdir -p build/test-results && vitest run --reporter=default --reporter=junit --outputFile.junit=build/test-results/vitest-junit.xml",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "vitest run --config vitest.unit.config.js",
+    "test:integration": "vitest run --config vitest.integration.config.js",
+    "test:coverage": "vitest run --config vitest.config.js --coverage",
+    "test:report": "mkdir -p build/test-results && vitest run --config vitest.config.js --reporter=default --reporter=junit --outputFile.junit=build/test-results/vitest-junit.xml",
     "docs:serve": "mkdocs serve",
     "docs:build": "mkdocs build",
     "trace": "bash tools/trace.sh",
     "verify": "bash tools/verify.sh"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.9",
     "vite": "^5.4.0",
     "vitest": "^2.1.0"
   }

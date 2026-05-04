@@ -2,7 +2,7 @@ import { LEVELS } from "./data/levels.js";
 import { getWorldForLevel } from "./data/worlds.js";
 import { DEFAULT_CHARACTER_ID, getCharacterById, getCharacters } from "./data/characters.js";
 import { clamp, createGameState, resetGameStateForLevel } from "./core/gameState.js";
-import { getCurrentLevel, getNextLevelIndex, hasWonLevel, isFinalLevel, selectLevelIndex } from "./core/progression.js";
+import { getCurrentLevel, hasWonLevel, selectLevelIndex } from "./core/progression.js";
 import { chooseNextItem, getWordSpeedBase } from "./core/wordSpawner.js";
 import { advancePlayingLevelFrame, shouldRunSlicingLoop } from "./core/gameLoop.js";
 import { findSwordCollision, isTargetHit } from "./core/collision.js";
@@ -20,21 +20,14 @@ import {
   canAccessDebugMenu,
   createDebugMaxScoreStats,
   createDebugLaunchContext,
-  createDebugSequenceEndContext,
-  createNextDebugLaunchContext,
-  getDebugChainContinueAction,
-  getLaunchCharacterId,
-  getPostLevelAction,
   matchesDebugMaxScoreShortcut,
-  normalizeDebugShortcutConfig,
-  shouldPersistLevelResult
+  normalizeDebugShortcutConfig
 } from "./core/debugMode.js";
 import {
   calculateLevelScore,
   createLevelStats,
   recordLevelError,
-  recordSuccessfulHit,
-  shouldReturnToStatsAfterReplay
+  recordSuccessfulHit
 } from "./core/statistics.js";
 import { resolveMusicContext } from "./core/musicContext.js";
 import { createKeyboardInput } from "./adapters/keyboardInput.js";
@@ -46,6 +39,15 @@ import { createNarrationService } from "./adapters/narrationService.js";
 import { createServerAccountStorage } from "./adapters/serverAccountStorage.js";
 import { createAccountSession } from "./adapters/accountSession.js";
 import { createAccountSelectionView } from "./core/accountsProgress.js";
+import { createScreenRouter } from "./app/screenRouter.js";
+import { createCharacterController } from "./app/characterController.js";
+import { createChampionsController } from "./app/championsController.js";
+import { createAccountController } from "./app/accountController.js";
+import { createDebugController } from "./app/debugController.js";
+import { createDictationController } from "./app/dictationController.js";
+import { createCannonController } from "./app/cannonController.js";
+import { createSlicingController } from "./app/slicingController.js";
+import { createContinueLevelPlan, createFinishLevelPlan, createStartGamePlan } from "./app/levelFlow.js";
 
 const game = document.getElementById("game");
 const arena = document.getElementById("arena");
@@ -100,6 +102,15 @@ const cannonTrajectory = document.getElementById("cannonTrajectory");
 const cannonCurrentLetter = document.getElementById("cannonCurrentLetter");
 const strikeBtnTop = document.getElementById("strikeBtnTop");
 const touchStrikeBtn = document.getElementById("touchStrike");
+const narrationStatus = document.getElementById("narrationStatus");
+const levelTitle = document.getElementById("levelTitle");
+const levelText = document.getElementById("levelText");
+const nextBtn = document.getElementById("nextBtn");
+const debugBackBtn = document.getElementById("debugBackBtn");
+const backBtn = document.getElementById("backBtn");
+const padBtn = document.getElementById("padBtn");
+const leftTouch = document.getElementById("leftTouch");
+const rightTouch = document.getElementById("rightTouch");
 
 const initialState = createGameState({ knightX: window.innerWidth / 2 });
 let state = initialState.state;
@@ -114,16 +125,11 @@ let lastTime = 0;
 let spawnTimer = initialState.spawnTimer;
 let wordIndex = initialState.wordIndex;
 let targetRetryQueue = initialState.targetRetryQueue;
-let selectedCharacterId = DEFAULT_CHARACTER_ID;
 let levelStats = createLevelStats();
 let replayContext = null;
 let launchContext = null;
-let currentDictation = null;
-let dictationAttempts = 0;
-let validatedDictationState = null;
-let currentCannonState = null;
 let frenchVoiceReady = false;
-const narrationStatus = document.getElementById("narrationStatus");
+
 const services = {
   audio: createAudioService(),
   music: createMusicService(),
@@ -135,68 +141,134 @@ const services = {
     }
   })
 };
+
 const accountSession = createAccountSession({
   storage: createServerAccountStorage(),
   levelsLength: LEVELS.length
 });
+
 const runtimeConfig = window.CHEVALIER_CONFIG || {};
 const debugMaxScoreShortcut = normalizeDebugShortcutConfig(runtimeConfig.debug?.maxScoreShortcut);
 
+const screenRouter = createScreenRouter({
+  game,
+  arena,
+  startOverlay,
+  selectOverlay,
+  levelOverlay,
+  debugOverlay,
+  championsOverlay,
+  pauseBtn,
+  dictationPanel,
+  cannonPanel,
+  cannonPrompt,
+  cannonRig,
+  cannonCurrentLetter
+});
+
+const characterController = createCharacterController({
+  knight,
+  characterGrid,
+  characterStatus,
+  defaultCharacterId: DEFAULT_CHARACTER_ID,
+  getCharacterById,
+  getCharacters
+});
+
+const championsController = createChampionsController({
+  championsList,
+  playerStatsDetail,
+  accountSession,
+  levels: LEVELS,
+  clearElement: screenRouter.clearElement
+});
+
+const accountController = createAccountController({
+  accountList,
+  accountNameInput,
+  accountStatus,
+  playBtn,
+  easyBtn,
+  renameAccountBtn,
+  resetAccountBtn,
+  deleteAccountBtn,
+  accountSession,
+  createAccountSelectionView,
+  levelsLength: LEVELS.length,
+  clearElement: screenRouter.clearElement,
+  getFrenchVoiceReady: () => frenchVoiceReady,
+  onAccountSelected: (resumeLevelIndex) => {
+    currentLevelIndex = resumeLevelIndex;
+    updateHud();
+  }
+});
+
+const debugController = createDebugController({
+  debugLevelGrid,
+  debugChainToggle,
+  levels: LEVELS,
+  buildDebugLevelEntries,
+  clearElement: screenRouter.clearElement
+});
+
+const dictationController = createDictationController({
+  dictationInput,
+  dictationFeedback,
+  narrationService: services.narration,
+  pickDictation,
+  scoreDictation,
+  createValidatedDictationState,
+  clearElement: screenRouter.clearElement
+});
+
+const cannonController = createCannonController({
+  game,
+  cannonPrompt,
+  cannonShotLayer,
+  cannonRig,
+  cannonTrajectory,
+  cannonCurrentLetter,
+  createCannonState,
+  getCannonDisplayTokens,
+  getCurrentCannonLetter,
+  isCannonLevelComplete,
+  resolveCannonShot,
+  clearElement: screenRouter.clearElement
+});
+
+const slicingController = createSlicingController({
+  game,
+  arena,
+  knight,
+  chooseNextItem,
+  getWordSpeedBase,
+  findSwordCollision,
+  isTargetHit,
+  hasWonLevel
+});
+
 function getLevel() {
   return getCurrentLevel(LEVELS, currentLevelIndex);
-}
-
-function getSelectedCharacter() {
-  return getCharacterById(selectedCharacterId);
 }
 
 function setNarrationStatus(text) {
   if (narrationStatus) narrationStatus.textContent = text || "";
 }
 
-async function initNarration() {
-  services.music.init();
-  updateMusicControls();
-  syncMusicContext();
-  services.narration.init();
-  updateNarrationButton();
-  setNarrationStatus(services.narration.getDiagnosticMessage());
-  setLaunchControlsEnabled(false);
-  setNarrationStatus("Vérification de la voix française...");
-  frenchVoiceReady = await services.narration.waitForFrenchVoice();
-  setLaunchControlsEnabled(frenchVoiceReady);
-  setNarrationStatus(frenchVoiceReady ? "" : services.narration.getDiagnosticMessage());
+function isDictationLevel(level = getLevel()) {
+  return level?.type === "dictation";
 }
 
-function ensureAudio() {
-  services.audio.ensureReady();
-  services.music.ensureReady();
-  syncMusicContext();
+function isCannonLevel(level = getLevel()) {
+  return level?.type === "cannon";
 }
 
-function playSweetSound() {
-  services.audio.playSweetSound();
+function shortFeedback(text) {
+  return (text || "").split(/[.!?]/)[0].trim() || text;
 }
 
-function enableNarration() {
-  services.narration.setEnabled(true);
-  updateNarrationButton();
-  setNarrationStatus(services.narration.getDiagnosticMessage());
-  services.narration.speak("Voix activée.");
-}
-
-function disableNarration() {
-  services.narration.setEnabled(false);
-  updateNarrationButton();
-  setNarrationStatus(services.narration.getDiagnosticMessage());
-}
-
-function toggleNarration() {
-  if (services.narration.isEnabled()) {
-    disableNarration();
-  } else {
-    enableNarration();
-  }
+function setMessage(text) {
+  message.textContent = text;
 }
 
 function updateNarrationButton() {
@@ -235,15 +307,60 @@ function syncMusicContext() {
 
 function setLaunchControlsEnabled(enabled) {
   const allow = Boolean(enabled);
-  playBtn.disabled = !allow || !hasActiveAccount();
-  easyBtn.disabled = !allow || !hasActiveAccount();
+  playBtn.disabled = !allow || !accountController.hasActiveAccount();
+  easyBtn.disabled = !allow || !accountController.hasActiveAccount();
   debugBtn.disabled = !allow;
   championsBtn.disabled = !allow;
   chooseBtn.disabled = true;
 }
 
-function clearElement(element) {
-  element.replaceChildren();
+async function initNarration() {
+  services.music.init();
+  updateMusicControls();
+  syncMusicContext();
+  services.narration.init();
+  updateNarrationButton();
+  setNarrationStatus(services.narration.getDiagnosticMessage());
+  setLaunchControlsEnabled(false);
+  setNarrationStatus("Vérification de la voix française...");
+  frenchVoiceReady = await services.narration.waitForFrenchVoice();
+  setLaunchControlsEnabled(frenchVoiceReady);
+  setNarrationStatus(frenchVoiceReady ? "" : services.narration.getDiagnosticMessage());
+}
+
+function ensureAudio() {
+  services.audio.ensureReady();
+  services.music.ensureReady();
+  syncMusicContext();
+}
+
+function playSweetSound() {
+  services.audio.playSweetSound();
+}
+
+function playSwordSound() {
+  services.audio.playSwordSound();
+}
+
+function enableNarration() {
+  services.narration.setEnabled(true);
+  updateNarrationButton();
+  setNarrationStatus(services.narration.getDiagnosticMessage());
+  services.narration.speak("Voix activée.");
+}
+
+function disableNarration() {
+  services.narration.setEnabled(false);
+  updateNarrationButton();
+  setNarrationStatus(services.narration.getDiagnosticMessage());
+}
+
+function toggleNarration() {
+  if (services.narration.isEnabled()) {
+    disableNarration();
+  } else {
+    enableNarration();
+  }
 }
 
 window.testNarration = function() {
@@ -251,55 +368,19 @@ window.testNarration = function() {
   services.narration.speak("Bonjour chevalier. La voix fonctionne.");
 };
 
-function shortFeedback(text) {
-  return (text || "").split(/[.!?]/)[0].trim() || text;
-}
-
-function setMessage(text) {
-  message.textContent = text;
-}
-
-function isDictationLevel(level = getLevel()) {
-  return level?.type === "dictation";
-}
-
-function isCannonLevel(level = getLevel()) {
-  return level?.type === "cannon";
-}
-
-function updateHud() {
+function updateHud(nextStars = stars) {
   const current = getLevel();
   const world = getWorldForLevel(current.id);
   levelInfo.textContent = world.title + " · Niveau " + current.id + " · " + current.title;
   // [impl->req~ui.visible-instruction~1]
   instruction.textContent = current.shortInstruction;
-  starsEl.textContent = "⭐ " + stars + " / " + current.starsToWin;
+  starsEl.textContent = "⭐ " + nextStars + " / " + current.starsToWin;
   starsEl.classList.toggle("hidden", isCannonLevel(current));
   startSubtitle.textContent = world.title + " : Niveau " + current.id + " — " + current.title;
 }
 
 function isDebugLevelRunning() {
   return state === "playing" && launchContext?.source === "debug";
-}
-
-function updateCharacterPreview() {
-  const character = getSelectedCharacter();
-  if (characterStatus) {
-    characterStatus.textContent = "Personnage choisi : " + character.label + " · arme : " + character.weaponLabel;
-  }
-  if (!characterGrid) return;
-  for (const button of characterGrid.querySelectorAll("button[data-character-id]")) {
-    button.classList.toggle("is-selected", button.dataset.characterId === character.id);
-    button.setAttribute("aria-pressed", button.dataset.characterId === character.id ? "true" : "false");
-  }
-}
-
-function setAccountStatus(text) {
-  if (accountStatus) accountStatus.textContent = text || "";
-}
-
-function hasActiveAccount() {
-  return Boolean(accountSession.getSnapshot().activeAccount);
 }
 
 function updateLinearProgressionControls() {
@@ -310,140 +391,71 @@ function updateLinearProgressionControls() {
   }
 }
 
-function syncLevelWithActiveAccount() {
-  const snapshot = accountSession.getSnapshot();
-  if (!snapshot.activeAccount) return;
+async function createAccountFromInput() {
+  const name = accountController.readInputName();
+  if (!name.trim()) {
+    accountController.setAccountStatus("Entre un nom de compte.");
+    return;
+  }
+  // [impl->req~account.creation~1]
+  const snapshot = await accountSession.createAccount(name);
   currentLevelIndex = accountSession.getResumeLevelIndex();
   updateHud();
+  accountController.renderAccounts(snapshot);
+  accountController.setAccountStatus("Compte créé : " + snapshot.activeAccount.name);
 }
 
-function renderAccounts(snapshot = accountSession.getSnapshot()) {
-  if (!accountList) return;
-  clearElement(accountList);
-  const view = createAccountSelectionView(snapshot.accounts, snapshot.activeAccountId, LEVELS.length);
-
-  if (view.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "accountEmpty";
-    empty.textContent = "Aucun compte pour l'instant.";
-    accountList.appendChild(empty);
-  }
-
-  // [impl->req~account.start-selection~1]
-  for (const account of view) {
-    const button = document.createElement("button");
-    button.className = "accountChoice";
-    button.type = "button";
-    button.dataset.accountId = account.id;
-    button.classList.toggle("is-selected", account.active);
-    button.setAttribute("aria-pressed", account.active ? "true" : "false");
-    button.textContent = account.name;
-    const resume = document.createElement("span");
-    resume.textContent = "Reprise : niveau " + account.resumeLevel;
-    button.appendChild(resume);
-    button.addEventListener("click", () => {
-      const nextSnapshot = accountSession.selectAccount(account.id);
-      if (accountNameInput) accountNameInput.value = nextSnapshot.activeAccount?.name || "";
-      syncLevelWithActiveAccount();
-      renderAccounts(nextSnapshot);
-      setAccountStatus("Compte actif : " + account.name);
-    });
-    accountList.appendChild(button);
-  }
-
-  const hasAccount = Boolean(snapshot.activeAccount);
-  playBtn.disabled = !hasAccount || !frenchVoiceReady;
-  easyBtn.disabled = !hasAccount || !frenchVoiceReady;
-  renameAccountBtn.disabled = !hasAccount;
-  resetAccountBtn.disabled = !hasAccount;
-  deleteAccountBtn.disabled = !hasAccount;
-  if (snapshot.diagnostic) setAccountStatus(snapshot.diagnostic);
-  if (!hasAccount && !snapshot.diagnostic) setAccountStatus("Choisis ou crée un compte avant de jouer.");
-}
-
-function renderChampionsDashboard() {
-  if (!championsList || !playerStatsDetail) return;
-  clearElement(championsList);
-  clearElement(playerStatsDetail);
-  // [impl->req~stats.champions-dashboard~1]
-  const champions = accountSession.getChampionsDashboard();
-  if (champions.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "accountEmpty";
-    empty.textContent = "Aucun joueur pour l'instant.";
-    championsList.appendChild(empty);
+async function renameActiveAccount() {
+  const name = accountController.readInputName();
+  if (!name.trim()) {
+    accountController.setAccountStatus("Entre un nouveau nom.");
     return;
   }
-
-  champions.forEach(player => {
-    const button = document.createElement("button");
-    button.className = "championChoice";
-    button.type = "button";
-    button.dataset.accountId = player.id;
-    const name = document.createElement("span");
-    name.className = "championChoice__name";
-    name.textContent = player.name;
-    const progress = document.createElement("span");
-    progress.textContent = "Niveau atteint : " + player.highestCompletedLevel;
-    const score = document.createElement("span");
-    score.textContent = "Score global : " + player.globalScore;
-    button.appendChild(name);
-    button.appendChild(progress);
-    button.appendChild(score);
-    button.addEventListener("click", () => renderPlayerStatsDetail(player.id));
-    championsList.appendChild(button);
-  });
+  const snapshot = await accountSession.renameAccount(name);
+  accountController.renderAccounts(snapshot);
+  accountController.setAccountStatus(snapshot.activeAccount ? "Compte renommé : " + snapshot.activeAccount.name : "");
 }
 
-function renderPlayerStatsDetail(accountId) {
-  if (!playerStatsDetail) return;
-  clearElement(playerStatsDetail);
-  // [impl->req~stats.player-detail~1]
-  const levels = accountSession.getPlayerStatsDetail(accountId, LEVELS);
-  if (levels.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "accountEmpty";
-    empty.textContent = "Aucun niveau accompli.";
-    playerStatsDetail.appendChild(empty);
-    return;
-  }
+async function resetActiveAccount() {
+  if (!accountController.hasActiveAccount()) return;
+  if (!window.confirm("Réinitialiser la progression de ce compte ?")) return;
+  const snapshot = await accountSession.resetAccount();
+  currentLevelIndex = accountSession.getResumeLevelIndex();
+  updateHud();
+  accountController.renderAccounts(snapshot);
+  accountController.setAccountStatus("Progression réinitialisée.");
+}
 
-  levels.forEach(level => {
-    const row = document.createElement("div");
-    row.className = "levelScoreRow";
-    const summary = document.createElement("div");
-    const title = document.createElement("strong");
-    title.textContent = "Niveau " + level.levelNumber + " · " + level.title;
-    const score = document.createElement("span");
-    score.textContent = "Meilleur score : " + level.bestScore + " / 5";
-    summary.appendChild(title);
-    summary.appendChild(score);
-    const replayBtn = document.createElement("button");
-    replayBtn.className = "smallBtn secondary";
-    replayBtn.type = "button";
-    replayBtn.disabled = !level.replayAvailable;
-    replayBtn.textContent = "Rejouer";
-    replayBtn.addEventListener("click", () => replayCompletedLevel(accountId, level.levelNumber));
-    row.appendChild(summary);
-    row.appendChild(replayBtn);
-    playerStatsDetail.appendChild(row);
-  });
+async function deleteActiveAccount() {
+  if (!accountController.hasActiveAccount()) return;
+  if (!window.confirm("Supprimer ce compte ?")) return;
+  const snapshot = await accountSession.deleteAccount();
+  currentLevelIndex = 0;
+  accountController.clearInputName();
+  accountController.renderAccounts(snapshot);
+  state = "menu";
+  updateHud();
+  screenRouter.showStartMenu();
+  accountController.setAccountStatus("Compte supprimé. Choisis ou crée un compte.");
+  screenRouter.setDictationVisible(false);
+  screenRouter.setCannonVisible(false);
+}
+
+async function initAccounts() {
+  const snapshot = await accountSession.load();
+  accountController.renderAccounts(snapshot);
+  updateLinearProgressionControls();
 }
 
 function openChampionsDashboard() {
-  renderChampionsDashboard();
-  startOverlay.classList.add("hidden");
-  selectOverlay.classList.add("hidden");
-  levelOverlay.classList.add("hidden");
-  debugOverlay.classList.add("hidden");
-  championsOverlay.classList.remove("hidden");
+  championsController.renderChampionsDashboard(replayCompletedLevel);
+  screenRouter.showChampions();
   state = "menu";
   syncMusicContext();
 }
 
 function closeChampionsDashboard() {
-  championsOverlay.classList.add("hidden");
-  startOverlay.classList.remove("hidden");
+  screenRouter.hideChampions();
   state = "menu";
   syncMusicContext();
 }
@@ -453,287 +465,37 @@ function openDebugMenu() {
     setNarrationStatus(services.narration.getDiagnosticMessage());
     return;
   }
-  startOverlay.classList.add("hidden");
-  selectOverlay.classList.add("hidden");
-  levelOverlay.classList.add("hidden");
-  championsOverlay.classList.add("hidden");
-  debugOverlay.classList.remove("hidden");
+  screenRouter.showDebugMenu();
   state = "menu";
   syncMusicContext();
 }
 
 function closeDebugMenu() {
-  debugOverlay.classList.add("hidden");
-  startOverlay.classList.remove("hidden");
+  screenRouter.hideDebugMenu();
   state = "menu";
   syncMusicContext();
 }
 
-async function createAccountFromInput() {
-  const name = accountNameInput.value;
-  if (!name.trim()) {
-    setAccountStatus("Entre un nom de compte.");
-    return;
-  }
-  // [impl->req~account.creation~1]
-  const snapshot = await accountSession.createAccount(name);
-  syncLevelWithActiveAccount();
-  renderAccounts(snapshot);
-  setAccountStatus("Compte créé : " + snapshot.activeAccount.name);
-}
-
-async function renameActiveAccount() {
-  const name = accountNameInput.value;
-  if (!name.trim()) {
-    setAccountStatus("Entre un nouveau nom.");
-    return;
-  }
-  const snapshot = await accountSession.renameAccount(name);
-  renderAccounts(snapshot);
-  setAccountStatus(snapshot.activeAccount ? "Compte renommé : " + snapshot.activeAccount.name : "");
-}
-
-async function resetActiveAccount() {
-  if (!hasActiveAccount()) return;
-  if (!window.confirm("Réinitialiser la progression de ce compte ?")) return;
-  const snapshot = await accountSession.resetAccount();
-  syncLevelWithActiveAccount();
-  renderAccounts(snapshot);
-  setAccountStatus("Progression réinitialisée.");
-}
-
-async function deleteActiveAccount() {
-  if (!hasActiveAccount()) return;
-  if (!window.confirm("Supprimer ce compte ?")) return;
-  const snapshot = await accountSession.deleteAccount();
-  currentLevelIndex = 0;
-  if (accountNameInput) accountNameInput.value = "";
-  renderAccounts(snapshot);
-  startOverlay.classList.remove("hidden");
-  levelOverlay.classList.add("hidden");
-  selectOverlay.classList.add("hidden");
-  state = "menu";
-  updateHud();
-  setAccountStatus("Compte supprimé. Choisis ou crée un compte.");
-}
-
-async function initAccounts() {
-  const snapshot = await accountSession.load();
-  renderAccounts(snapshot);
-  updateLinearProgressionControls();
-}
-
-function applySelectedCharacter() {
-  const character = getSelectedCharacter();
-  knight.classList.remove("character-knight", "character-pepe", "character-laser");
-  knight.classList.add(character.cssClass);
-  knight.dataset.characterId = character.id;
-  // [impl->req~character.cosmetic-only~1]
-  updateCharacterPreview();
-}
-
-function chooseCharacter(characterId) {
-  selectedCharacterId = getCharacterById(characterId).id;
-  applySelectedCharacter();
-}
-
-function playSwordSound() {
-  services.audio.playSwordSound();
-}
-
-const keyboardInput = createKeyboardInput();
-const touchInput = createTouchInput({ onActivate: ensureAudio });
-const gamepadInput = createGamepadInput();
-
-function makeConfetti(x, y) {
-  const colors = ["#ffd94a", "#ff75b7", "#43c55f", "#3e8cff", "#6849d8", "#ff8b3d"];
-  for (let i = 0; i < 22; i++) {
-    const piece = document.createElement("div");
-    piece.className = "confetti";
-    piece.style.left = x + "px";
-    piece.style.top = y + "px";
-    piece.style.background = colors[i % colors.length];
-    piece.style.setProperty("--dx", (Math.random() * 180 - 90) + "px");
-    piece.style.setProperty("--dy", (-40 - Math.random() * 120) + "px");
-    game.appendChild(piece);
-    setTimeout(() => piece.remove(), 900);
-  }
-}
-
-function makeSlash(character, x, y) {
-  const slash = document.createElement("div");
-  slash.className = "slash slash--" + character.strikeEffect;
-  slash.style.left = x + "px";
-  slash.style.top = y + "px";
-  game.appendChild(slash);
-  setTimeout(() => slash.remove(), 280);
-}
-
 function resetWords() {
-  activeWords.forEach(w => w.el.remove());
+  slicingController.resetWords(activeWords);
   activeWords = [];
   spawnTimer = 0;
   targetRetryQueue = [];
 }
 
-function chooseLevel(index) {
-  currentLevelIndex = selectLevelIndex(index, LEVELS.length);
-  startGame(veryEasy);
-}
-
-function nextWordData() {
-  const current = getLevel();
-  if (!shouldRunSlicingLoop(current)) {
-    return null;
-  }
-  const result = chooseNextItem({
-    level: current,
-    retryQueue: targetRetryQueue,
-    wordIndex,
-    veryEasy
-  });
-  targetRetryQueue = result.retryQueue;
-  wordIndex = result.wordIndex;
-  return result.item;
-}
-
 function spawnWord() {
-  const current = getLevel();
-  const data = nextWordData();
-  if (!data) {
-    return false;
-  }
-  const el = document.createElement("div");
-  el.className = "word";
-  el.textContent = data.text;
-  arena.appendChild(el);
-  const width = window.innerWidth;
-  const speedBase = getWordSpeedBase(current, veryEasy);
-  activeWords.push({
-    el,
-    data,
-    x: 90 + Math.random() * Math.max(140, width - 180),
-    y: -46,
-    speed: speedBase + Math.random() * (veryEasy ? 12 : 24),
-    bouncing: 0
+  const next = slicingController.spawnWord({
+    level: getLevel(),
+    activeWords,
+    targetRetryQueue,
+    wordIndex,
+    veryEasy,
+    shouldRunSlicingLoop
   });
-  return true;
-}
-
-function bounceWord(word) {
-  word.bouncing = .65;
-  word.speed = -120;
-  word.el.classList.add("bounce");
-  setTimeout(() => word.el.classList.remove("bounce"), 580);
-}
-
-function strike() {
-  if (state !== "playing") return;
-  if (isDictationLevel()) return;
-  ensureAudio();
-  if (isCannonLevel()) {
-    const holeLayouts = getCannonHoleLayouts();
-    const axisX = cannonCurrentLetter.getBoundingClientRect().left + cannonCurrentLetter.getBoundingClientRect().width / 2;
-    const previousLetter = getCurrentCannonLetter(currentCannonState);
-    const { state: nextState, outcome } = resolveCannonShot({
-      state: currentCannonState,
-      axisX,
-      holeLayouts
-    });
-    currentCannonState = nextState;
-    if (outcome.type === "idle") {
-      return;
-    }
-    const holeElement = outcome.holeIndex !== undefined
-      ? cannonPrompt.querySelector('[data-hole-index="' + outcome.holeIndex + '"]')
-      : null;
-    const targetRect = holeElement?.getBoundingClientRect() || null;
-    if (outcome.type === "success") {
-      levelStats = {
-        levelType: "cannon",
-        successfulHits: Math.max(0, Number(levelStats?.successfulHits) || 0) + 1,
-        errors: Math.max(0, Number(levelStats?.errors) || 0)
-      };
-      setMessage("Bien joué ! La lettre est placée.");
-      services.narration.speak("Bien joué.");
-      playSweetSound();
-      animateCannonShot({ letter: previousLetter, targetRect, success: true });
-      renderCannonState();
-      if (isCannonLevelComplete(currentCannonState)) {
-        finishLevel();
-      }
-      return;
-    }
-    levelStats = {
-      levelType: "cannon",
-      successfulHits: Math.max(0, Number(levelStats?.successfulHits) || 0),
-      errors: Math.max(0, Number(levelStats?.errors) || 0) + 1
-    };
-    setMessage(outcome.type === "miss-wrong-letter" ? "Cette lettre ne va pas dans ce trou." : "Aucun trou visé.");
-    services.narration.speak("Essaie encore.");
-    animateCannonShot({ letter: previousLetter, targetRect, success: false });
-    renderCannonState();
-    return;
-  }
-  playSwordSound();
-  const character = getSelectedCharacter();
-  knight.classList.remove("striking");
-  void knight.offsetWidth;
-  knight.classList.add("striking");
-
-  const swordRect = knight.querySelector(".sword").getBoundingClientRect();
-  const swordCenterX = swordRect.left + swordRect.width / 2;
-  const swordCenterY = swordRect.top + swordRect.height / 2;
-  // [impl->req~game.target-only-slicing~1]
-  const hit = findSwordCollision({ words: activeWords, swordCenterX, swordCenterY, veryEasy });
-  // [impl->req~character.cosmetic-only~1]
-  makeSlash(character, knightX + 40, window.innerHeight - 185);
-  if (!hit) return;
-
-  const rect = hit.el.getBoundingClientRect();
-  if (isTargetHit(hit)) {
-    // [impl->req~stats.level-error-counting~2]
-    levelStats = recordSuccessfulHit(levelStats);
-    stars++;
-    updateHud();
-    // [impl->req~feedback.immediate-result~1]
-    setMessage(hit.data.feedbackOk + (hit.data.correction ? "" : ""));
-    services.narration.speak(shortFeedback(hit.data.feedbackOk));
-    playSweetSound();
-    makeConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    hit.el.remove();
-    activeWords = activeWords.filter(w => w !== hit);
-    if (hasWonLevel(stars, getLevel())) finishLevel();
-  } else {
-    // [impl->req~stats.level-error-counting~2]
-    levelStats = recordLevelError(levelStats);
-    bounceWord(hit);
-    // [impl->req~game.no-blocking-punishment~1]
-    setMessage(hit.data.feedbackKo);
-    services.narration.speak(shortFeedback(hit.data.feedbackKo));
-  }
-}
-
-function setDictationVisible(visible) {
-  // [impl->req~dictation.shared-game-screen~1]
-  dictationPanel.classList.toggle("hidden", !visible);
-  arena.classList.toggle("hidden", visible);
-}
-
-// [impl->req~cannon.holed-text-display~1]
-// [impl->req~cannon.vertical-trajectory-indicator~1]
-// [impl->req~cannon.selected-character-operates-cannon~1]
-// [impl->req~cannon.no-live-score~1]
-function setCannonVisible(visible) {
-  // [impl->req~cannon.shared-game-screen~1]
-  const enabled = Boolean(visible);
-  cannonPanel.classList.toggle("hidden", !enabled);
-  cannonRig.classList.toggle("hidden", !enabled);
-  game.classList.toggle("is-cannon-mode", enabled);
-  if (!enabled) {
-    if (cannonPrompt) clearElement(cannonPrompt);
-    if (cannonCurrentLetter) cannonCurrentLetter.textContent = "";
-  }
+  activeWords = next.activeWords;
+  targetRetryQueue = next.targetRetryQueue;
+  wordIndex = next.wordIndex;
+  return next.spawned;
 }
 
 function updateAttackButtons() {
@@ -751,220 +513,115 @@ function updateAttackButtons() {
   }
 }
 
-function getCannonHoleLayouts() {
-  if (!currentCannonState || !cannonPrompt) return [];
-  return currentCannonState.holes.map((hole) => {
-    const element = cannonPrompt.querySelector('[data-hole-index="' + hole.index + '"]');
-    if (!element) return null;
-    const rect = element.getBoundingClientRect();
-    return {
-      index: hole.index,
-      centerX: rect.left + rect.width / 2,
-      width: rect.width
-    };
-  }).filter(Boolean);
-}
-
-function animateCannonShot({ letter, targetRect = null, success = false } = {}) {
-  if (!letter || !cannonShotLayer || !cannonCurrentLetter) return;
-  const startRect = cannonCurrentLetter.getBoundingClientRect();
-  const shot = document.createElement("div");
-  shot.className = "cannonShot " + (success ? "is-hit" : "is-miss");
-  shot.textContent = letter;
-  shot.style.left = startRect.left + startRect.width / 2 + "px";
-  shot.style.top = startRect.top + startRect.height / 2 + "px";
-  const targetX = targetRect ? targetRect.left + targetRect.width / 2 : startRect.left + startRect.width / 2;
-  const targetY = targetRect ? targetRect.top + targetRect.height / 2 : startRect.top - Math.min(window.innerHeight * 0.35, 240);
-  shot.style.setProperty("--dx", (targetX - (startRect.left + startRect.width / 2)) + "px");
-  shot.style.setProperty("--dy", (targetY - (startRect.top + startRect.height / 2)) + "px");
-  shot.style.setProperty("--dx-bounce", (targetX - (startRect.left + startRect.width / 2) - 24) + "px");
-  shot.style.setProperty("--dy-bounce", (targetY - (startRect.top + startRect.height / 2) + 14) + "px");
-  shot.style.setProperty("--dx-drop", (targetX - (startRect.left + startRect.width / 2) + 18) + "px");
-  shot.style.setProperty("--dy-drop", (window.innerHeight - (startRect.top + startRect.height / 2) - 36) + "px");
-  game.appendChild(shot);
-  setTimeout(() => shot.remove(), success ? 420 : 840);
-}
-
-function renderCannonState() {
-  if (!currentCannonState || !cannonPrompt) return;
-  clearElement(cannonPrompt);
-  const content = document.createElement("div");
-  content.className = "cannonPrompt__text";
-  for (const token of getCannonDisplayTokens(currentCannonState)) {
-    if (token.type === "text") {
-      content.appendChild(document.createTextNode(token.value));
-      continue;
-    }
-    const hole = document.createElement("span");
-    hole.className = "cannonHole";
-    hole.dataset.holeIndex = String(token.holeIndex);
-    hole.textContent = token.value || " ";
-    if (token.filled) {
-      hole.classList.add("is-filled");
-    }
-    content.appendChild(hole);
-  }
-  cannonPrompt.appendChild(content);
-  cannonCurrentLetter.textContent = getCurrentCannonLetter(currentCannonState) || "·";
-  cannonRig.style.left = knightX + "px";
-  cannonTrajectory.style.left = "104px";
-}
-
-function speakCurrentDictation() {
-  if (!currentDictation || services.narration.isSpeaking()) return;
-  services.narration.speak(currentDictation.text);
-}
-
-function renderDictationFeedback(result, inputValue) {
-  clearElement(dictationFeedback);
-  const expected = document.createElement("p");
-  expected.textContent = "Texte attendu : " + result.text;
-  const actual = document.createElement("p");
-  actual.textContent = "Texte saisi : " + inputValue;
-  dictationFeedback.appendChild(expected);
-  dictationFeedback.appendChild(actual);
-
-  if (result.differences.length === 0) {
-    const none = document.createElement("p");
-    none.textContent = "Aucune différence.";
-    dictationFeedback.appendChild(none);
-    return;
-  }
-
-  const list = document.createElement("ul");
-  result.differences.forEach((diff) => {
-    const item = document.createElement("li");
-    const type = document.createElement("span");
-    type.className = diff.type.includes("ajout") ? "diff-added" : diff.type.includes("supprim") ? "diff-removed" : "diff-replaced";
-    type.textContent = diff.type;
-    item.appendChild(type);
-    item.appendChild(document.createTextNode(" · attendu: \"" + (diff.expected || "∅") + "\" · saisi: \"" + (diff.actual || "∅") + "\""));
-    list.appendChild(item);
-  });
-  dictationFeedback.appendChild(list);
-}
-
-function renderDictationRetryActions() {
-  const actions = document.createElement("div");
-  actions.className = "dictationActions";
-
-  const retryButton = document.createElement("button");
-  retryButton.id = "dictationRetryBtn";
-  retryButton.className = "smallBtn secondary";
-  retryButton.type = "button";
-  retryButton.textContent = "Recommencer";
-  retryButton.addEventListener("click", () => {
-    dictationInput.value = "";
-    dictationFeedback.textContent = "";
-    validatedDictationState = null;
-    currentDictation = pickDictation(getLevel());
-    speakCurrentDictation();
-  });
-
-  const continueButton = document.createElement("button");
-  continueButton.id = "dictationContinueBtn";
-  continueButton.className = "smallBtn";
-  continueButton.type = "button";
-  continueButton.textContent = "Continuer";
-  continueButton.addEventListener("click", () => {
-    if (!validatedDictationState?.canContinue) return;
-    finishLevel();
-  });
-
-  actions.appendChild(retryButton);
-  actions.appendChild(continueButton);
-  dictationFeedback.appendChild(actions);
-}
-
-function validateDictation() {
-  if (!currentDictation) return;
-  if (validatedDictationState?.canContinue) {
-    finishLevel();
-    return;
-  }
-  // [impl->req~dictation.input-display~1]
-  const inputValue = dictationInput.value || "";
-  const result = scoreDictation(currentDictation, inputValue);
-  dictationAttempts += 1;
-  // [impl->req~dictation.statistics~1]
-  levelStats = {
-    levelType: "dictation",
-    dictationScore: result.score,
-    errors: result.distance,
-    successfulHits: 0,
-    attempts: dictationAttempts
-  };
-  validatedDictationState = createValidatedDictationState({ result, inputValue, attempts: dictationAttempts });
-  renderDictationFeedback(result, inputValue);
-  services.narration.speak(result.text);
-  if (result.score < 5) {
-    // [impl->req~dictation.retry-or-continue~1]
-    renderDictationRetryActions();
-    return;
-  }
-  finishLevel();
-}
-
 function finishLevel() {
   const current = getLevel();
+  const finishPlan = createFinishLevelPlan({
+    launchContext,
+    replayContext,
+    currentLevelIndex,
+    levelsLength: LEVELS.length
+  });
   state = "level";
   syncMusicContext();
-  levelOverlay.classList.remove("hidden");
-  debugOverlay.classList.add("hidden");
+  screenRouter.showLevelSummary();
   resetWords();
-  currentDictation = null;
-  currentCannonState = null;
-  setDictationVisible(false);
-  setCannonVisible(false);
-  if (shouldPersistLevelResult(launchContext)) {
+  dictationController.reset();
+  cannonController.reset();
+  screenRouter.setDictationVisible(false);
+  screenRouter.setCannonVisible(false);
+  if (finishPlan.persistResult) {
     // [impl->req~stats.level-score-five-stars~2]
     // [impl->req~stats.best-level-score~1]
     // [impl->req~stats.global-score~1]
     // [impl->req~stats.server-database-persistence~1]
     void accountSession.saveCompletedLevelResult(current.id, levelStats).then(snapshot => {
-      renderAccounts(snapshot);
-      if (replayContext) renderPlayerStatsDetail(replayContext.accountId);
+      accountController.renderAccounts(snapshot);
+      if (replayContext) championsController.renderPlayerStatsDetail(replayContext.accountId, replayCompletedLevel);
     });
   }
   const scoreText = " Score : " + calculateLevelScore(levelStats) + " / 5.";
-  const postLevelAction = getPostLevelAction({ launchContext, replayContext });
-  if (postLevelAction === "stats" && shouldReturnToStatsAfterReplay(replayContext)) {
-    document.getElementById("levelTitle").textContent = "Niveau rejoué !";
-    document.getElementById("levelText").textContent = current.title + " terminé." + scoreText;
-    document.getElementById("nextBtn").textContent = "Retour au tableau";
+  if (finishPlan.returnsToStats) {
+    levelTitle.textContent = "Niveau rejoué !";
+    levelText.textContent = current.title + " terminé." + scoreText;
+    nextBtn.textContent = "Retour au tableau";
     services.narration.speak("Bravo, niveau rejoué.");
     return;
   }
-  if (postLevelAction === "debug-menu") {
-    document.getElementById("levelTitle").textContent = "Niveau debug terminé";
-    document.getElementById("levelText").textContent = current.title + " terminé." + scoreText;
-    document.getElementById("nextBtn").textContent = "Retour au menu debug";
+  if (finishPlan.postLevelAction === "debug-menu") {
+    levelTitle.textContent = "Niveau debug terminé";
+    levelText.textContent = current.title + " terminé." + scoreText;
+    nextBtn.textContent = "Retour au menu debug";
     services.narration.speak("Niveau debug terminé.");
     return;
   }
-  if (postLevelAction === "debug-chain") {
-    document.getElementById("levelTitle").textContent = "Bravo !";
+  if (finishPlan.postLevelAction === "debug-chain") {
+    levelTitle.textContent = "Bravo !";
     if (currentLevelIndex >= LEVELS.length - 1) {
-      document.getElementById("levelText").textContent = current.title + " terminé." + scoreText;
+      levelText.textContent = current.title + " terminé." + scoreText;
     } else {
       const world = getWorldForLevel(current.id);
-      document.getElementById("levelText").textContent = world.title + " terminé." + scoreText + " Prochaine mission : " + LEVELS[currentLevelIndex + 1].title + " !";
+      levelText.textContent = world.title + " terminé." + scoreText + " Prochaine mission : " + LEVELS[currentLevelIndex + 1].title + " !";
     }
-    document.getElementById("nextBtn").textContent = "Continuer";
+    nextBtn.textContent = "Continuer";
     services.narration.speak("Bravo, niveau terminé.");
     return;
   }
-  if (isFinalLevel(currentLevelIndex, LEVELS.length)) {
-    document.getElementById("levelTitle").textContent = "Victoire finale !";
-    document.getElementById("levelText").textContent = "Le chevalier maîtrise les " + LEVELS.length + " niveaux des mots." + scoreText;
-    document.getElementById("nextBtn").textContent = "Rejouer";
+  if (finishPlan.isFinalLevel) {
+    levelTitle.textContent = "Victoire finale !";
+    levelText.textContent = "Le chevalier maîtrise les " + LEVELS.length + " niveaux des mots." + scoreText;
+    nextBtn.textContent = "Rejouer";
   } else {
-    document.getElementById("levelTitle").textContent = "Bravo !";
+    levelTitle.textContent = "Bravo !";
     const world = getWorldForLevel(current.id);
-    document.getElementById("levelText").textContent = world.title + " terminé." + scoreText + " Prochaine mission : " + LEVELS[currentLevelIndex + 1].title + " !";
-    document.getElementById("nextBtn").textContent = "Continuer";
+    levelText.textContent = world.title + " terminé." + scoreText + " Prochaine mission : " + LEVELS[currentLevelIndex + 1].title + " !";
+    nextBtn.textContent = "Continuer";
   }
   services.narration.speak("Bravo, niveau terminé.");
+}
+
+function strike() {
+  if (state !== "playing") return;
+  if (isDictationLevel()) return;
+  ensureAudio();
+  if (isCannonLevel()) {
+    levelStats = cannonController.strike({
+      levelStats,
+      setMessage,
+      speak: (text) => services.narration.speak(text),
+      playSweetSound,
+      finishLevel,
+      knightX
+    });
+    return;
+  }
+  let pendingStars = stars;
+  const result = slicingController.strike({
+    activeWords,
+    veryEasy,
+    knightX,
+    stars,
+    level: getLevel(),
+    levelStats,
+    getSelectedCharacter: () => characterController.getSelectedCharacter(),
+    playSwordSound,
+    setMessage,
+    speak: (text) => services.narration.speak(text),
+    playSweetSound,
+    shortFeedback,
+    updateHud: (nextStars) => {
+      pendingStars = nextStars;
+      updateHud(nextStars);
+    },
+    recordLevelError,
+    recordSuccessfulHit,
+    finishLevel: () => {
+      stars = pendingStars;
+      finishLevel();
+    }
+  });
+  activeWords = result.activeWords;
+  levelStats = result.levelStats;
+  stars = result.stars;
 }
 
 function completeDebugLevelWithMaxScore() {
@@ -973,10 +630,9 @@ function completeDebugLevelWithMaxScore() {
   }
   levelStats = createDebugMaxScoreStats(getLevel().type);
   if (isDictationLevel()) {
-    validatedDictationState = null;
-    currentDictation = null;
+    dictationController.reset();
   } else if (isCannonLevel()) {
-    currentCannonState = null;
+    cannonController.reset();
   } else {
     stars = getLevel().starsToWin;
     updateHud();
@@ -986,37 +642,33 @@ function completeDebugLevelWithMaxScore() {
 }
 
 function startGame(easy, options = {}) {
-  const requestedLaunchContext = options.launchContext || null;
-  const requiresAccount = requestedLaunchContext?.requiresAccount !== false;
-  if (requiresAccount && !hasActiveAccount()) {
+  const startPlan = createStartGamePlan({
+    levels: LEVELS,
+    requestedLaunchContext: options.launchContext || null,
+    replayFromStats: Boolean(options.replayFromStats),
+    replayLevelIndex: options.levelIndex,
+    activeAccountId: accountSession.getSnapshot().activeAccountId,
+    hasActiveAccount: accountController.hasActiveAccount(),
+    frenchVoiceReady,
+    resumeLevelIndex: accountSession.getResumeLevelIndex(),
+    selectedCharacterId: characterController.getSelectedCharacterId()
+  });
+  if (startPlan.blocked === "missing-account") {
     // [impl->req~account.start-selection~1]
-    setAccountStatus("Choisis ou crée un compte avant de jouer.");
+    accountController.setAccountStatus(startPlan.accountStatus);
     return;
   }
-  if (!frenchVoiceReady) {
+  if (startPlan.blocked === "missing-french-voice") {
     setNarrationStatus(services.narration.getDiagnosticMessage());
     return;
   }
-  launchContext = requestedLaunchContext;
-  if (options.replayFromStats) {
-    // [impl->req~stats.replay-completed-level~1]
-    replayContext = {
-      accountId: accountSession.getSnapshot().activeAccountId,
-      levelIndex: options.levelIndex
-    };
-    currentLevelIndex = selectLevelIndex(options.levelIndex, LEVELS.length);
-  } else if (requestedLaunchContext?.source === "debug") {
-    replayContext = null;
-    currentLevelIndex = selectLevelIndex(requestedLaunchContext.levelIndex, LEVELS.length);
-  } else {
-    replayContext = null;
-    currentLevelIndex = accountSession.getResumeLevelIndex();
-  }
+  launchContext = startPlan.launchContext;
+  replayContext = startPlan.replayContext;
+  currentLevelIndex = startPlan.currentLevelIndex;
   resetWords();
   levelStats = createLevelStats();
-  validatedDictationState = null;
-  currentDictation = null;
-  currentCannonState = null;
+  dictationController.reset();
+  cannonController.reset();
   const nextState = resetGameStateForLevel({
     state,
     veryEasy,
@@ -1036,137 +688,92 @@ function startGame(easy, options = {}) {
   activeWords = nextState.activeWords;
   spawnTimer = nextState.spawnTimer;
   targetRetryQueue = nextState.targetRetryQueue;
-  selectedCharacterId = getLaunchCharacterId({ launchContext, selectedCharacterId });
-  applySelectedCharacter();
+  characterController.setSelectedCharacterId(startPlan.launchCharacterId);
+  characterController.applySelectedCharacter();
   // [impl->req~ui.visible-instruction~1]
   updateHud();
-  startOverlay.classList.add("hidden");
-  selectOverlay.classList.add("hidden");
-  levelOverlay.classList.add("hidden");
-  championsOverlay.classList.add("hidden");
-  debugOverlay.classList.add("hidden");
-  pauseBtn.classList.remove("paused");
-  pauseBtn.textContent = "⏸";
+  screenRouter.showPlaying();
   updateAttackButtons();
   syncMusicContext();
   setMessage(getLevel().instruction);
   services.narration.speak(getLevel().instruction);
   ensureAudio();
-  if (isDictationLevel()) {
-    // [impl->req~dictation.random-selection~1]
-    currentDictation = pickDictation(getLevel());
-    dictationAttempts = 0;
-    dictationInput.value = "";
-    dictationFeedback.textContent = "";
-    setDictationVisible(true);
-    // [impl->req~dictation.start-audio~1]
-    speakCurrentDictation();
-    focusDictationPrompt();
-    setCannonVisible(false);
-  } else if (isCannonLevel()) {
-    setDictationVisible(false);
-    setCannonVisible(true);
-    currentCannonState = createCannonState(getLevel());
-    levelStats = {
-      levelType: "cannon",
-      successfulHits: 0,
-      errors: 0
-    };
-    renderCannonState();
+  if (startPlan.startDictation) {
+    screenRouter.setDictationVisible(true);
+    screenRouter.setCannonVisible(false);
+    dictationController.startLevel(getLevel());
+  } else if (startPlan.startCannon) {
+    screenRouter.setDictationVisible(false);
+    screenRouter.setCannonVisible(true);
+    levelStats = cannonController.startLevel(getLevel(), knightX);
   } else {
-    setCannonVisible(false);
-    setDictationVisible(false);
+    screenRouter.setCannonVisible(false);
+    screenRouter.setDictationVisible(false);
     spawnWord();
   }
 }
 
-function focusDictationPrompt() {
-  requestAnimationFrame(() => {
-    dictationInput.focus();
-  });
-}
-
 function continueLevel() {
-  if (launchContext?.source === "debug" && launchContext.pendingSequenceEnd) {
-    levelOverlay.classList.add("hidden");
-    validatedDictationState = null;
-    launchContext = null;
-    openDebugMenu();
-    return;
-  }
-  const postLevelAction = getPostLevelAction({ launchContext, replayContext });
-  if (postLevelAction === "stats") {
+  const continuePlan = createContinueLevelPlan({
+    launchContext,
+    replayContext,
+    currentLevelIndex,
+    levelsLength: LEVELS.length
+  });
+  if (continuePlan.action === "open-stats") {
     // [impl->req~stats.replay-return-flow~1]
     // [impl->req~stats.replay-does-not-regress-progression~1]
-    levelOverlay.classList.add("hidden");
-    championsOverlay.classList.remove("hidden");
-    renderChampionsDashboard();
-    renderPlayerStatsDetail(replayContext.accountId);
-    replayContext = null;
-    launchContext = null;
+    screenRouter.hideLevelSummary();
+    screenRouter.showChampions();
+    championsController.renderChampionsDashboard(replayCompletedLevel);
+    championsController.renderPlayerStatsDetail(replayContext.accountId, replayCompletedLevel);
+    replayContext = continuePlan.replayContext;
+    launchContext = continuePlan.launchContext;
     state = "menu";
     syncMusicContext();
     return;
   }
-  if (postLevelAction === "debug-menu") {
-    levelOverlay.classList.add("hidden");
+  if (continuePlan.action === "open-debug-menu") {
+    screenRouter.hideLevelSummary();
+    launchContext = continuePlan.launchContext ?? launchContext;
     openDebugMenu();
-    validatedDictationState = null;
     return;
   }
-  if (postLevelAction === "debug-chain") {
-    const debugContinueAction = getDebugChainContinueAction({
-      launchContext,
-      currentLevelIndex,
-      levelsLength: LEVELS.length
-    });
-    if (debugContinueAction === "debug-sequence-end") {
-    launchContext = createDebugSequenceEndContext(launchContext);
-    document.getElementById("levelTitle").textContent = "Fin de séquence debug";
-      document.getElementById("levelText").textContent = "Tous les niveaux debug de la campagne ont été testés.";
-      document.getElementById("nextBtn").textContent = "Retour au menu debug";
+  if (continuePlan.action === "show-debug-sequence-end") {
+    launchContext = continuePlan.launchContext;
+    levelTitle.textContent = "Fin de séquence debug";
+    levelText.textContent = "Tous les niveaux debug de la campagne ont été testés.";
+    nextBtn.textContent = "Retour au menu debug";
     services.narration.speak("Fin de séquence debug.");
     syncMusicContext();
     return;
   }
-    launchContext = createNextDebugLaunchContext(launchContext, currentLevelIndex + 1);
-    startGame(veryEasy, { launchContext });
-    return;
-  }
-  currentLevelIndex = getNextLevelIndex(currentLevelIndex, LEVELS.length);
-  launchContext = null;
-  startGame(veryEasy);
+  currentLevelIndex = continuePlan.currentLevelIndex;
+  launchContext = continuePlan.launchContext;
+  startGame(veryEasy, { launchContext });
 }
 
 function returnToMenu() {
   resetWords();
   replayContext = null;
   launchContext = null;
-  validatedDictationState = null;
-  currentDictation = null;
-  currentCannonState = null;
+  dictationController.reset();
+  cannonController.reset();
   stars = 0;
   state = "menu";
   updateHud();
   updateAttackButtons();
   syncMusicContext();
-  pauseBtn.classList.remove("paused");
-  pauseBtn.textContent = "⏸";
-  levelOverlay.classList.add("hidden");
-  championsOverlay.classList.add("hidden");
-  debugOverlay.classList.add("hidden");
-  selectOverlay.classList.add("hidden");
-  startOverlay.classList.remove("hidden");
+  screenRouter.showStartMenu();
   setMessage(getLevel().instruction);
-  setDictationVisible(false);
-  setCannonVisible(false);
+  screenRouter.setDictationVisible(false);
+  screenRouter.setCannonVisible(false);
 }
 
 function replayCompletedLevel(accountId, levelNumber) {
   // [impl->req~stats.replay-completed-level~1]
   accountSession.selectAccount(accountId);
-  renderAccounts();
-  championsOverlay.classList.add("hidden");
+  accountController.renderAccounts();
   startGame(veryEasy, {
     replayFromStats: true,
     levelIndex: levelNumber - 1
@@ -1182,15 +789,13 @@ function togglePause() {
     }
     state = "paused";
     syncMusicContext();
-    pauseBtn.classList.add("paused");
-    pauseBtn.textContent = "▶";
+    screenRouter.setPauseState(true);
     setMessage("Pause");
     services.narration.speak("Pause");
   } else if (state === "paused") {
     state = "playing";
     syncMusicContext();
-    pauseBtn.classList.remove("paused");
-    pauseBtn.textContent = "⏸";
+    screenRouter.setPauseState(false);
     setMessage(getLevel().instruction);
     services.narration.speak("C’est reparti.");
   }
@@ -1211,7 +816,6 @@ function tick(time) {
   const touchState = touchInput.read();
   const gamepadState = updateGamepadStatus();
   const current = state === "playing" ? getLevel() : null;
-  const canRunSlicingActions = shouldRunSlicingLoop(current);
   moveLeft = keyboardState.left || touchState.left || gamepadState.left;
   moveRight = keyboardState.right || touchState.right || gamepadState.right;
   // [impl->req~cannon.normalized-inputs~1]
@@ -1243,15 +847,20 @@ function tick(time) {
     activeWords = nextFrame.activeWords;
     knight.style.left = knightX + "px";
     if (isCannonLevel(current)) {
-      renderCannonState();
+      cannonController.render(knightX);
     }
   }
 
   requestAnimationFrame(tick);
 }
 
+function chooseLevel(index) {
+  currentLevelIndex = selectLevelIndex(index, LEVELS.length);
+  startGame(veryEasy);
+}
+
 function buildLevelGrid() {
-  clearElement(levelGrid);
+  screenRouter.clearElement(levelGrid);
   // [impl->req~data.levels-separated-from-engine~1]
   LEVELS.forEach((levelData, index) => {
     const button = document.createElement("button");
@@ -1266,59 +875,25 @@ function buildLevelGrid() {
   });
 }
 
-function buildCharacterGrid() {
-  if (!characterGrid) return;
-  clearElement(characterGrid);
-  // [impl->req~character.start-selection~1]
-  getCharacters().forEach(character => {
-    const button = document.createElement("button");
-    button.className = "characterChoice";
-    button.type = "button";
-    button.dataset.characterId = character.id;
-    button.setAttribute("aria-pressed", character.id === selectedCharacterId ? "true" : "false");
-    const label = document.createElement("span");
-    label.className = "characterChoice__label";
-    label.textContent = character.label;
-    const weapon = document.createElement("span");
-    weapon.className = "characterChoice__weapon";
-    weapon.textContent = "Arme : " + character.weaponLabel;
-    button.appendChild(label);
-    button.appendChild(weapon);
-    button.addEventListener("click", () => chooseCharacter(character.id));
-    characterGrid.appendChild(button);
-  });
-  updateCharacterPreview();
-}
-
 function launchDebugLevel(levelIndex) {
   startGame(false, {
     launchContext: createDebugLaunchContext({
       levelIndex,
-      selectedCharacterId,
-      chainLevels: Boolean(debugChainToggle?.checked),
+      selectedCharacterId: characterController.getSelectedCharacterId(),
+      chainLevels: debugController.isChainEnabled(),
       maxScoreShortcut: debugMaxScoreShortcut
     })
   });
 }
 
-function buildDebugLevelGrid() {
-  clearElement(debugLevelGrid);
-  buildDebugLevelEntries(LEVELS).forEach((level) => {
-    const button = document.createElement("button");
-    button.className = "levelChoice";
-    button.type = "button";
-    const meta = document.createElement("span");
-    meta.textContent = "Niveau " + level.levelNumber + " · " + level.type;
-    button.appendChild(meta);
-    button.appendChild(document.createTextNode(level.title));
-    button.addEventListener("click", () => launchDebugLevel(level.index));
-    debugLevelGrid.appendChild(button);
-  });
-}
+const keyboardInput = createKeyboardInput();
+const touchInput = createTouchInput({ onActivate: ensureAudio });
+const gamepadInput = createGamepadInput();
 
-touchInput.bindHold(document.getElementById("leftTouch"), "left");
-touchInput.bindHold(document.getElementById("rightTouch"), "right");
+touchInput.bindHold(leftTouch, "left");
+touchInput.bindHold(rightTouch, "right");
 touchInput.bindStrike(touchStrikeBtn);
+
 strikeBtnTop.addEventListener("click", strike);
 menuBtn.addEventListener("click", returnToMenu);
 pauseBtn.addEventListener("click", togglePause);
@@ -1338,25 +913,23 @@ easyBtn.addEventListener("click", () => startGame(true));
 debugBtn.addEventListener("click", openDebugMenu);
 championsBtn.addEventListener("click", openChampionsDashboard);
 championsBackBtn.addEventListener("click", closeChampionsDashboard);
-document.getElementById("debugBackBtn").addEventListener("click", closeDebugMenu);
+debugBackBtn.addEventListener("click", closeDebugMenu);
 createAccountBtn.addEventListener("click", () => { void createAccountFromInput(); });
 renameAccountBtn.addEventListener("click", () => { void renameActiveAccount(); });
 resetAccountBtn.addEventListener("click", () => { void resetActiveAccount(); });
 deleteAccountBtn.addEventListener("click", () => { void deleteActiveAccount(); });
 chooseBtn.addEventListener("click", () => {
-  startOverlay.classList.add("hidden");
-  selectOverlay.classList.remove("hidden");
+  screenRouter.showCharacterSelection();
   state = "select";
   syncMusicContext();
 });
-document.getElementById("backBtn").addEventListener("click", () => {
-  selectOverlay.classList.add("hidden");
-  startOverlay.classList.remove("hidden");
+backBtn.addEventListener("click", () => {
+  screenRouter.closeCharacterSelection();
   state = "menu";
   syncMusicContext();
 });
-document.getElementById("nextBtn").addEventListener("click", continueLevel);
-document.getElementById("padBtn").addEventListener("click", () => {
+nextBtn.addEventListener("click", continueLevel);
+padBtn.addEventListener("click", () => {
   ensureAudio();
   const padState = updateGamepadStatus();
   gamepadStatus.textContent = padState.connected ? "Manette détectée" : "Appuie sur un bouton de la manette";
@@ -1366,34 +939,35 @@ window.addEventListener("resize", () => {
   knightX = clamp(knightX, 52, window.innerWidth - 52);
   knight.style.left = knightX + "px";
   if (isCannonLevel()) {
-    renderCannonState();
+    cannonController.render(knightX);
   }
 });
 
-buildLevelGrid();
-buildDebugLevelGrid();
-buildCharacterGrid();
-applySelectedCharacter();
-updateHud();
-updateAttackButtons();
-void initAccounts();
-void initNarration();
-setMessage(getLevel().instruction);
-knight.style.left = knightX + "px";
-requestAnimationFrame(tick);
-
 // [impl->req~dictation.repeat-control~1]
-dictationRepeatBtn.addEventListener("click", speakCurrentDictation);
+dictationRepeatBtn.addEventListener("click", () => dictationController.speakCurrentDictation());
 // [impl->req~dictation.validation-and-clear-controls~1]
-dictationValidateBtn.addEventListener("click", () => validateDictation());
+dictationValidateBtn.addEventListener("click", () => {
+  dictationController.validate({
+    finishLevel,
+    getLevel,
+    setLevelStats: (nextLevelStats) => {
+      levelStats = nextLevelStats;
+    }
+  });
+});
 dictationClearBtn.addEventListener("click", () => {
-  dictationInput.value = "";
-  focusDictationPrompt();
+  dictationController.clearCurrentInput();
 });
 dictationInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();
-    validateDictation();
+    dictationController.validate({
+      finishLevel,
+      getLevel,
+      setLevelStats: (nextLevelStats) => {
+        levelStats = nextLevelStats;
+      }
+    });
   }
 });
 
@@ -1409,3 +983,15 @@ window.addEventListener("keydown", (event) => {
   }
   completeDebugLevelWithMaxScore();
 });
+
+buildLevelGrid();
+debugController.buildDebugLevelGrid(launchDebugLevel);
+characterController.buildCharacterGrid();
+characterController.applySelectedCharacter();
+updateHud();
+updateAttackButtons();
+void initAccounts();
+void initNarration();
+setMessage(getLevel().instruction);
+knight.style.left = knightX + "px";
+requestAnimationFrame(tick);

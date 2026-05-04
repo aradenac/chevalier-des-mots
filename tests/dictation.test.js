@@ -37,6 +37,35 @@ describe("dictation core", () => {
     expect(scoreDictation({ text: "chat", variants: [] }, "chat").score).toBe(5);
   });
 
+  it("retourne null si un niveau de dictée n'a pas de banque exploitable", () => {
+    expect(pickDictation(null)).toBeNull();
+    expect(pickDictation({ type: "dictation", dictations: [] })).toBeNull();
+  });
+
+  it("tolère un niveau de tranchage sans dictées sans le traiter comme une erreur", () => {
+    expect(pickDictation({ type: "slicing", items: [{ text: "faux" }] })).toBeNull();
+  });
+
+  it("distingue accents, casse, ponctuation et espaces dans les différences de dictée", () => {
+    const accent = scoreDictation({ text: "École", variants: [] }, "Ecole");
+    const punctuation = scoreDictation({ text: "Bonjour?", variants: [] }, "Bonjour!");
+    const spacing = scoreDictation({ text: "bon jour", variants: [] }, "bonjour");
+    const casing = scoreDictation({ text: "Chat", variants: [] }, "chat");
+
+    expect(accent.differences).toEqual([
+      expect.objectContaining({ type: "accent différent", expected: "É", actual: "E" })
+    ]);
+    expect(punctuation.differences).toEqual([
+      expect.objectContaining({ type: "ponctuation différente", expected: "?", actual: "!" })
+    ]);
+    expect(spacing.differences).toEqual([
+      expect.objectContaining({ type: "caractère ajouté", expected: " ", actual: "" })
+    ]);
+    expect(casing.differences).toEqual([
+      expect.objectContaining({ type: "casse différente", expected: "C", actual: "c" })
+    ]);
+  });
+
   it("définit des niveaux de dictée dans la progression principale", () => {
     const dictationLevels = LEVELS.filter(level => level.type === "dictation");
     expect(dictationLevels.length).toBeGreaterThanOrEqual(10);
