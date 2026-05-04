@@ -195,6 +195,36 @@ Acceptance criteria:
 
 Needs: impl, utest
 
+#### Une voix française doit être obligatoire dans le navigateur et dans le jeu
+`req~speech.french-voice-required~3`
+
+Status: approved  
+Priority: high  
+Verification: test  
+Additional verification: manual-review  
+
+Au lancement du site et pendant l'utilisation du jeu, le système doit imposer la disponibilité et l'utilisation d'une voix française de synthèse vocale pour accéder aux menus de jeu, lancer les niveaux et jouer la progression principale.
+
+Rationale: Les niveaux de dictée sont obligatoires dans la progression principale ; la voix française n'est donc pas une préférence de confort, mais une capacité fonctionnelle nécessaire au jeu.
+
+Acceptance criteria:
+
+- La vérification de disponibilité de l'API de synthèse vocale fait partie des premières opérations de lancement du site.
+- Le système détecte au moins une voix dont la langue commence par `fr` ou dont le nom indique une voix française.
+- Si les voix ne sont pas disponibles immédiatement, le système attend l'événement navigateur permettant de réévaluer la liste des voix avant de conclure à l'indisponibilité.
+- Si aucune voix française n'est disponible après la phase de détection, le système affiche un message d'erreur lisible.
+- Si aucune voix française n'est disponible, le système ne permet pas d'accéder au menu principal.
+- Si aucune voix française n'est disponible, le système ne permet pas d'accéder au menu debug.
+- Si une voix française est disponible, le système permet d'accéder au menu principal.
+- Le système ne doit pas proposer de contrôle utilisateur permettant de désactiver la voix du jeu.
+- Le système ne doit pas stocker de préférence utilisateur permettant de désactiver la voix du jeu.
+- Le système ne doit pas rendre silencieuses les consignes vocales, les lectures de dictée ou les répétitions de dictée par préférence utilisateur.
+- La lecture automatique d'une dictée doit rester active pendant toute la progression principale.
+- Le bouton `Répéter` d'un niveau de dictée doit rester disponible et audible.
+- L'indisponibilité de WebAudio pour les effets sonores ou la musique ne rend pas cette exigence échouée.
+- L'échec de la musique ne doit pas désactiver la voix française si celle-ci reste disponible.
+
+Needs: impl, utest
 
 
 ## Change history
