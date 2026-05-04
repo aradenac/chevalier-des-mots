@@ -103,7 +103,7 @@ Needs: impl, utest
 
 #### L'indicateur de trajectoire doit rester vertical et pointillé
 
-`req~cannon.vertical-trajectory-indicator~1`
+`req~cannon.vertical-trajectory-indicator~3`
 
 Status: approved  
 Priority: medium  
@@ -120,6 +120,7 @@ Acceptance criteria:
 - La ligne de trajectoire reste verticale.
 - La ligne de trajectoire ne s'incline pas selon le déplacement du canon.
 - La ligne de trajectoire se met à jour lorsque le canon se déplace horizontalement.
+- La trajectoire de la lettre tirée par le cannnon suit le guide pointillé et le milieu de la lettre tirée et centré horizontalement sur le guide.
 
 Needs: impl
 

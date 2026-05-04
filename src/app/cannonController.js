@@ -14,6 +14,14 @@ export function createCannonController({
 }) {
   let currentCannonState = null;
 
+  function alignTrajectoryGuide() {
+    if (!cannonTrajectory || !cannonCurrentLetter || !cannonRig) return;
+    const rigRect = cannonRig.getBoundingClientRect();
+    const letterRect = cannonCurrentLetter.getBoundingClientRect();
+    const centerOffset = letterRect.left + letterRect.width / 2 - rigRect.left;
+    cannonTrajectory.style.left = centerOffset + "px";
+  }
+
   function reset() {
     currentCannonState = null;
   }
@@ -39,19 +47,21 @@ export function createCannonController({
   function animateCannonShot({ letter, targetRect = null, success = false } = {}) {
     if (!letter || !cannonShotLayer || !cannonCurrentLetter) return;
     const startRect = cannonCurrentLetter.getBoundingClientRect();
+    const startX = startRect.left + startRect.width / 2;
+    const startY = startRect.top + startRect.height / 2;
     const shot = document.createElement("div");
     shot.className = "cannonShot " + (success ? "is-hit" : "is-miss");
     shot.textContent = letter;
-    shot.style.left = startRect.left + startRect.width / 2 + "px";
-    shot.style.top = startRect.top + startRect.height / 2 + "px";
-    const targetX = targetRect ? targetRect.left + targetRect.width / 2 : startRect.left + startRect.width / 2;
+    shot.style.left = startX + "px";
+    shot.style.top = startY + "px";
     const targetY = targetRect ? targetRect.top + targetRect.height / 2 : startRect.top - Math.min(window.innerHeight * 0.35, 240);
-    shot.style.setProperty("--dx", (targetX - (startRect.left + startRect.width / 2)) + "px");
-    shot.style.setProperty("--dy", (targetY - (startRect.top + startRect.height / 2)) + "px");
-    shot.style.setProperty("--dx-bounce", (targetX - (startRect.left + startRect.width / 2) - 24) + "px");
-    shot.style.setProperty("--dy-bounce", (targetY - (startRect.top + startRect.height / 2) + 14) + "px");
-    shot.style.setProperty("--dx-drop", (targetX - (startRect.left + startRect.width / 2) + 18) + "px");
-    shot.style.setProperty("--dy-drop", (window.innerHeight - (startRect.top + startRect.height / 2) - 36) + "px");
+    // [impl->req~cannon.vertical-trajectory-indicator~3]
+    shot.style.setProperty("--dx", "0px");
+    shot.style.setProperty("--dy", (targetY - startY) + "px");
+    shot.style.setProperty("--dx-bounce", "-24px");
+    shot.style.setProperty("--dy-bounce", (targetY - startY + 14) + "px");
+    shot.style.setProperty("--dx-drop", "18px");
+    shot.style.setProperty("--dy-drop", (window.innerHeight - startY - 36) + "px");
     game.appendChild(shot);
     setTimeout(() => shot.remove(), success ? 420 : 840);
   }
@@ -78,7 +88,8 @@ export function createCannonController({
     cannonPrompt.appendChild(content);
     cannonCurrentLetter.textContent = getCurrentCannonLetter(currentCannonState) || "·";
     cannonRig.style.left = knightX + "px";
-    cannonTrajectory.style.left = "104px";
+    // [impl->req~cannon.vertical-trajectory-indicator~3]
+    alignTrajectoryGuide();
   }
 
   function startLevel(level, knightX) {

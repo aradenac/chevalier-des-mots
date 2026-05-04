@@ -97,7 +97,7 @@ export function createScreenRouter({
   }
 
   // [impl->req~cannon.holed-text-display~1]
-  // [impl->req~cannon.vertical-trajectory-indicator~1]
+  // [impl->req~cannon.vertical-trajectory-indicator~3]
   // [impl->req~cannon.selected-character-operates-cannon~1]
   // [impl->req~cannon.no-live-score~1]
   function setCannonVisible(visible) {
