@@ -256,7 +256,10 @@ const tetrisController = createTetrisController({
   getCurrentTetrisWord,
   isTetrisLevelComplete,
   resolveTetrisAction,
-  clearElement: screenRouter.clearElement
+  clearElement: screenRouter.clearElement,
+  onHorizontalAnchorChange: (nextX) => {
+    knightX = nextX;
+  }
 });
 
 const slicingController = createSlicingController({

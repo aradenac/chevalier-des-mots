@@ -82,4 +82,30 @@ describe("tetris core", () => {
     expect(result.outcome.type).toBe("eliminate-distractor");
     expect(result.state.currentWord.text).toBe("dragon");
   });
+
+  it("garde la ponctuation finale après le dernier trou quand la donnée source est mal formée", () => {
+    const malformedLevel = {
+      type: "tetris",
+      tetrisPuzzles: [{
+        segments: ["Le ", " traverse le ", "."],
+        slots: [
+          { answer: "chevalier", placeholder: "_________" },
+          { answer: "jardin", placeholder: "______" },
+          { answer: "royaume", placeholder: "_______" }
+        ],
+        distractors: []
+      }]
+    };
+
+    const state = createTetrisState(malformedLevel, vi.fn(() => 0.4));
+    expect(getTetrisDisplayTokens(state).map((token) => token.value)).toEqual([
+      "Le ",
+      "_________",
+      " traverse le ",
+      "______",
+      " ",
+      "_______",
+      "."
+    ]);
+  });
 });

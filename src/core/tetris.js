@@ -25,10 +25,33 @@ function nextWordFromQueue(state) {
   };
 }
 
+function normalizeSegments(rawSegments, slotCount) {
+  const fallback = [""];
+  const segments = Array.isArray(rawSegments) && rawSegments.length > 0
+    ? rawSegments.map((segment) => String(segment ?? ""))
+    : fallback;
+
+  if (slotCount > 0 && segments.length === slotCount) {
+    const trailing = segments.at(-1) || "";
+    if (/^[\s.!?;:,]+$/.test(trailing) && /[.!?]/.test(trailing)) {
+      segments[segments.length - 1] = trailing.replace(/[.!?;:,]+/g, "").trimEnd() || " ";
+      segments.push(trailing.trimStart());
+      return segments;
+    }
+    segments.push("");
+  }
+
+  while (segments.length < slotCount + 1) {
+    segments.push("");
+  }
+
+  return segments;
+}
+
 export function createTetrisState(level, random = Math.random) {
   const puzzle = Array.isArray(level?.tetrisPuzzles) ? level.tetrisPuzzles[0] : null;
-  const segments = Array.isArray(puzzle?.segments) ? puzzle.segments : [""];
   const slots = Array.isArray(puzzle?.slots) ? puzzle.slots.map(buildDisplaySlot) : [];
+  const segments = normalizeSegments(puzzle?.segments, slots.length);
   const distractors = Array.isArray(puzzle?.distractors) ? puzzle.distractors.filter(Boolean) : [];
   const answers = slots.map((slot, slotIndex) => ({
     kind: "answer",

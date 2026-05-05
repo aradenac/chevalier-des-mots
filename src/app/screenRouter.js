@@ -87,8 +87,8 @@ export function createScreenRouter({
     startOverlay.classList.remove("hidden");
   }
 
-  function setGameModeClass(enabled) {
-    game.classList.toggle("is-cannon-mode", Boolean(enabled));
+  function setGameModeClass(name, enabled) {
+    game.classList.toggle(name, Boolean(enabled));
   }
 
   function setDictationVisible(visible) {
@@ -101,6 +101,7 @@ export function createScreenRouter({
   function setTetrisVisible(visible) {
     const enabled = Boolean(visible);
     tetrisPanel.classList.toggle("hidden", !enabled);
+    setGameModeClass("is-tetris-mode", enabled);
   }
 
   // [impl->req~cannon.holed-text-display~1]
@@ -112,7 +113,7 @@ export function createScreenRouter({
     const enabled = Boolean(visible);
     cannonPanel.classList.toggle("hidden", !enabled);
     cannonRig.classList.toggle("hidden", !enabled);
-    setGameModeClass(enabled);
+    setGameModeClass("is-cannon-mode", enabled);
     if (!enabled) {
       if (cannonPrompt) clearElement(cannonPrompt);
       if (cannonCurrentLetter) cannonCurrentLetter.textContent = "";

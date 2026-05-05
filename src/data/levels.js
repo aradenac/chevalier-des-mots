@@ -540,7 +540,7 @@ const TETRIS_LEVEL_BANKS = {
     distractors: ["jouer", "pelouse"]
   }],
   59: [{
-    segments: ["La ", " prépare un ", " pour le ", "."],
+    segments: ["La ", " prépare un ", " pour le ", " ", "."],
     slots: [
       { answer: "reine", placeholder: "_____" },
       { answer: "festin", placeholder: "______" },
@@ -550,7 +550,7 @@ const TETRIS_LEVEL_BANKS = {
     distractors: ["nage", "caillou"]
   }],
   60: [{
-    segments: ["Les ", " avancent avec leurs ", " vers la ", "."],
+    segments: ["Les ", " avancent avec leurs ", " vers la ", " ", "."],
     slots: [
       { answer: "chevaliers", placeholder: "__________" },
       { answer: "boucliers", placeholder: "__________" },
@@ -560,7 +560,7 @@ const TETRIS_LEVEL_BANKS = {
     distractors: ["assis", "nuits"]
   }],
   61: [{
-    segments: ["Le ", " traverse le ", " pour sauver la ", " du ", "."],
+    segments: ["Le ", " traverse le ", " pour sauver la ", " du ", " ", "."],
     slots: [
       { answer: "chevalier", placeholder: "_________" },
       { answer: "jardin", placeholder: "______" },
@@ -573,17 +573,17 @@ const TETRIS_LEVEL_BANKS = {
 };
 
 const TETRIS_LEVEL_METADATA = {
-  51: { title: "Tetris 1 · Premier mot", instruction: "Déplace le mot qui tombe pour le faire entrer dans le bon trou. Élimine les distracteurs.", shortInstruction: "Place le bon mot", difficulty: "facile", fallDurationSeconds: 3 },
-  52: { title: "Tetris 2 · Trou unique", instruction: "Place le mot juste dans le trou en bas de l'écran. Élimine les intrus.", shortInstruction: "Complète la phrase", difficulty: "facile", fallDurationSeconds: 2.9 },
-  53: { title: "Tetris 3 · Deux trous", instruction: "Fais tomber chaque mot dans le bon trou et élimine les distracteurs.", shortInstruction: "Complète les deux trous", difficulty: "facile", fallDurationSeconds: 2.8 },
-  54: { title: "Tetris 4 · Deux mots guidés", instruction: "Complète la phrase avec les bons mots. Les distracteurs doivent être éliminés.", shortInstruction: "Place les bons mots", difficulty: "moyen", fallDurationSeconds: 2.65 },
-  55: { title: "Tetris 5 · Groupe simple", instruction: "Place les mots utiles dans la phrase et élimine les mots intrus.", shortInstruction: "Complète le groupe", difficulty: "moyen", fallDurationSeconds: 2.5 },
-  56: { title: "Tetris 6 · Trois trous", instruction: "La phrase comporte trois trous. Positionne correctement chaque mot.", shortInstruction: "Complète les trois trous", difficulty: "moyen", fallDurationSeconds: 2.35 },
-  57: { title: "Tetris 7 · Lecture rapide", instruction: "Lis la phrase du bas, place les bons mots et chasse les distracteurs.", shortInstruction: "Lis et place", difficulty: "difficile", fallDurationSeconds: 2.2 },
-  58: { title: "Tetris 8 · Phrase plus longue", instruction: "Les mots tombent plus vite. Place-les dans les bons trous de la phrase.", shortInstruction: "Phrase longue", difficulty: "difficile", fallDurationSeconds: 2.05 },
-  59: { title: "Tetris 9 · Quatre trous", instruction: "Complète les quatre trous avec précision et élimine les mots distracteurs.", shortInstruction: "Complète quatre trous", difficulty: "difficile", fallDurationSeconds: 1.9 },
-  60: { title: "Tetris 10 · Ligne dense", instruction: "Les mots descendent vite. Garde ton calme et complète la phrase.", shortInstruction: "Garde le rythme", difficulty: "expert", fallDurationSeconds: 1.7 },
-  61: { title: "Tetris 11 · Phrase finale", instruction: "Complète toute la phrase malgré la vitesse élevée et les distracteurs.", shortInstruction: "Complète toute la phrase", difficulty: "expert", fallDurationSeconds: 1.5 }
+  51: { title: "Tetris 1 · Premier mot", instruction: "Déplace le mot qui tombe pour le faire entrer dans le bon trou. Élimine les distracteurs.", shortInstruction: "Place le bon mot", difficulty: "facile", fallDurationSeconds: 6 },
+  52: { title: "Tetris 2 · Trou unique", instruction: "Place le mot juste dans le trou en bas de l'écran. Élimine les intrus.", shortInstruction: "Complète la phrase", difficulty: "facile", fallDurationSeconds: 5.7 },
+  53: { title: "Tetris 3 · Deux trous", instruction: "Fais tomber chaque mot dans le bon trou et élimine les distracteurs.", shortInstruction: "Complète les deux trous", difficulty: "facile", fallDurationSeconds: 5.4 },
+  54: { title: "Tetris 4 · Deux mots guidés", instruction: "Complète la phrase avec les bons mots. Les distracteurs doivent être éliminés.", shortInstruction: "Place les bons mots", difficulty: "moyen", fallDurationSeconds: 5.1 },
+  55: { title: "Tetris 5 · Groupe simple", instruction: "Place les mots utiles dans la phrase et élimine les mots intrus.", shortInstruction: "Complète le groupe", difficulty: "moyen", fallDurationSeconds: 4.8 },
+  56: { title: "Tetris 6 · Trois trous", instruction: "La phrase comporte trois trous. Positionne correctement chaque mot.", shortInstruction: "Complète les trois trous", difficulty: "moyen", fallDurationSeconds: 4.5 },
+  57: { title: "Tetris 7 · Lecture rapide", instruction: "Lis la phrase du bas, place les bons mots et chasse les distracteurs.", shortInstruction: "Lis et place", difficulty: "difficile", fallDurationSeconds: 4.2 },
+  58: { title: "Tetris 8 · Phrase plus longue", instruction: "Les mots tombent plus vite. Place-les dans les bons trous de la phrase.", shortInstruction: "Phrase longue", difficulty: "difficile", fallDurationSeconds: 3.9 },
+  59: { title: "Tetris 9 · Quatre trous", instruction: "Complète les quatre trous avec précision et élimine les mots distracteurs.", shortInstruction: "Complète quatre trous", difficulty: "difficile", fallDurationSeconds: 3.6 },
+  60: { title: "Tetris 10 · Ligne dense", instruction: "Les mots descendent vite. Garde ton calme et complète la phrase.", shortInstruction: "Garde le rythme", difficulty: "expert", fallDurationSeconds: 3.3 },
+  61: { title: "Tetris 11 · Phrase finale", instruction: "Complète toute la phrase malgré la vitesse élevée et les distracteurs.", shortInstruction: "Complète toute la phrase", difficulty: "expert", fallDurationSeconds: 3 }
 };
 
 const CAMPAIGN_LAYOUT = [

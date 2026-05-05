@@ -55,8 +55,8 @@ describe("LEVELS", () => {
       }
       if (level.type === "tetris") {
         expect(level.tetrisPuzzles.length).toBeGreaterThanOrEqual(1);
-        expect(level.fallDurationSeconds).toBeGreaterThanOrEqual(1.5);
-        expect(level.fallDurationSeconds).toBeLessThanOrEqual(3);
+        expect(level.fallDurationSeconds).toBeGreaterThanOrEqual(3);
+        expect(level.fallDurationSeconds).toBeLessThanOrEqual(6);
         expect(level.items).toBeUndefined();
         expect(level.dictations).toBeUndefined();
         expect(level.cannonPuzzles).toBeUndefined();
@@ -82,6 +82,7 @@ describe("LEVELS", () => {
       } else if (level.type === "tetris") {
         expect(level.tetrisPuzzles.length).toBeGreaterThanOrEqual(1);
         expect(level.tetrisPuzzles[0].slots.length).toBeGreaterThanOrEqual(1);
+        expect(level.tetrisPuzzles[0].segments.length).toBe(level.tetrisPuzzles[0].slots.length + 1);
         expect(level.items).toBeUndefined();
         expect(level.dictations).toBeUndefined();
         expect(level.cannonPuzzles).toBeUndefined();
@@ -142,8 +143,8 @@ describe("LEVELS", () => {
     const tetrisLevels = LEVELS.filter(level => level.type === "tetris");
     expect(tetrisLevels).toHaveLength(11);
     expect(tetrisLevels.map(level => level.id)).toEqual([51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61]);
-    expect(tetrisLevels[0].fallDurationSeconds).toBe(3);
-    expect(tetrisLevels.at(-1).fallDurationSeconds).toBe(1.5);
+    expect(tetrisLevels[0].fallDurationSeconds).toBe(6);
+    expect(tetrisLevels.at(-1).fallDurationSeconds).toBe(3);
     expect(tetrisLevels.at(-1).tetrisPuzzles[0].slots.length).toBeGreaterThanOrEqual(tetrisLevels[0].tetrisPuzzles[0].slots.length);
   });
 });

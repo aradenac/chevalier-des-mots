@@ -8,11 +8,13 @@ export function createTetrisController({
   getCurrentTetrisWord,
   isTetrisLevelComplete,
   resolveTetrisAction,
-  clearElement
+  clearElement,
+  onHorizontalAnchorChange = () => {},
+  random = Math.random
 }) {
   let currentTetrisState = null;
   let currentBlock = null;
-  let currentFallDuration = 3;
+  let currentFallDuration = 6;
 
   function removeCurrentBlock() {
     currentBlock?.el?.remove();
@@ -27,6 +29,7 @@ export function createTetrisController({
 
   function getSlotLayouts() {
     if (!tetrisPrompt || !currentTetrisState) return [];
+    const arenaRect = arena?.getBoundingClientRect?.() || { left: 0, top: 0 };
     return currentTetrisState.slots.map((slot) => {
       const element = tetrisPrompt.querySelector('[data-tetris-slot-index="' + slot.index + '"]');
       if (!element) return null;
@@ -38,9 +41,23 @@ export function createTetrisController({
         top: rect.top,
         width: rect.width,
         centerX: rect.left + rect.width / 2,
-        centerY: rect.top + rect.height / 2
+        centerY: rect.top + rect.height / 2,
+        localCenterY: rect.top + rect.height / 2 - arenaRect.top
       };
     }).filter(Boolean);
+  }
+
+  function fitPromptLine(line) {
+    if (!line || !tetrisPrompt) return;
+    const promptWidth = tetrisPrompt.clientWidth || tetrisPrompt.getBoundingClientRect?.().width || 0;
+    const contentWidth = line.scrollWidth || line.getBoundingClientRect?.().width || 0;
+    if (promptWidth <= 0 || contentWidth <= 0 || contentWidth <= promptWidth - 40) {
+      return;
+    }
+    const maxFontSize = 42;
+    const minFontSize = 16;
+    const scaledFontSize = Math.floor(maxFontSize * ((promptWidth - 40) / contentWidth));
+    line.style.fontSize = Math.max(minFontSize, Math.min(maxFontSize, scaledFontSize)) + "px";
   }
 
   function renderPrompt() {
@@ -64,6 +81,37 @@ export function createTetrisController({
       line.appendChild(slot);
     }
     tetrisPrompt.appendChild(line);
+    fitPromptLine(line);
+  }
+
+  function estimateWordWidth(word) {
+    return Math.max(96, Math.round((Math.max(4, Number(word?.widthCh) || 4) * 18) + 32));
+  }
+
+  function getHorizontalBounds() {
+    const rect = arena?.getBoundingClientRect?.();
+    if (rect && rect.width > 0) {
+      return {
+        left: rect.left,
+        right: rect.right
+      };
+    }
+    const viewportWidth = Math.max(320, Number(globalThis.window?.innerWidth) || 0);
+    return {
+      left: 0,
+      right: viewportWidth
+    };
+  }
+
+  function pickSpawnX(word, fallbackX) {
+    const bounds = getHorizontalBounds();
+    const halfWidth = estimateWordWidth(word) / 2;
+    const minX = bounds.left + halfWidth + 12;
+    const maxX = bounds.right - halfWidth - 12;
+    if (!(maxX > minX)) {
+      return fallbackX;
+    }
+    return minX + ((maxX - minX) * random());
   }
 
   function spawnCurrentBlock(knightX, windowHeight) {
@@ -76,17 +124,19 @@ export function createTetrisController({
     el.style.minWidth = Math.max(4, Math.round(word.widthCh * 0.9 * 10) / 10) + "ch";
     arena.appendChild(el);
     const layouts = getSlotLayouts();
-    const landingY = layouts[0]?.centerY || (windowHeight - 110);
+    const landingY = layouts[0]?.localCenterY || Math.max(120, windowHeight - 258);
     const startY = 60;
     const distance = Math.max(120, landingY - startY);
+    const spawnX = pickSpawnX(word, knightX);
     currentBlock = {
       el,
-      x: knightX,
+      x: spawnX,
       y: startY,
       landingY,
       speed: distance / Math.max(1.5, currentFallDuration)
     };
-    render(knightX);
+    onHorizontalAnchorChange(spawnX);
+    render(spawnX);
   }
 
   function render(knightX) {
@@ -175,7 +225,7 @@ export function createTetrisController({
 
   function startLevel(level, knightX, windowHeight) {
     currentTetrisState = createTetrisState(level);
-    currentFallDuration = Math.max(1.5, Math.min(3, Number(level?.fallDurationSeconds) || 3));
+    currentFallDuration = Math.max(3, Math.min(6, Number(level?.fallDurationSeconds) || 6));
     renderPrompt();
     spawnCurrentBlock(knightX, windowHeight);
     return {
@@ -187,7 +237,7 @@ export function createTetrisController({
 
   function updateFrame({ dt, knightX, levelStats, finishLevel, onSuccess, onError, windowHeight }) {
     if (!currentBlock) return levelStats;
-    currentBlock.y += currentBlock.speed * dt;
+    currentBlock.y = Math.min(currentBlock.landingY, currentBlock.y + (currentBlock.speed * dt));
     render(knightX);
     if (currentBlock.y < currentBlock.landingY) {
       return levelStats;

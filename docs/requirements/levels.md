@@ -78,14 +78,18 @@ Rationale: apprendre à l'enfant à constituer des phrases correctes.
 Acceptance criteria:
 
 - La position du texte à trou est dans le dernier tier de l'écran, avec une marge avec la limite basse du champ de vision.
-- Le texte à trou doit tenir sur une seule ligne.
-- Les mots ont une vitesse telle que leur descente met de 3 secondes à traverser l'écran pour les niveaux faciles. La vitesse augmente jusqu'à 1.5 secondes pour le niveau le plus dur.
+- Le texte à trou doit tenir sur une seule ligne et ne doit pas dépasser de l'écran, ni être coupé.
+- Le texte est centré horizontalement.
+- Les mots ont une vitesse telle que leur descente met de 6 secondes à traverser l'écran pour les niveaux faciles. La vitesse augmente jusqu'à 3 secondes pour le niveau le plus dur.
 - La trajectoire de chute des mots suit une direction verticale.
 - Les mots qui tombent ont une largeur 10% inférieure à celle du trou. Ce pourcentage correspond à la marge d'acceptation de placement du mot.
 - Le mot est validé quand il est correctement placé verticalement selon les marges de tolérence définies, et quand sa position hosrizontale égale celle de la phrase.
 - Une animation et un son de succès sont joués par le jeu à chaque mot correctement placé.
 - Une animation et un son d'échec sont joués par le jeu à chaque mot incorrectement placé, ou injustement éliminé.
 - Un mot distracteur correctement éliminé s'accompagne d'un son et d'une animation d'explosion de feu d'artifice autour de l'élément.
+- Aucun personnage n'apparait dans ce niveau.
+- Les mots apparaissent à une position horizontale aléatoire.
+- Les mots ne peuvent jamais tomber plus bas que le texte. Aucun dépassement inférieur n'est permis, ils doivent être validés ou invalidés automatiquement en atteignant cette limite basse.
 
 Needs: impl, utest
 

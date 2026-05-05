@@ -169,8 +169,15 @@ button {
   background: rgba(255, 253, 242, .94);
   border: 4px solid #3e8cff;
   box-shadow: 0 8px 0 #245db4, 0 14px 24px var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 .tetrisPrompt__line {
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
   white-space: nowrap;
   text-align: center;
   font-size: clamp(24px, 3vw, 42px);
@@ -199,6 +206,7 @@ button {
 .tetrisWord {
   position: absolute;
   min-height: 48px;
+  max-width: min(360px, calc(100vw - 48px));
   padding: 10px 16px;
   border-radius: 18px;
   background: #fffdf2;
@@ -322,8 +330,14 @@ button {
 #game.is-cannon-mode #knight .sword {
   opacity: .12;
 }
+#game.is-tetris-mode #knight {
+  opacity: 0;
+  pointer-events: none;
+}
 #game.is-cannon-mode #strikeBtnTop,
-#game.is-cannon-mode #touchStrike {
+#game.is-cannon-mode #touchStrike,
+#game.is-tetris-mode #strikeBtnTop,
+#game.is-tetris-mode #touchStrike {
   background: #b9f5ff;
   border-color: #258dc7;
   box-shadow: 0 7px 0 #258dc7;
