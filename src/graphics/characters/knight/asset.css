@@ -1,0 +1,111 @@
+#knight {
+  position: absolute;
+  left: 50%;
+  bottom: 8vh;
+  width: 118px;
+  height: 142px;
+  transform: translateX(-50%);
+  z-index: 10;
+  will-change: left;
+}
+#knight .body {
+  position: absolute;
+  left: 30px;
+  bottom: 16px;
+  width: 58px;
+  height: 70px;
+  border-radius: 18px 18px 12px 12px;
+  background: linear-gradient(#78d7ff, #398eea);
+  border: 4px solid #31549f;
+  box-shadow: 0 6px 0 #23386f;
+}
+#knight .head {
+  position: absolute;
+  left: 27px;
+  bottom: 78px;
+  width: 64px;
+  height: 54px;
+  border-radius: 22px 22px 16px 16px;
+  background: #d7e0ef;
+  border: 4px solid #596985;
+  box-shadow: inset 0 -8px 0 rgba(0,0,0,.08);
+}
+#knight .visor {
+  position: absolute;
+  left: 12px;
+  top: 19px;
+  width: 40px;
+  height: 14px;
+  border-radius: 12px;
+  background: #27304f;
+  box-shadow: inset 0 0 0 3px #596985;
+}
+#knight .plume {
+  position: absolute;
+  left: 43px;
+  bottom: 126px;
+  width: 38px;
+  height: 26px;
+  border-radius: 50% 50% 50% 8px;
+  background: #ff75b7;
+  border: 3px solid #b92f77;
+  transform: rotate(-18deg);
+}
+#knight .leg {
+  position: absolute;
+  bottom: 0;
+  width: 22px;
+  height: 30px;
+  border-radius: 10px;
+  background: #27304f;
+}
+#knight .leg.left { left: 34px; }
+#knight .leg.right { right: 34px; }
+#knight .shield {
+  position: absolute;
+  left: 12px;
+  bottom: 32px;
+  width: 34px;
+  height: 45px;
+  border-radius: 18px 18px 18px 18px / 14px 14px 26px 26px;
+  background: #ffd94a;
+  border: 4px solid #bd7600;
+}
+#knight .sword {
+  position: absolute;
+  right: 10px;
+  bottom: 54px;
+  width: 14px;
+  height: 84px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #c9f6ff, #fff, #8deeff);
+  border: 2px solid #5789b5;
+  transform-origin: 50% 88%;
+  rotate: 33deg;
+  box-shadow: 0 0 16px rgba(255,255,255,.8);
+}
+#knight .sword::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -14px;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 17px solid #fff;
+  transform: translateX(-50%);
+}
+#knight.striking .sword { animation: strike .26s ease-out; }
+@keyframes strike {
+  0% { rotate: 33deg; }
+  45% { rotate: -72deg; scale: 1.06; }
+  100% { rotate: 33deg; }
+}
+
+@media (max-width: 720px) {
+  #knight { width: 98px; height: 122px; bottom: 8.5vh; }
+  #knight .body { left: 24px; width: 52px; height: 62px; }
+  #knight .head { left: 22px; width: 58px; height: 50px; bottom: 70px; }
+  #knight .plume { bottom: 115px; }
+}

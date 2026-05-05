@@ -46,6 +46,50 @@ Acceptance criteria:
 
 Needs: impl, utest
 
+## Niveaux 51 à 61
+`req~level.tetris-mode~1`
+
+Status: approved  
+Priority: high  
+Verification: test  
+Additional verification: inspection  
+
+Le jeu doit inclure une dizaine de niveaux avec un mode de jeu tetris.
+
+Decription du mode de jeu tetris : un texte à trou est affiché en bas de l'écran.
+Des mots tombent du haut de l'écran et le joueur peut contrôler leur position horizontale afin que ceux-ci tombent dans les bons trous du texte.
+Si le bon mot est placé dans le trou correspondant, il s'incorpore à la phrase.
+Si le mot n'est pas placé à l'endroit attendu, il sera reproposé en tombant du haut de l'écran à nouveau.
+Une mot correctement éliminé ne sera plus proposé. Un mot injustement éliminé sera reproposé pour permettre de terminer la complétion du texte.
+Des mots distracteurs sont également proposés, qui ne font pas partie de la phrase. Le joueur doit appuyer sur un bouton pour les éliminer.
+
+
+Le texte doit être correctement rempli pour terminer le niveau.
+
+Le score est calculé comme pour les autres niveaux de 0 à 5 et participe aux statistiques globales.
+Le score est de 5 sur 5 si l'élève ne commet pas d'erreur. Il diminue en cas d'erreur.
+
+La difficulté augmente graduellement:
+- la vitesse de chute augmente.
+- le nombre de trous dans le texte augmente.
+
+Rationale: apprendre à l'enfant à constituer des phrases correctes.
+
+Acceptance criteria:
+
+- La position du texte à trou est dans le dernier tier de l'écran, avec une marge avec la limite basse du champ de vision.
+- Le texte à trou doit tenir sur une seule ligne.
+- Les mots ont une vitesse telle que leur descente met de 3 secondes à traverser l'écran pour les niveaux faciles. La vitesse augmente jusqu'à 1.5 secondes pour le niveau le plus dur.
+- La trajectoire de chute des mots suit une direction verticale.
+- Les mots qui tombent ont une largeur 10% inférieure à celle du trou. Ce pourcentage correspond à la marge d'acceptation de placement du mot.
+- Le mot est validé quand il est correctement placé verticalement selon les marges de tolérence définies, et quand sa position hosrizontale égale celle de la phrase.
+- Une animation et un son de succès sont joués par le jeu à chaque mot correctement placé.
+- Une animation et un son d'échec sont joués par le jeu à chaque mot incorrectement placé, ou injustement éliminé.
+- Un mot distracteur correctement éliminé s'accompagne d'un son et d'une animation d'explosion de feu d'artifice autour de l'élément.
+
+Needs: impl, utest
+
+
 ## Contexte non normatif : vue pédagogique des niveaux
 
 La campagne étendue prévoit deux mondes de 25 niveaux chacun.

@@ -1,3 +1,9 @@
+import {
+  createCannonMuzzleEffects,
+  createCannonShotElement,
+  restartCannonRecoil
+} from "../graphics/cannon/asset.js";
+
 export function createCannonController({
   game,
   cannonPrompt,
@@ -49,19 +55,16 @@ export function createCannonController({
     const startRect = cannonCurrentLetter.getBoundingClientRect();
     const startX = startRect.left + startRect.width / 2;
     const startY = startRect.top + startRect.height / 2;
-    const shot = document.createElement("div");
-    shot.className = "cannonShot " + (success ? "is-hit" : "is-miss");
-    shot.textContent = letter;
-    shot.style.left = startX + "px";
-    shot.style.top = startY + "px";
     const targetY = targetRect ? targetRect.top + targetRect.height / 2 : startRect.top - Math.min(window.innerHeight * 0.35, 240);
     // [impl->req~cannon.vertical-trajectory-indicator~3]
-    shot.style.setProperty("--dx", "0px");
-    shot.style.setProperty("--dy", (targetY - startY) + "px");
-    shot.style.setProperty("--dx-bounce", "-24px");
-    shot.style.setProperty("--dy-bounce", (targetY - startY + 14) + "px");
-    shot.style.setProperty("--dx-drop", "18px");
-    shot.style.setProperty("--dy-drop", (window.innerHeight - startY - 36) + "px");
+    const shot = createCannonShotElement(document, {
+      letter,
+      startX,
+      startY,
+      targetY,
+      dropY: window.innerHeight,
+      success
+    });
     game.appendChild(shot);
     setTimeout(() => shot.remove(), success ? 420 : 840);
   }
@@ -69,14 +72,7 @@ export function createCannonController({
   function animateCannonMuzzle() {
     if (!game || !cannonRig) return;
     const rigRect = cannonRig.getBoundingClientRect();
-    const flame = document.createElement("div");
-    flame.className = "cannonMuzzle cannonMuzzle--flame";
-    flame.style.left = rigRect.left + 168 + "px";
-    flame.style.top = rigRect.top + 50 + "px";
-    const smoke = document.createElement("div");
-    smoke.className = "cannonMuzzle cannonMuzzle--smoke";
-    smoke.style.left = rigRect.left + 168 + "px";
-    smoke.style.top = rigRect.top + 50 + "px";
+    const { flame, smoke } = createCannonMuzzleEffects(document, rigRect);
     game.appendChild(flame);
     game.appendChild(smoke);
     setTimeout(() => flame.remove(), 180);
@@ -84,11 +80,8 @@ export function createCannonController({
   }
 
   function animateCannonRecoil() {
-    if (!cannonRig?.classList) return;
-    cannonRig.classList.remove("is-firing");
-    void cannonRig.offsetWidth;
     // [impl->req~cannon.animation~1]
-    cannonRig.classList.add("is-firing");
+    restartCannonRecoil(cannonRig);
     setTimeout(() => cannonRig.classList.remove("is-firing"), 220);
   }
 

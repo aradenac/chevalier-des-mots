@@ -1,0 +1,68 @@
+#knight.character-pepe .plume,
+#knight.character-pepe .shield {
+  display: none;
+}
+#knight.character-pepe .head {
+  left: 28px;
+  bottom: 76px;
+  background: linear-gradient(#f1d8c3, #cda27e);
+  border-color: #7d5b43;
+}
+#knight.character-pepe .body {
+  left: 32px;
+  width: 54px;
+  height: 74px;
+  background: linear-gradient(#e9d6b2, #b68449);
+  border-color: #7d5b43;
+  box-shadow: 0 6px 0 #62482f;
+}
+#knight.character-pepe .visor {
+  left: 10px;
+  top: 23px;
+  width: 42px;
+  height: 12px;
+  background: #6e4a31;
+  box-shadow: none;
+}
+#knight.character-pepe .sword {
+  right: 17px;
+  bottom: 42px;
+  width: 10px;
+  height: 92px;
+  border-radius: 999px;
+  background: linear-gradient(#a87a48, #704c2a);
+  border: 2px solid #704c2a;
+  rotate: 20deg;
+  box-shadow: none;
+}
+#knight.character-pepe .sword::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -16px;
+  width: 24px;
+  height: 16px;
+  border: 4px solid #704c2a;
+  border-bottom: 0;
+  border-radius: 14px 14px 0 0;
+  transform: translateX(-50%);
+  background: transparent;
+  box-shadow: none;
+}
+#knight.character-pepe .sword::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 18px;
+  height: 12px;
+  border-radius: 0 0 10px 10px;
+  background: #704c2a;
+  transform: translateX(-50%);
+}
+#knight.character-pepe.striking .sword { animation: strike-cane .28s ease-out; }
+@keyframes strike-cane {
+  0% { rotate: 20deg; }
+  45% { rotate: -18deg; scale: 1.02; }
+  100% { rotate: 20deg; }
+}

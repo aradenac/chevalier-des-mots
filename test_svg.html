@@ -1,0 +1,508 @@
+from pathlib import Path
+import base64, html
+
+parts_path = Path("/mnt/data/cartoon_knight_character_parts_sheet.png")
+poses_path = Path("/mnt/data/chibi_knight_character_animation_sheet.png")
+
+parts_b64 = base64.b64encode(parts_path.read_bytes()).decode("ascii")
+poses_b64 = base64.b64encode(poses_path.read_bytes()).decode("ascii")
+
+html_content = f"""<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Démo personnage animé — assets générés intégrés</title>
+  <style>
+    :root {{
+      --ink: #17233c;
+      --purple: #6849d8;
+      --cream: #fff7d6;
+      --gold: #ffd94a;
+      --blue: #3e8cff;
+      --shadow: rgba(23, 35, 60, 0.22);
+      --parts-sheet: url("data:image/png;base64,{parts_b64}");
+      --poses-sheet: url("data:image/png;base64,{poses_b64}");
+    }}
+
+    * {{ box-sizing: border-box; }}
+
+    body {{
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", Verdana, Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 10%, rgba(255,255,255,.92) 0 4%, transparent 4.2%),
+        radial-gradient(circle at 85% 9%, rgba(255,255,255,.85) 0 4.5%, transparent 4.7%),
+        linear-gradient(#7bdcff 0%, #c9f6ff 54%, #87d76b 54.2%, #55c863 78%, #36aa4e 100%);
+      overflow-x: hidden;
+    }}
+
+    header {{
+      max-width: 1180px;
+      margin: 24px auto 16px;
+      padding: 18px 22px;
+      border: 4px solid var(--purple);
+      border-radius: 28px;
+      background: rgba(255, 253, 242, .95);
+      box-shadow: 0 8px 0 #42269f, 0 18px 34px var(--shadow);
+      text-align: center;
+    }}
+
+    h1 {{
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 46px);
+      color: #412568;
+      line-height: 1.05;
+    }}
+
+    .lead {{
+      margin: 0;
+      font-weight: 800;
+      opacity: .82;
+    }}
+
+    main {{
+      max-width: 1180px;
+      margin: 0 auto 40px;
+      padding: 0 16px;
+    }}
+
+    .demo-grid {{
+      display: grid;
+      grid-template-columns: minmax(300px, 520px) 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }}
+
+    .card {{
+      border-radius: 24px;
+      background: rgba(255, 253, 242, .94);
+      border: 3px solid rgba(104, 73, 216, .45);
+      box-shadow: 0 12px 28px rgba(23, 35, 60, .14);
+      overflow: hidden;
+    }}
+
+    .card-title {{
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 16px;
+      background: rgba(255, 247, 214, .96);
+      border-bottom: 2px solid rgba(104, 73, 216, .25);
+      font-weight: 900;
+      color: #412568;
+    }}
+
+    .stage {{
+      position: relative;
+      min-height: 540px;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 22% 20%, rgba(255,255,255,.85) 0 5%, transparent 5.2%),
+        linear-gradient(#9eefff 0%, #ccf7ff 48%, #7dd56a 48.2%, #45b853 100%);
+    }}
+
+    .sprite-stage {{
+      position: relative;
+      width: 100%;
+      min-height: 410px;
+      display: grid;
+      place-items: center;
+    }}
+
+    .sprite-shadow {{
+      position: absolute;
+      left: 50%;
+      bottom: 46px;
+      width: 230px;
+      height: 36px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: rgba(23, 35, 60, .16);
+      filter: blur(1px);
+    }}
+
+    .pose-window {{
+      position: relative;
+      width: 270px;
+      height: 350px;
+      background-image: var(--poses-sheet);
+      background-size: 1448px 1086px;
+      background-repeat: no-repeat;
+      border-radius: 24px;
+      overflow: hidden;
+      filter: drop-shadow(0 18px 14px rgba(23,35,60,.18));
+      transform-origin: 50% 90%;
+    }}
+
+    .pose-window::after {{
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,.55);
+      pointer-events: none;
+    }}
+
+    .pose-label {{
+      position: absolute;
+      left: 50%;
+      top: 16px;
+      transform: translateX(-50%);
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 253, 242, .95);
+      border: 3px solid rgba(104,73,216,.50);
+      font-weight: 900;
+      color: #412568;
+      box-shadow: 0 8px 18px rgba(23, 35, 60, .14);
+      z-index: 2;
+    }}
+
+    .controls {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 14px 16px 18px;
+      justify-content: center;
+      background: rgba(255, 247, 214, .72);
+    }}
+
+    button {{
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: #fff1a8;
+      color: var(--ink);
+      box-shadow: 0 4px 0 #c28b00, 0 10px 18px rgba(23, 35, 60, .12);
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .12s ease, filter .12s ease;
+    }}
+
+    button:hover {{ transform: translateY(-2px); filter: brightness(1.04); }}
+    button:active {{ transform: translateY(2px); box-shadow: 0 2px 0 #c28b00; }}
+    button.is-active {{ background: #b9f5ff; box-shadow: 0 4px 0 #258dc7, 0 10px 18px rgba(23, 35, 60, .12); }}
+
+    .explain {{
+      padding: 18px;
+      line-height: 1.55;
+      font-weight: 700;
+    }}
+
+    .explain code {{
+      color: #0c3974;
+      font-weight: 900;
+      background: rgba(62,140,255,.12);
+      border-radius: 6px;
+      padding: 2px 5px;
+    }}
+
+    .asset-sheets {{
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }}
+
+    .sheet-img {{
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 0 0 20px 20px;
+      background: #fffdf2;
+    }}
+
+    .sheet-note {{
+      padding: 14px 16px;
+      font-weight: 800;
+      background: rgba(255, 247, 214, .75);
+      border-top: 2px solid rgba(104,73,216,.22);
+    }}
+
+    /* Crop coordinates on the generated animation sheet.
+       The generated sheet is embedded whole; these values crop its pose cells. */
+    .pose-idle   {{ background-position: -12px  -55px;  }}
+    .pose-walk1  {{ background-position: -296px -55px;  }}
+    .pose-walk2  {{ background-position: -581px -55px;  }}
+    .pose-run    {{ background-position: -870px -55px;  }}
+    .pose-strike {{ background-position: -1157px -55px; }}
+    .pose-defend {{ background-position: -15px  -492px; }}
+    .pose-jump   {{ background-position: -396px -492px; }}
+    .pose-cheer  {{ background-position: -780px -492px; }}
+    .pose-hurt   {{ background-position: -1142px -492px; }}
+
+    .anim-idle {{
+      animation: idle-breathe 1.7s ease-in-out infinite;
+    }}
+
+    .anim-walk {{
+      animation:
+        walk-frames .52s steps(1, end) infinite,
+        walk-bob .52s ease-in-out infinite alternate;
+    }}
+
+    .anim-run {{
+      animation:
+        run-frames .38s steps(1, end) infinite,
+        run-bob .38s ease-in-out infinite alternate;
+    }}
+
+    .anim-strike {{
+      animation: strike-sequence .7s steps(1, end) infinite, strike-pop .7s ease-in-out infinite;
+    }}
+
+    .anim-defend {{
+      animation: defend-breathe .9s ease-in-out infinite alternate;
+    }}
+
+    .anim-jump {{
+      animation: jump-float .85s ease-in-out infinite alternate;
+    }}
+
+    .anim-cheer {{
+      animation: cheer-bounce .55s ease-in-out infinite alternate;
+    }}
+
+    .anim-hurt {{
+      animation: hurt-shake .55s ease-out infinite;
+    }}
+
+    .anim-auto {{
+      animation: auto-poses 5.6s steps(1, end) infinite, auto-motion 5.6s ease-in-out infinite;
+    }}
+
+    @keyframes idle-breathe {{
+      0%, 100% {{ transform: translateY(0) scale(1); }}
+      50% {{ transform: translateY(-5px) scale(1.015); }}
+    }}
+
+    @keyframes walk-frames {{
+      0%, 49.9% {{ background-position: -296px -55px; }}
+      50%, 100% {{ background-position: -581px -55px; }}
+    }}
+
+    @keyframes walk-bob {{
+      from {{ transform: translateX(-70px) translateY(0) rotate(-1deg); }}
+      to {{ transform: translateX(70px) translateY(-8px) rotate(1deg); }}
+    }}
+
+    @keyframes run-frames {{
+      0%, 49.9% {{ background-position: -870px -55px; }}
+      50%, 100% {{ background-position: -581px -55px; }}
+    }}
+
+    @keyframes run-bob {{
+      from {{ transform: translateX(-90px) translateY(0) rotate(-3deg); }}
+      to {{ transform: translateX(90px) translateY(-12px) rotate(3deg); }}
+    }}
+
+    @keyframes strike-sequence {{
+      0%, 24.9% {{ background-position: -12px -55px; }}
+      25%, 69.9% {{ background-position: -1157px -55px; }}
+      70%, 100% {{ background-position: -12px -55px; }}
+    }}
+
+    @keyframes strike-pop {{
+      0%, 100% {{ transform: scale(1); }}
+      40% {{ transform: scale(1.08) rotate(-2deg); }}
+    }}
+
+    @keyframes defend-breathe {{
+      from {{ transform: translateY(3px) rotate(-2deg); }}
+      to {{ transform: translateY(-4px) rotate(2deg); }}
+    }}
+
+    @keyframes jump-float {{
+      from {{ transform: translateY(18px) scale(.98); }}
+      to {{ transform: translateY(-38px) scale(1.02); }}
+    }}
+
+    @keyframes cheer-bounce {{
+      from {{ transform: translateY(0) rotate(-1deg); }}
+      to {{ transform: translateY(-16px) rotate(2deg); }}
+    }}
+
+    @keyframes hurt-shake {{
+      0%, 100% {{ transform: translateX(0) rotate(0); }}
+      20% {{ transform: translateX(-12px) rotate(-4deg); }}
+      40% {{ transform: translateX(9px) rotate(4deg); }}
+      60% {{ transform: translateX(-6px) rotate(-3deg); }}
+      80% {{ transform: translateX(4px) rotate(2deg); }}
+    }}
+
+    @keyframes auto-poses {{
+      0%, 13% {{ background-position: -12px -55px; }}
+      14%, 27% {{ background-position: -296px -55px; }}
+      28%, 41% {{ background-position: -581px -55px; }}
+      42%, 55% {{ background-position: -870px -55px; }}
+      56%, 69% {{ background-position: -1157px -55px; }}
+      70%, 82% {{ background-position: -780px -492px; }}
+      83%, 100% {{ background-position: -12px -55px; }}
+    }}
+
+    @keyframes auto-motion {{
+      0%, 100% {{ transform: translateX(0) translateY(0) scale(1); }}
+      30% {{ transform: translateX(-80px) translateY(-6px); }}
+      55% {{ transform: translateX(85px) translateY(-10px) scale(1.04); }}
+      75% {{ transform: translateX(0) translateY(-16px) scale(1.02); }}
+    }}
+
+    @media (max-width: 900px) {{
+      .demo-grid {{ grid-template-columns: 1fr; }}
+      .stage {{ min-height: 500px; }}
+    }}
+
+    @media (max-width: 560px) {{
+      header {{ margin: 12px; }}
+      main {{ padding: 0 12px; }}
+      .pose-window {{
+        width: 220px;
+        height: 305px;
+        background-size: 1220px 914px;
+      }}
+      .pose-idle   {{ background-position: -10px  -47px;  }}
+      .pose-walk1  {{ background-position: -250px -47px;  }}
+      .pose-walk2  {{ background-position: -490px -47px;  }}
+      .pose-run    {{ background-position: -733px -47px;  }}
+      .pose-strike {{ background-position: -975px -47px; }}
+      .pose-defend {{ background-position: -13px  -414px; }}
+      .pose-jump   {{ background-position: -334px -414px; }}
+      .pose-cheer  {{ background-position: -657px -414px; }}
+      .pose-hurt   {{ background-position: -963px -414px; }}
+    }}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Personnage animé avec les images générées</h1>
+    <p class="lead">Single-file HTML : les deux planches PNG générées sont embarquées en base64. La démo anime la planche de poses par cropping CSS.</p>
+  </header>
+
+  <main>
+    <section class="demo-grid">
+      <article class="card">
+        <div class="card-title">
+          <span>Démo d’animation depuis la planche générée</span>
+          <span id="modeName">Idle</span>
+        </div>
+        <div class="stage">
+          <div class="sprite-stage">
+            <div class="pose-label" id="poseLabel">Idle</div>
+            <div class="sprite-shadow"></div>
+            <div id="poseWindow" class="pose-window pose-idle anim-idle" role="img" aria-label="Pose animée du personnage généré"></div>
+          </div>
+        </div>
+        <div class="controls">
+          <button data-pose="idle" class="is-active">Idle</button>
+          <button data-pose="walk">Marche</button>
+          <button data-pose="run">Course</button>
+          <button data-pose="strike">Frappe</button>
+          <button data-pose="defend">Défense</button>
+          <button data-pose="jump">Saut</button>
+          <button data-pose="cheer">Joie</button>
+          <button data-pose="hurt">Touché</button>
+          <button data-pose="auto">Auto</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">Ce que montre cette démo</div>
+        <div class="explain">
+          <p>
+            Cette version intègre réellement les deux images générées. Pour rester en <strong>single-file HTML</strong>,
+            elles sont encodées directement dans le fichier en <code>data:image/png;base64</code>.
+          </p>
+          <p>
+            La zone animée utilise la planche de poses comme une pseudo-spritesheet :
+            le CSS change <code>background-position</code> pour afficher <code>idle</code>, <code>walk</code>,
+            <code>run</code>, <code>strike</code>, etc.
+          </p>
+          <p>
+            Limite importante : ce n’est pas encore un vrai rig SVG par parties. Pour le jeu final,
+            ces planches servent de référence artistique ; il faudra ensuite vectoriser ou reconstruire le personnage
+            en <code>SVG inline</code> avec des groupes animables.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <section class="asset-sheets">
+      <article class="card">
+        <div class="card-title">Planche de pièces générée — référence pour le futur SVG riggé</div>
+        <img class="sheet-img" alt="Planche de pièces du chevalier généré" src="data:image/png;base64,{parts_b64}" />
+        <div class="sheet-note">
+          À utiliser comme référence pour recréer <code>head</code>, <code>helmet</code>, <code>body</code>, <code>weapon</code>,
+          <code>shield</code>, <code>left-leg</code>, <code>right-leg</code>, etc. en SVG inline.
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title">Planche de poses générée — source de la démo animée ci-dessus</div>
+        <img class="sheet-img" alt="Planche de poses animées du chevalier généré" src="data:image/png;base64,{poses_b64}" />
+        <div class="sheet-note">
+          Cette image est utilisée par la démo comme spritesheet visuelle. Ce n’est pas un format optimal final,
+          mais cela montre comment les poses peuvent guider les futures animations CSS/SVG.
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const poseWindow = document.getElementById("poseWindow");
+    const modeName = document.getElementById("modeName");
+    const poseLabel = document.getElementById("poseLabel");
+    const buttons = Array.from(document.querySelectorAll("button[data-pose]"));
+
+    const poseMap = {{
+      idle:   {{ label: "Idle",   crop: "pose-idle",   anim: "anim-idle" }},
+      walk:   {{ label: "Marche", crop: "pose-walk1",  anim: "anim-walk" }},
+      run:    {{ label: "Course", crop: "pose-run",    anim: "anim-run" }},
+      strike: {{ label: "Frappe", crop: "pose-strike", anim: "anim-strike" }},
+      defend: {{ label: "Défense",crop: "pose-defend", anim: "anim-defend" }},
+      jump:   {{ label: "Saut",   crop: "pose-jump",   anim: "anim-jump" }},
+      cheer:  {{ label: "Joie",   crop: "pose-cheer",  anim: "anim-cheer" }},
+      hurt:   {{ label: "Touché", crop: "pose-hurt",   anim: "anim-hurt" }},
+      auto:   {{ label: "Auto",   crop: "pose-idle",   anim: "anim-auto" }}
+    }};
+
+    const allCrops = ["pose-idle", "pose-walk1", "pose-walk2", "pose-run", "pose-strike", "pose-defend", "pose-jump", "pose-cheer", "pose-hurt"];
+    const allAnims = ["anim-idle", "anim-walk", "anim-run", "anim-strike", "anim-defend", "anim-jump", "anim-cheer", "anim-hurt", "anim-auto"];
+
+    function setPose(key) {{
+      const pose = poseMap[key] || poseMap.idle;
+      poseWindow.classList.remove(...allCrops, ...allAnims);
+      void poseWindow.offsetWidth;
+      poseWindow.classList.add(pose.crop, pose.anim);
+      modeName.textContent = pose.label;
+      poseLabel.textContent = pose.label;
+      buttons.forEach(button => button.classList.toggle("is-active", button.dataset.pose === key));
+    }}
+
+    buttons.forEach(button => {{
+      button.addEventListener("click", () => setPose(button.dataset.pose));
+    }});
+
+    window.addEventListener("keydown", event => {{
+      if (event.code === "Space") setPose("strike");
+      if (event.code === "ArrowLeft" || event.code === "ArrowRight") setPose("walk");
+      if (event.code === "KeyR") setPose("run");
+      if (event.code === "KeyD") setPose("defend");
+      if (event.code === "KeyJ") setPose("jump");
+      if (event.code === "KeyC") setPose("cheer");
+      if (event.code === "KeyH") setPose("hurt");
+      if (event.code === "Escape") setPose("idle");
+    }});
+  </script>
+</body>
+</html>
+"""
+
+out_path = Path("/mnt/data/generated_character_sprite_demo.html")
+out_path.write_text(html_content, encoding="utf-8")
+out_path
+

@@ -1,0 +1,28 @@
+.slash {
+  position: absolute;
+  width: 150px;
+  height: 18px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #fff, #85f7ff, transparent);
+  box-shadow: 0 0 20px #fff, 0 0 28px #4de7ff;
+  transform: translate(-50%, -50%) rotate(-28deg);
+  pointer-events: none;
+  animation: slash .25s ease-out forwards;
+  z-index: 12;
+}
+.slash--cane {
+  width: 136px;
+  height: 14px;
+  background: linear-gradient(90deg, transparent, #fff0bd, #c48a4d, transparent);
+  box-shadow: 0 0 18px rgba(196, 138, 77, .8);
+}
+.slash--laser {
+  width: 180px;
+  height: 16px;
+  background: linear-gradient(90deg, transparent, #ffffff, #5ef0ff, #ffffff, transparent);
+  box-shadow: 0 0 22px #fff, 0 0 34px #5ef0ff;
+}
+@keyframes slash {
+  from { opacity: 1; scale: .35; }
+  to { opacity: 0; scale: 1.5; }
+}

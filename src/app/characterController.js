@@ -1,3 +1,5 @@
+import { applyCharacterGraphic } from "../graphics/characters/index.js";
+
 export function createCharacterController({
   knight,
   characterGrid,
@@ -30,9 +32,7 @@ export function createCharacterController({
 
   function applySelectedCharacter() {
     const character = getSelectedCharacter();
-    knight.classList.remove("character-knight", "character-pepe", "character-laser");
-    knight.classList.add(character.cssClass);
-    knight.dataset.characterId = character.id;
+    applyCharacterGraphic(knight, character);
     // [impl->req~character.cosmetic-only~1]
     updateCharacterPreview();
   }

@@ -1,3 +1,5 @@
+import { createSlashEffect } from "../graphics/slash/asset.js";
+
 export function createSlicingController({
   game,
   arena,
@@ -21,15 +23,6 @@ export function createSlicingController({
       game.appendChild(piece);
       setTimeout(() => piece.remove(), 900);
     }
-  }
-
-  function makeSlash(character, x, y) {
-    const slash = document.createElement("div");
-    slash.className = "slash slash--" + character.strikeEffect;
-    slash.style.left = x + "px";
-    slash.style.top = y + "px";
-    game.appendChild(slash);
-    setTimeout(() => slash.remove(), 280);
   }
 
   function resetWords(activeWords) {
@@ -123,7 +116,13 @@ export function createSlicingController({
     // [impl->req~game.target-only-slicing~1]
     const hit = findSwordCollision({ words: activeWords, swordCenterX, swordCenterY, veryEasy });
     // [impl->req~character.cosmetic-only~1]
-    makeSlash(character, knightX + 40, window.innerHeight - 185);
+    const slash = createSlashEffect(document, {
+      character,
+      x: knightX + 40,
+      y: window.innerHeight - 185
+    });
+    game.appendChild(slash);
+    setTimeout(() => slash.remove(), 280);
     if (!hit) {
       return { activeWords, levelStats, stars };
     }
