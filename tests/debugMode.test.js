@@ -49,6 +49,7 @@ describe("debug mode", () => {
     expect(entries.some(level => level.type === "dictation")).toBe(true);
     expect(entries.some(level => level.type === "slicing")).toBe(true);
     expect(entries.some(level => level.type === "cannon")).toBe(true);
+    expect(entries.some(level => level.type === "tetris")).toBe(true);
   });
 
   it("crée un contexte debug sans compte ni persistance", () => {
@@ -132,10 +133,11 @@ describe("debug mode", () => {
     })).toBe(true);
   });
 
-  it("produit toujours la note maximale en complétion debug pour le tranchage, la dictée et le cannon", () => {
+  it("produit toujours la note maximale en complétion debug pour le tranchage, la dictée, le cannon et le tetris", () => {
     expect(calculateLevelScore(createDebugMaxScoreStats("slicing"))).toBe(5);
     expect(calculateLevelScore(createDebugMaxScoreStats("dictation"))).toBe(5);
     expect(calculateLevelScore(createDebugMaxScoreStats("cannon"))).toBe(5);
+    expect(calculateLevelScore(createDebugMaxScoreStats("tetris"))).toBe(5);
   });
 
   it("applique le prérequis de voix française au menu debug", () => {

@@ -130,6 +130,13 @@ export function createDebugMaxScoreStats(levelType) {
       errors: 0
     };
   }
+  if (levelType === "tetris") {
+    return {
+      levelType: "tetris",
+      successfulHits: 1,
+      errors: 0
+    };
+  }
   return {
     levelType: "slicing",
     successfulHits: 1,

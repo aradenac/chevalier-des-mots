@@ -4,13 +4,14 @@
 // [utest->req~cannon.main-progression~1]
 // [utest->req~cannon.data-model~1]
 // [utest->req~cannon.content-progression~1]
+// [utest->req~level.tetris-mode~1]
 import { describe, expect, it } from "vitest";
 import { LEVELS } from "../src/data/levels.js";
 import { getPedagogicalLevelGroups } from "../src/data/pedagogicalProgression.js";
 
 describe("LEVELS", () => {
-  it("contient 50 niveaux", () => {
-    expect(LEVELS).toHaveLength(50);
+  it("contient 61 niveaux", () => {
+    expect(LEVELS).toHaveLength(61);
   });
 
   it("utilise des ids uniques", () => {
@@ -22,7 +23,7 @@ describe("LEVELS", () => {
     for (const level of LEVELS) {
       expect(level.title.trim()).not.toBe("");
       expect(level.instruction.trim()).not.toBe("");
-      expect(["slicing", "dictation", "cannon"]).toContain(level.type);
+      expect(["slicing", "dictation", "cannon", "tetris"]).toContain(level.type);
       expect(level.starsToWin).toBeGreaterThan(0);
       expect(level.maxActiveWords).toBeGreaterThanOrEqual(1);
       expect(level.maxActiveWords).toBeLessThanOrEqual(5);
@@ -52,6 +53,15 @@ describe("LEVELS", () => {
         expect(level.dictations).toBeUndefined();
         continue;
       }
+      if (level.type === "tetris") {
+        expect(level.tetrisPuzzles.length).toBeGreaterThanOrEqual(1);
+        expect(level.fallDurationSeconds).toBeGreaterThanOrEqual(1.5);
+        expect(level.fallDurationSeconds).toBeLessThanOrEqual(3);
+        expect(level.items).toBeUndefined();
+        expect(level.dictations).toBeUndefined();
+        expect(level.cannonPuzzles).toBeUndefined();
+        continue;
+      }
       for (const item of level.items) {
         expect(item.text.trim()).not.toBe("");
       }
@@ -69,10 +79,17 @@ describe("LEVELS", () => {
         expect(level.cannonPuzzles.length).toBeGreaterThanOrEqual(1);
         expect(level.items).toBeUndefined();
         expect(level.dictations).toBeUndefined();
+      } else if (level.type === "tetris") {
+        expect(level.tetrisPuzzles.length).toBeGreaterThanOrEqual(1);
+        expect(level.tetrisPuzzles[0].slots.length).toBeGreaterThanOrEqual(1);
+        expect(level.items).toBeUndefined();
+        expect(level.dictations).toBeUndefined();
+        expect(level.cannonPuzzles).toBeUndefined();
       } else {
         expect(Array.isArray(level.items)).toBe(true);
         expect(level.dictations).toBeUndefined();
         expect(level.cannonPuzzles).toBeUndefined();
+        expect(level.tetrisPuzzles).toBeUndefined();
       }
     }
   });
@@ -119,5 +136,14 @@ describe("LEVELS", () => {
     expect(cannonLevels.map(level => level.id)).toEqual([4, 9, 14, 19, 24, 29, 34, 39, 44, 49]);
     expect(cannonLevels.filter(level => level.id <= 25)).toHaveLength(5);
     expect(cannonLevels.filter(level => level.id >= 26)).toHaveLength(5);
+  });
+
+  it("ajoute 11 niveaux tetris de campagne en fin de progression avec une difficulté croissante", () => {
+    const tetrisLevels = LEVELS.filter(level => level.type === "tetris");
+    expect(tetrisLevels).toHaveLength(11);
+    expect(tetrisLevels.map(level => level.id)).toEqual([51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61]);
+    expect(tetrisLevels[0].fallDurationSeconds).toBe(3);
+    expect(tetrisLevels.at(-1).fallDurationSeconds).toBe(1.5);
+    expect(tetrisLevels.at(-1).tetrisPuzzles[0].slots.length).toBeGreaterThanOrEqual(tetrisLevels[0].tetrisPuzzles[0].slots.length);
   });
 });

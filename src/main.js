@@ -13,6 +13,13 @@ import {
   isCannonLevelComplete,
   resolveCannonShot
 } from "./core/cannon.js";
+import {
+  createTetrisState,
+  getCurrentTetrisWord,
+  getTetrisDisplayTokens,
+  isTetrisLevelComplete,
+  resolveTetrisAction
+} from "./core/tetris.js";
 import { pickDictation, scoreDictation } from "./core/dictation.js";
 import { createValidatedDictationState } from "./core/dictationFlow.js";
 import {
@@ -47,6 +54,7 @@ import { createDebugController } from "./app/debugController.js";
 import { createDictationController } from "./app/dictationController.js";
 import { createCannonController } from "./app/cannonController.js";
 import { createSlicingController } from "./app/slicingController.js";
+import { createTetrisController } from "./app/tetrisController.js";
 import { createContinueLevelPlan, createFinishLevelPlan, createStartGamePlan } from "./app/levelFlow.js";
 
 const game = document.getElementById("game");
@@ -94,6 +102,8 @@ const dictationRepeatBtn = document.getElementById("dictationRepeatBtn");
 const dictationValidateBtn = document.getElementById("dictationValidateBtn");
 const dictationClearBtn = document.getElementById("dictationClearBtn");
 const dictationFeedback = document.getElementById("dictationFeedback");
+const tetrisPanel = document.getElementById("tetrisPanel");
+const tetrisPrompt = document.getElementById("tetrisPrompt");
 const cannonPanel = document.getElementById("cannonPanel");
 const cannonPrompt = document.getElementById("cannonPrompt");
 const cannonShotLayer = document.getElementById("cannonShotLayer");
@@ -160,6 +170,7 @@ const screenRouter = createScreenRouter({
   championsOverlay,
   pauseBtn,
   dictationPanel,
+  tetrisPanel,
   cannonPanel,
   cannonPrompt,
   cannonRig,
@@ -236,6 +247,18 @@ const cannonController = createCannonController({
   clearElement: screenRouter.clearElement
 });
 
+const tetrisController = createTetrisController({
+  arena,
+  tetrisPanel,
+  tetrisPrompt,
+  createTetrisState,
+  getTetrisDisplayTokens,
+  getCurrentTetrisWord,
+  isTetrisLevelComplete,
+  resolveTetrisAction,
+  clearElement: screenRouter.clearElement
+});
+
 const slicingController = createSlicingController({
   game,
   arena,
@@ -261,6 +284,10 @@ function isDictationLevel(level = getLevel()) {
 
 function isCannonLevel(level = getLevel()) {
   return level?.type === "cannon";
+}
+
+function isTetrisLevel(level = getLevel()) {
+  return level?.type === "tetris";
 }
 
 function shortFeedback(text) {
@@ -419,6 +446,7 @@ async function deleteActiveAccount() {
   screenRouter.showStartMenu();
   accountController.setAccountStatus("Compte supprimé. Choisis ou crée un compte.");
   screenRouter.setDictationVisible(false);
+  screenRouter.setTetrisVisible(false);
   screenRouter.setCannonVisible(false);
 }
 
@@ -480,8 +508,8 @@ function spawnWord() {
 }
 
 function updateAttackButtons() {
-  const label = isCannonLevel() ? "Tirer" : "Frapper";
-  const icon = isCannonLevel() ? "⬆" : "⚔";
+  const label = isCannonLevel() ? "Tirer" : isTetrisLevel() ? "Éliminer" : "Frapper";
+  const icon = isCannonLevel() ? "⬆" : isTetrisLevel() ? "✖" : "⚔";
   if (strikeBtnTop) {
     strikeBtnTop.textContent = icon;
     strikeBtnTop.setAttribute("aria-label", label);
@@ -508,7 +536,9 @@ function finishLevel() {
   resetWords();
   dictationController.reset();
   cannonController.reset();
+  tetrisController.reset();
   screenRouter.setDictationVisible(false);
+  screenRouter.setTetrisVisible(false);
   screenRouter.setCannonVisible(false);
   if (finishPlan.persistResult) {
     // [impl->req~stats.level-score-five-stars~2]
@@ -576,6 +606,34 @@ function strike() {
     });
     return;
   }
+  if (isTetrisLevel()) {
+    levelStats = tetrisController.strike({
+      levelStats,
+      finishLevel,
+      knightX,
+      windowHeight: window.innerHeight,
+      onSuccess: (outcome) => {
+        const nextStars = Math.min(getLevel().starsToWin, (stars || 0) + 1);
+        stars = nextStars;
+        updateHud(nextStars);
+        if (outcome.type === "eliminate-distractor") {
+          tetrisController.makeBurst(knightX, window.innerHeight - 180);
+          setMessage("Bien joué ! Mot distracteur éliminé.");
+        } else {
+          setMessage("Bien joué ! Le mot complète la phrase.");
+        }
+        services.narration.speak("Bien joué.");
+        playSweetSound();
+      },
+      onError: (outcome) => {
+        tetrisController.makeBurst(knightX, window.innerHeight - 180, "failure");
+        setMessage(outcome.type === "wrong-elimination" ? "Ce mot devait compléter la phrase." : "Ce mot n'allait pas dans ce trou.");
+        services.narration.speak("Essaie encore.");
+        playSwordSound();
+      }
+    });
+    return;
+  }
   let pendingStars = stars;
   const result = slicingController.strike({
     activeWords,
@@ -615,6 +673,8 @@ function completeDebugLevelWithMaxScore() {
     dictationController.reset();
   } else if (isCannonLevel()) {
     cannonController.reset();
+  } else if (isTetrisLevel()) {
+    tetrisController.reset();
   } else {
     stars = getLevel().starsToWin;
     updateHud();
@@ -651,6 +711,7 @@ function startGame(easy, options = {}) {
   levelStats = createLevelStats();
   dictationController.reset();
   cannonController.reset();
+  tetrisController.reset();
   const nextState = resetGameStateForLevel({
     state,
     veryEasy,
@@ -682,15 +743,23 @@ function startGame(easy, options = {}) {
   ensureAudio();
   if (startPlan.startDictation) {
     screenRouter.setDictationVisible(true);
+    screenRouter.setTetrisVisible(false);
     screenRouter.setCannonVisible(false);
     dictationController.startLevel(getLevel());
   } else if (startPlan.startCannon) {
     screenRouter.setDictationVisible(false);
+    screenRouter.setTetrisVisible(false);
     screenRouter.setCannonVisible(true);
     levelStats = cannonController.startLevel(getLevel(), knightX);
+  } else if (startPlan.startTetris) {
+    screenRouter.setDictationVisible(false);
+    screenRouter.setTetrisVisible(true);
+    screenRouter.setCannonVisible(false);
+    levelStats = tetrisController.startLevel(getLevel(), knightX, window.innerHeight);
   } else {
     screenRouter.setCannonVisible(false);
     screenRouter.setDictationVisible(false);
+    screenRouter.setTetrisVisible(false);
     spawnWord();
   }
 }
@@ -741,6 +810,7 @@ function returnToMenu() {
   launchContext = null;
   dictationController.reset();
   cannonController.reset();
+  tetrisController.reset();
   stars = 0;
   state = "menu";
   updateHud();
@@ -749,6 +819,7 @@ function returnToMenu() {
   screenRouter.showStartMenu();
   setMessage(getLevel().instruction);
   screenRouter.setDictationVisible(false);
+  screenRouter.setTetrisVisible(false);
   screenRouter.setCannonVisible(false);
 }
 
@@ -805,31 +876,67 @@ function tick(time) {
   if (keyboardState.pausePressed || touchState.pausePressed || gamepadState.pausePressed) togglePause();
 
   if (state === "playing") {
-    const nextFrame = advancePlayingLevelFrame({
-      level: current,
-      dt,
-      moveLeft,
-      moveRight,
-      knightX,
-      windowWidth: window.innerWidth,
-      windowHeight: window.innerHeight,
-      spawnTimer,
-      activeWords,
-      veryEasy,
-      clamp,
-      spawnWord,
-      onTargetMissed: (wordData) => {
-        // [impl->req~stats.level-error-counting~2]
-        levelStats = recordLevelError(levelStats);
-        targetRetryQueue.push(wordData);
-      }
-    });
-    knightX = nextFrame.knightX;
-    spawnTimer = nextFrame.spawnTimer;
-    activeWords = nextFrame.activeWords;
+    if (isTetrisLevel(current)) {
+      const speed = 280 + Math.min(current.id, 20) * 6;
+      if (moveLeft) knightX -= speed * dt;
+      if (moveRight) knightX += speed * dt;
+      knightX = clamp(knightX, 52, window.innerWidth - 52);
+      levelStats = tetrisController.updateFrame({
+        dt,
+        knightX,
+        levelStats,
+        finishLevel,
+        windowHeight: window.innerHeight,
+        onSuccess: (outcome) => {
+          const nextStars = Math.min(getLevel().starsToWin, (stars || 0) + 1);
+          stars = nextStars;
+          updateHud(nextStars);
+          if (outcome.type === "eliminate-distractor") {
+            tetrisController.makeBurst(knightX, window.innerHeight - 180);
+            setMessage("Parfait ! Mot distracteur éliminé.");
+          } else {
+            tetrisController.makeBurst(knightX, window.innerHeight - 180);
+            setMessage("Bien joué ! Le mot complète la phrase.");
+          }
+          services.narration.speak("Bien joué.");
+          playSweetSound();
+        },
+        onError: (outcome) => {
+          tetrisController.makeBurst(knightX, window.innerHeight - 180, "failure");
+          setMessage(outcome.type === "wrong-elimination" ? "Tu as éliminé un mot utile." : "Ce mot reviendra : il n'était pas au bon endroit.");
+          services.narration.speak("Essaie encore.");
+          playSwordSound();
+        }
+      });
+    } else {
+      const nextFrame = advancePlayingLevelFrame({
+        level: current,
+        dt,
+        moveLeft,
+        moveRight,
+        knightX,
+        windowWidth: window.innerWidth,
+        windowHeight: window.innerHeight,
+        spawnTimer,
+        activeWords,
+        veryEasy,
+        clamp,
+        spawnWord,
+        onTargetMissed: (wordData) => {
+          // [impl->req~stats.level-error-counting~2]
+          levelStats = recordLevelError(levelStats);
+          targetRetryQueue.push(wordData);
+        }
+      });
+      knightX = nextFrame.knightX;
+      spawnTimer = nextFrame.spawnTimer;
+      activeWords = nextFrame.activeWords;
+    }
     knight.style.left = knightX + "px";
     if (isCannonLevel(current)) {
       cannonController.render(knightX);
+    } else if (isTetrisLevel(current)) {
+      tetrisController.render(knightX);
     }
   }
 
@@ -925,6 +1032,8 @@ window.addEventListener("resize", () => {
   knight.style.left = knightX + "px";
   if (isCannonLevel()) {
     cannonController.render(knightX);
+  } else if (isTetrisLevel()) {
+    tetrisController.render(knightX);
   }
 });
 

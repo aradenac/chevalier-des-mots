@@ -7,6 +7,7 @@
 // [utest->req~debug.chain-end~1]
 // [utest->req~stats.replay-return-flow~1]
 // [utest->req~stats.replay-does-not-regress-progression~1]
+// [utest->req~level.tetris-mode~1]
 import { describe, expect, it } from "vitest";
 import {
   createContinueLevelPlan,
@@ -18,11 +19,11 @@ import { createDebugLaunchContext } from "../../src/core/debugMode.js";
 const CAMPAIGN_LEVELS = [
   { id: 1, type: "slicing", title: "Découpe 1" },
   { id: 2, type: "dictation", title: "Dictée 2" },
-  { id: 3, type: "slicing", title: "Découpe 3" }
+  { id: 3, type: "tetris", title: "Tetris 3" }
 ];
 
 describe("level flow integration", () => {
-  it("enchaîne slicing puis dictée puis slicing et réactive le spawn après la dictée", () => {
+  it("enchaîne slicing puis dictée puis tetris sans sauter l'entrée suivante", () => {
     const firstStart = createStartGamePlan({
       levels: CAMPAIGN_LEVELS,
       hasActiveAccount: true,
@@ -66,7 +67,7 @@ describe("level flow integration", () => {
     expect(backToSlicing.action).toBe("start-level");
     expect(backToSlicing.currentLevelIndex).toBe(2);
 
-    const slicingStartAgain = createStartGamePlan({
+    const tetrisStart = createStartGamePlan({
       levels: CAMPAIGN_LEVELS,
       hasActiveAccount: true,
       frenchVoiceReady: true,
@@ -74,8 +75,9 @@ describe("level flow integration", () => {
       selectedCharacterId: "knight"
     });
 
-    expect(slicingStartAgain.startSlicing).toBe(true);
-    expect(slicingStartAgain.startDictation).toBe(false);
+    expect(tetrisStart.startTetris).toBe(true);
+    expect(tetrisStart.startSlicing).toBe(false);
+    expect(tetrisStart.startDictation).toBe(false);
   });
 
   it("bloque la campagne normale sans compte actif mais autorise le lancement debug", () => {

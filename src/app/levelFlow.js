@@ -23,6 +23,7 @@ import { shouldReturnToStatsAfterReplay } from "../core/statistics.js";
 export function resolveLevelRuntimeMode(level) {
   if (level?.type === "dictation") return "dictation";
   if (level?.type === "cannon") return "cannon";
+  if (level?.type === "tetris") return "tetris";
   return "slicing";
 }
 
@@ -80,7 +81,8 @@ export function createStartGamePlan({
     mode,
     startSlicing: mode === "slicing",
     startDictation: mode === "dictation",
-    startCannon: mode === "cannon"
+    startCannon: mode === "cannon",
+    startTetris: mode === "tetris"
   };
 }
 

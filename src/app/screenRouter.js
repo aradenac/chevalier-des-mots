@@ -8,6 +8,7 @@ export function createScreenRouter({
   championsOverlay,
   pauseBtn,
   dictationPanel,
+  tetrisPanel,
   cannonPanel,
   cannonPrompt,
   cannonRig,
@@ -96,6 +97,12 @@ export function createScreenRouter({
     arena.classList.toggle("hidden", visible);
   }
 
+  // [impl->req~level.tetris-mode~1]
+  function setTetrisVisible(visible) {
+    const enabled = Boolean(visible);
+    tetrisPanel.classList.toggle("hidden", !enabled);
+  }
+
   // [impl->req~cannon.holed-text-display~1]
   // [impl->req~cannon.vertical-trajectory-indicator~3]
   // [impl->req~cannon.selected-character-operates-cannon~1]
@@ -120,6 +127,7 @@ export function createScreenRouter({
     hideLevelSummary,
     setCannonVisible,
     setDictationVisible,
+    setTetrisVisible,
     setPauseState,
     showChampions,
     showCharacterSelection,
